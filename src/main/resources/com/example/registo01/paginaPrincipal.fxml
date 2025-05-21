@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:id="root" stylesheets="@estilo2.css">
+
+    <left>
+        <VBox fx:id="sidebar" spacing="20" styleClass="sidebar">
+            <padding>
+                <Insets top="20" left="10" right="10" bottom="20"/>
+            </padding>
+            <Label text="🦊" styleClass="logo"/>
+            <Button text="🏠" styleClass="sidebar-button"/>
+            <Button text="📊" styleClass="sidebar-button"/>
+            <Button text="🔍" styleClass="sidebar-button"/>
+            <Button text="🔔" styleClass="sidebar-button"/>
+            <Button text="📅" styleClass="sidebar-button"/>
+            <Button text="📋" styleClass="sidebar-button"/>
+            <Button text="⚙" styleClass="sidebar-button"/>
+            <Button text="👤" styleClass="sidebar-button"/>
+            <Button text="⏻" styleClass="sidebar-button-logout"/>
+        </VBox>
+    </left>
+
+    <top>
+        <VBox styleClass="header">
+            <HBox alignment="CENTER_RIGHT" spacing="20" styleClass="top-bar">
+                <padding>
+                    <Insets top="20" bottom="20" left="20" right="20"/>
+                </padding>
+                <TextField promptText="Search" styleClass="search-box"/>
+                <Label text="Matthew Parker" styleClass="user-label"/>
+            </HBox>
+            <VBox alignment="CENTER_LEFT" spacing="5" styleClass="welcome-container">
+                <Label text="Welcome back, Matthew" styleClass="welcome-text"/>
+                <Label text="Here are today’s stats from your online store!" styleClass="sub-welcome"/>
+            </VBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="15" alignment="TOP_CENTER" styleClass="main-container">
+            <padding>
+                <Insets top="30" left="40" right="40" bottom="30"/>
+            </padding>
+
+            <GridPane hgap="40" vgap="20">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="33"/>
+                    <ColumnConstraints percentWidth="33"/>
+                    <ColumnConstraints percentWidth="33"/>
+                </columnConstraints>
+
+                <!-- Cabeçalho -->
+                <Label text="Coin" styleClass="table-header" GridPane.columnIndex="0"/>
+                <Label text="Variation(24h)" styleClass="table-header" GridPane.columnIndex="1"/>
+                <Label text="Current Price" styleClass="table-header" GridPane.columnIndex="2"/>
+
+                <!-- Linha 1 -->
+                <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="coin-cell">
+                    <Label text="₿"/>
+                    <Label text="BITCOIN"/>
+                </HBox>
+                <Label text="📈 0.5%" styleClass="positive" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <Label text="5000€" styleClass="price-label" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+
+                <!-- Linha 2 -->
+                <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="coin-cell">
+                    <Label text="₿"/>
+                    <Label text="BITCOIN"/>
+                </HBox>
+                <Label text="📉 -0.5%" styleClass="negative" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <Label text="5000€" styleClass="price-label" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+
+                <!-- Linha 3 -->
+                <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="coin-cell">
+                    <Label text="₿"/>
+                    <Label text="BITCOIN"/>
+                </HBox>
+                <Label text="📈 0.5%" styleClass="positive" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                <Label text="5000€" styleClass="price-label" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+
+                <!-- Linha 4 -->
+                <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="coin-cell">
+                    <Label text="₿"/>
+                    <Label text="BITCOIN"/>
+                </HBox>
+                <Label text="📉 -0.5%" styleClass="negative" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <Label text="5000€" styleClass="price-label" GridPane.rowIndex="4" GridPane.columnIndex="2"/>
+            </GridPane>
+
+            <Button text="⬇ Export CSV" styleClass="export-button"/>
+        </VBox>
+    </center>
+</BorderPane>

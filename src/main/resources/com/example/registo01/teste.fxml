@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            stylesheets="@admin.css">
+
+    <!-- Top Bar -->
+    <top>
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT">
+            <Label text="Admin Dashboard" styleClass="dashboard-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <TextField promptText="Search" styleClass="search-field"/>
+                <Label text="Welcome back, Matthew" styleClass="welcome-text"/>
+                <ImageView fitHeight="40" fitWidth="40" styleClass="profile-image"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <VBox styleClass="main-content">
+            <!-- Summary Cards -->
+            <HBox styleClass="summary-cards" spacing="20">
+                <VBox styleClass="summary-card">
+                    <Label text="Total Moedas" styleClass="card-title"/>
+                    <Label text="24" styleClass="card-value"/>
+                    <Label text="+2 esta semana" styleClass="card-variation positive"/>
+                </VBox>
+                <VBox styleClass="summary-card">
+                    <Label text="Valor Total" styleClass="card-title"/>
+                    <Label text="€120,450" styleClass="card-value"/>
+                    <Label text="+5.2% esta semana" styleClass="card-variation positive"/>
+                </VBox>
+                <VBox styleClass="summary-card">
+                    <Label text="Transações" styleClass="card-title"/>
+                    <Label text="1,248" styleClass="card-value"/>
+                    <Label text="-3% esta semana" styleClass="card-variation negative"/>
+                </VBox>
+            </HBox>
+
+            <!-- Moedas Table -->
+            <TableView styleClass="coins-table" fx:id="coinsTable">
+                <columns>
+                    <TableColumn text="Moeda" styleClass="table-column"/>
+                    <TableColumn text="Símbolo" styleClass="table-column"/>
+                    <TableColumn text="Preço Atual (€)" styleClass="table-column"/>
+                    <TableColumn text="Variação (24h)" styleClass="table-column"/>
+                    <TableColumn text="Ações" styleClass="table-column actions"/>
+                </columns>
+                <items>
+                    <!-- Dados seriam preenchidos dinamicamente -->
+                    <FXCollections fx:factory="observableArrayList">
+                        <Coin coinName="Bitcoin" symbol="BTC" currentPrice="5000" change24h="0.5"/>
+                        <Coin coinName="Ethereum" symbol="ETH" currentPrice="3500" change24h="1.2"/>
+                        <Coin coinName="Cardano" symbol="ADA" currentPrice="1.20" change24h="-0.8"/>
+                        <Coin coinName="Solana" symbol="SOL" currentPrice="150" change24h="3.5"/>
+                    </FXCollections>
+                </items>
+            </TableView>
+
+            <!-- Add New Coin Button -->
+            <Button text="+ Adicionar Nova Moeda" styleClass="add-button"/>
+        </VBox>
+    </center>
+
+    <!-- Sidebar -->
+    <left>
+        <VBox styleClass="sidebar" spacing="20">
+            <ImageView fitWidth="120" fitHeight="60" styleClass="logo"/>
+            <Button text="Dashboard" styleClass="sidebar-button active"/>
+            <Button text="Moedas" styleClass="sidebar-button"/>
+            <Button text="Transações" styleClass="sidebar-button"/>
+            <Button text="Usuários" styleClass="sidebar-button"/>
+            <Button text="Configurações" styleClass="sidebar-button"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="Sair" styleClass="logout-button"/>
+        </VBox>
+    </left>
+</BorderPane>

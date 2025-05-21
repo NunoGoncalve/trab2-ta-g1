@@ -1,0 +1,119 @@
+.root {
+    -fx-background-color: #1e2833;
+    -fx-alignment: center;
+}
+
+.form-container {
+    -fx-background-color: #252D36;
+    -fx-padding: 40px;
+    -fx-spacing: 15px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+    -fx-min-width: 400px;
+    -fx-max-width: 400px;
+}
+
+.label-title {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 10px 0;
+}
+
+.text-field, .password-field {
+    -fx-background-radius: 8px;
+    -fx-background-color: #28323E;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #cccccc;
+    -fx-border-color: #3e4a5a;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-pref-height: 40px;
+    -fx-min-width: 300px;
+    -fx-max-width: 300px;
+    -fx-font-size: 14px;
+    -fx-padding: 0 10px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #8ab4f8;
+}
+
+.strength-bar {
+    -fx-min-width: 300px;
+    -fx-max-width: 300px;
+    -fx-pref-height: 15px;
+    -fx-background-radius: 4px;
+}
+
+.label-weak {
+    -fx-text-fill: #ff6b6b;
+    -fx-font-size: 12px;
+}
+
+.label-medium {
+    -fx-text-fill: #ffd166;
+    -fx-font-size: 12px;
+}
+
+.label-strong {
+    -fx-text-fill: #06d6a0;
+    -fx-font-size: 12px;
+}
+
+.label-excellent {
+    -fx-text-fill: #8ab4f8;
+    -fx-font-size: 12px;
+}
+
+.terms-checkbox {
+    -fx-padding: 0;
+}
+
+.terms-checkbox .box {
+    -fx-background-color: #28323E ;
+    -fx-border-color: #3e4a5a;
+    -fx-border-radius: 4px;
+}
+
+.terms-checkbox:selected .mark {
+    -fx-background-color: #ffcc99;
+}
+
+.hyperlink {
+    -fx-text-fill: #8ab4f8;
+    -fx-underline: true;
+    -fx-border-color: transparent;
+    -fx-font-size: 14px;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #a8c6fa;
+}
+
+.button-login {
+    -fx-background-color: #FFA630;
+    -fx-background-radius: 16px;
+    -fx-text-fill: black;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-pref-height: 45px;
+    -fx-min-width: 300px;
+    -fx-max-width: 300px;
+    -fx-cursor: hand;
+}
+
+.button-login:hover {
+    -fx-background-color: #ffb766;
+}
+
+.button-login:pressed {
+    -fx-background-color: #FFA630;
+}
+
+.error-message {
+    -fx-text-fill: #ff4444;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
