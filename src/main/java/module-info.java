@@ -10,8 +10,9 @@ module com.example.catcoins {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.sql;
+    requires java.desktop;
 
     opens com.example.catcoins to javafx.fxml;
     exports com.example.catcoins;
-
 }

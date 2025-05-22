@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane styleClass="root" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.RegisterController">
+
+    <VBox alignment="CENTER" spacing="15" styleClass="form-container">
+        <padding>
+            <Insets bottom="40" left="40" right="40" top="40" />
+        </padding>
+
+        <!-- Título -->
+        <Label styleClass="label-title" text="Registo" />
+
+        <!-- Username -->
+        <TextField fx:id="usernameField" promptText="Username" styleClass="text-field" />
+
+        <!-- Email -->
+        <TextField fx:id="emailField" onKeyReleased="#HandleEmail" promptText="Email" styleClass="text-field" />
+
+        <!-- Lable do Erro Email-->
+        <Label fx:id="errorLabelEmail" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
+
+        <!-- Password -->
+        <PasswordField fx:id="passwordField" onKeyReleased="#CalculateStrength" promptText="Password" styleClass="text-field" />
+
+        <!-- Lable do Erro  -->
+        <Label fx:id="errorLabelPassword" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
+
+        <!-- Lable do Erro  -->
+        <Label fx:id="errorLabelFields" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
+
+        <!-- Lable do Erro -->
+        <Label fx:id="errorLabelTerms" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
+
+
+
+        <!-- Indicador de força da senha -->
+        <HBox alignment="CENTER" spacing="5">
+            <Label styleClass="label-weak" text="Fraca" />
+            <Label style="-fx-text-fill: transparent;" text="/" />
+            <Label styleClass="label-medium" text="Média" />
+            <Label style="-fx-text-fill: transparent;" text="/" />
+            <Label styleClass="label-strong" text="Forte" />
+            <Label style="-fx-text-fill: transparent;" text="/" />
+            <Label styleClass="label-excellent" text="Excelente" />
+        </HBox>
+
+        <!-- Barra de progresso -->
+        <ProgressBar fx:id="passwordStrengthBar" onKeyPressed="#CalculateStrength" styleClass="strength-bar" />
+
+        <!-- Termos e condições -->
+        <HBox alignment="CENTER_LEFT" spacing="5">
+            <CheckBox fx:id="termsCheckBox" styleClass="terms-checkbox" />
+            <Hyperlink fx:id="termsLink" styleClass="hyperlink" text="Termos e Condições" />
+        </HBox>
+        <!-- Botão de registo -->
+        <Button fx:id="registerButton" onAction="#HandleRegister" styleClass="button-login" text="Registo" />
+        <!-- Botão de voltar ao login -->
+        <Button alignment="TOP_LEFT" contentDisplay="BOTTOM" mnemonicParsing="false" rotate="270.0" styleClass="return-button" text="⤴" />
+    </VBox>
+</StackPane>
