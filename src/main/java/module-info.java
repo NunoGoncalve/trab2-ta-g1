@@ -1,4 +1,4 @@
-module com.example.registo01 {
+module com.example.catcoins {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
@@ -13,6 +13,6 @@ module com.example.registo01 {
     requires java.sql;
     requires java.desktop;
 
-    opens com.example.registo01 to javafx.fxml;
-    exports com.example.registo01;
+    opens com.example.catcoins to javafx.fxml;
+    exports com.example.catcoins;
 }

@@ -1,4 +1,4 @@
-package com.example.registo01;
+package com.example.catcoins;
 
 public class Wallet {
     Double balance;
@@ -11,5 +11,6 @@ public class Wallet {
 
     public Double SetBalance(Double balance) {
         this.balance = balance;
+        return balance;
     }
 }

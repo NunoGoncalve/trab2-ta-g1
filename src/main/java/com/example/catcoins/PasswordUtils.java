@@ -1,4 +1,4 @@
-package com.example.registo01;
+package com.example.catcoins;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

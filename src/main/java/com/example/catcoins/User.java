@@ -1,4 +1,4 @@
-package com.example.registo01;
+package com.example.catcoins;
 
 public class User {
     private String nome;

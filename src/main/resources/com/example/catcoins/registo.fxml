@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<StackPane styleClass="root" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.registo01.RegisterController">
+<StackPane styleClass="root" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.RegisterController">
 
     <VBox alignment="CENTER" spacing="15" styleClass="form-container">
         <padding>
@@ -18,17 +26,23 @@
         <TextField fx:id="usernameField" promptText="Username" styleClass="text-field" />
 
         <!-- Email -->
-        <TextField fx:id="emailField" promptText="Email" styleClass="text-field" />
+        <TextField fx:id="emailField" onKeyReleased="#HandleEmail" promptText="Email" styleClass="text-field" />
 
         <!-- Lable do Erro Email-->
         <Label fx:id="errorLabelEmail" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
 
-
         <!-- Password -->
-        <PasswordField fx:id="passwordField" onInputMethodTextChanged="#CalculateStrength" onKeyPressed="#CalculateStrength" promptText="Password" styleClass="text-field" />
+        <PasswordField fx:id="passwordField" onKeyReleased="#CalculateStrength" promptText="Password" styleClass="text-field" />
+
+        <!-- Lable do Erro  -->
+        <Label fx:id="errorLabelPassword" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
+
+        <!-- Lable do Erro  -->
+        <Label fx:id="errorLabelFields" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
 
         <!-- Lable do Erro -->
-        <Label fx:id="errorLabelPassword" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
+        <Label fx:id="errorLabelTerms" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
+
 
 
         <!-- Indicador de força da senha -->
@@ -43,7 +57,7 @@
         </HBox>
 
         <!-- Barra de progresso -->
-        <ProgressBar fx:id="passwordStrengthBar" styleClass="strength-bar" />
+        <ProgressBar fx:id="passwordStrengthBar" onKeyPressed="#CalculateStrength" styleClass="strength-bar" />
 
         <!-- Termos e condições -->
         <HBox alignment="CENTER_LEFT" spacing="5">
@@ -51,6 +65,8 @@
             <Hyperlink fx:id="termsLink" styleClass="hyperlink" text="Termos e Condições" />
         </HBox>
         <!-- Botão de registo -->
-        <Button fx:id="registerButton" onAction="#handleRegister" styleClass="button-login" text="Registo" />
+        <Button fx:id="registerButton" onAction="#HandleRegister" styleClass="button-login" text="Registo" />
+        <!-- Botão de voltar ao login -->
+        <Button alignment="TOP_LEFT" contentDisplay="BOTTOM" mnemonicParsing="false" rotate="270.0" styleClass="return-button" text="⤴" />
     </VBox>
 </StackPane>

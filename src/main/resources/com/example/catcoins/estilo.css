@@ -7,11 +7,12 @@
     -fx-background-color: #252D36;
     -fx-padding: 40px;
     -fx-spacing: 15px;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
+    -fx-border-radius: 30px;
+    -fx-background-radius: 25px;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
     -fx-min-width: 400px;
     -fx-max-width: 400px;
+    -fx-max-height: 500px;
 }
 
 .label-title {
@@ -116,4 +117,11 @@
     -fx-text-fill: #ff4444;
     -fx-font-weight: bold;
     -fx-wrap-text: true;
+}
+
+.return-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 30px;
+    -fx-cursor: hand;
 }
