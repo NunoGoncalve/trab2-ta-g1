@@ -23,20 +23,8 @@
     -fx-text-fill: white;
     -fx-font-size: 18px;
     -fx-cursor: hand;
-    -fx-start-margin: 30;
 }
 
-.sidebar-button-logout {
-    -fx-text-fill: red;
-}
-
-.sidebar-button-text, .sidebar-button-text-logout{
-    -fx-background-color: transparent;
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-padding-bottom: 30;
-}
-
-.sidebar-button-text-logout{
-    -fx-text-fill: red;
+.sidebar-icon{
+    -fx-cursor: hand;
 }

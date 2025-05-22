@@ -4,85 +4,89 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<StackPane prefHeight="668.0" prefWidth="159.0" styleClass="root" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.MenuController">
+<StackPane styleClass="root" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.MenuController">
     <children>
-        <AnchorPane fx:id="editorRoot" prefHeight="668.0" prefWidth="140.0" />
-        <HBox fx:id="ExtendedMenu" alignment="CENTER_LEFT" prefHeight="668.0" prefWidth="161.0" styleClass="root">
+        <AnchorPane fx:id="editorRoot" prefHeight="668.0" prefWidth="121.0" />
+        <HBox fx:id="ExtendedMenu" alignment="CENTER_LEFT" prefHeight="668.0" prefWidth="123.0" visible="false">
             <children>
-                <VBox alignment="TOP_CENTER" fillWidth="true" onMouseClicked="#Close" prefHeight="668.0" prefWidth="163.0" styleClass="sidebar">
+                <VBox alignment="TOP_CENTER" fillWidth="true" maxWidth="185.0" onMouseClicked="#Close" styleClass="sidebar">
                     <children>
-                        <Button fx:id="backBtn1" prefHeight="48.0" prefWidth="138.0" styleClass="logo" text="CatCoins">
+                  <Label alignment="CENTER_RIGHT" styleClass="logo" text="CatCoins" textAlignment="CENTER">
+                     <VBox.margin>
+                        <Insets bottom="60.0" top="30.0" />
+                     </VBox.margin>
+                  </Label>
+                        <Button onAction="#GoHome" prefHeight="25.0" prefWidth="73.0" styleClass="sidebar-button" text="Home">
                             <VBox.margin>
-                                <Insets bottom="40.0" top="20.0" />
-                            </VBox.margin>
-                            <font>
-                                <Font size="22.0" />
-                            </font>
-                        </Button>
-                        <Button fx:id="backBtn" onAction="#GoHome" prefHeight="25.0" prefWidth="73.0" styleClass="sidebar-button-text" text="Home">
-                            <VBox.margin>
-                                <Insets bottom="30.0" />
+                                <Insets bottom="45.0" />
                             </VBox.margin>
                         </Button>
-                        <Button fx:id="infoBtn" onAction="#GoMarket" prefHeight="25.0" prefWidth="79.0" styleClass="sidebar-button-text" text="Market" VBox.vgrow="ALWAYS">
+                        <Button onAction="#GoMarket" prefHeight="35.0" prefWidth="89.0" styleClass="sidebar-button" text="Market" VBox.vgrow="ALWAYS">
                             <VBox.margin>
-                                <Insets bottom="30.0" />
+                                <Insets bottom="45.0" />
                             </VBox.margin>
                         </Button>
-                        <Button fx:id="openBtn" onAction="#GoWallet" prefHeight="25.0" prefWidth="80.0" styleClass="sidebar-button-text" text="Wallet">
+                        <Button onAction="#GoWallet" prefHeight="25.0" prefWidth="80.0" styleClass="sidebar-button" text="Wallet">
                             <VBox.margin>
-                                <Insets bottom="30.0" />
+                                <Insets bottom="45.0" />
                             </VBox.margin>
                         </Button>
-                        <Separator prefHeight="0.0" prefWidth="86.0">
-                            <VBox.margin>
-                                <Insets left="20.0" right="20.0" />
-                            </VBox.margin>
-                        </Separator>
-                        <Separator orientation="VERTICAL" prefHeight="343.0" prefWidth="5.0" visible="false" />
-                        <ImageView fitHeight="25.0" fitWidth="25.0" onMouseClicked="#Logout" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@imgs/exit%20(Personalizar).png" />
-                            </image>
-                        </ImageView>
+                        <Separator orientation="VERTICAL" prefHeight="480.0" visible="false" />
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label prefHeight="23.0" prefWidth="63.0" styleClass="sidebar-button" text="Logout" />
+                              <ImageView fitHeight="25.0" fitWidth="20.0" onMouseClicked="#Logout" opacity="0.75" pickOnBounds="true" preserveRatio="true">
+                                  <image>
+                                      <Image url="@imgs/exit.png" />
+                                  </image>
+                              </ImageView>
+                     </children>
+                  </HBox>
                     </children>
                 </VBox>
             </children>
         </HBox>
-        <HBox fx:id="Menu" alignment="CENTER_LEFT" visible="false">
+        <HBox fx:id="Menu" alignment="CENTER_LEFT" prefHeight="668.0" prefWidth="132.0" stylesheets="@styles/styles.css">
             <children>
-                <VBox alignment="TOP_CENTER" fillWidth="true" onMouseClicked="#Open" prefHeight="500.0" prefWidth="66.0" styleClass="sidebar">
+                <VBox alignment="TOP_CENTER" fillWidth="true" onMouseClicked="#Open" styleClass="sidebar">
                     <children>
-                        <ImageView fitHeight="45.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@imgs/cat-icon.png" />
+                                <Image url="@imgs/logo.png" />
                             </image>
                             <VBox.margin>
-                                <Insets bottom="40.0" top="20.0" />
+                                <Insets bottom="60.0" top="20.0" />
                             </VBox.margin>
                         </ImageView>
-                        <Button onAction="#GoHome" prefHeight="50.0" prefWidth="50.0" styleClass="sidebar-button" text="🏠">
-                            <opaqueInsets>
-                                <Insets />
-                            </opaqueInsets>
-                            <VBox.margin>
-                                <Insets bottom="30.0" />
-                            </VBox.margin></Button>
-                        <Button onAction="#GoMarket" prefHeight="50.0" prefWidth="50.0" styleClass="sidebar-button" text="📊">
-                            <VBox.margin>
-                                <Insets bottom="30.0" />
-                            </VBox.margin></Button>
-                        <ImageView fx:id="menu" fitHeight="23.0" fitWidth="23.0" onMouseClicked="#GoWallet" pickOnBounds="true" style="-fx-cursor: pointer;">
+                  <ImageView fitHeight="23.0" fitWidth="23.0" onMouseClicked="#GoHome" pickOnBounds="true" styleClass="sidebar-icon">
+                     <image>
+                        <Image url="@imgs/house.png" />
+                     </image>
+                     <VBox.margin>
+                        <Insets bottom="60.0" />
+                     </VBox.margin>
+                  </ImageView>
+                  <ImageView fx:id="menu1" fitHeight="23.0" fitWidth="23.0" onMouseClicked="#GoMarket" pickOnBounds="true" styleClass="sidebar-icon">
+                     <image>
+                        <Image url="@imgs/chart.png" />
+                     </image>
+                     <VBox.margin>
+                        <Insets bottom="60.0" />
+                     </VBox.margin>
+                  </ImageView>
+                        <ImageView fx:id="menu" fitHeight="23.0" fitWidth="23.0" onMouseClicked="#GoWallet" pickOnBounds="true" styleClass="sidebar-icon">
                             <image>
-                                <Image url="@imgs/Wallet (Personalizar).png" />
+                                <Image url="@imgs/wallet.png" />
                             </image>
+                     <VBox.margin>
+                        <Insets bottom="60.0" />
+                     </VBox.margin>
                         </ImageView>
-                        <Separator orientation="VERTICAL" prefHeight="315.0" prefWidth="7.0" visible="false" />
+                        <Separator orientation="VERTICAL" prefHeight="500.0" visible="false" />
                         <ImageView fitHeight="25.0" fitWidth="25.0" onMouseClicked="#Logout" opacity="0.75" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@imgs/exit%20(Personalizar).png" />
+                                <Image url="@imgs/exit.png" />
                             </image>
                         </ImageView>
 

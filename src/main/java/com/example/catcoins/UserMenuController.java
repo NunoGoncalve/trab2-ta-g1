@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -21,22 +20,7 @@ public class UserMenuController {
     private Parent root;
 
     @FXML
-    private Button btn;
-
-    @FXML
     private HBox UserMenu;
-
-    @FXML
-    private Button backBtn;
-
-    @FXML
-    private Button infoBtn;
-
-    @FXML
-    private Button newBtn;
-
-    @FXML
-    private Button openBtn;
 
     @FXML
     void Open() {
@@ -63,7 +47,7 @@ public class UserMenuController {
     }
 
     @FXML
-    void GoHome(ActionEvent event) {
+    void GoConnfig(ActionEvent event) {
         try {
             root = FXMLLoader.load(getClass().getResource("main.fxml"));
         } catch (IOException e) {
@@ -77,7 +61,7 @@ public class UserMenuController {
     }
 
     @FXML
-    void GoWallet(ActionEvent event) {
+    void AddBalance(ActionEvent event) {
 
         try {
             root = FXMLLoader.load(getClass().getResource("UserMenu.fxml"));
@@ -92,7 +76,7 @@ public class UserMenuController {
     }
 
     @FXML
-    void GoMarket(ActionEvent event) {
+    void ManageCoin(ActionEvent event) {
 
         try {
             root = FXMLLoader.load(getClass().getResource("main.fxml"));
