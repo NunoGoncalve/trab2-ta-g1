@@ -11,11 +11,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
-            //StackPane root = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("menu.fxml"));
 
             Scene scene = new Scene(loader.load(), 1000, 1000);
-
 
             primaryStage.setScene(scene);
             primaryStage.show();

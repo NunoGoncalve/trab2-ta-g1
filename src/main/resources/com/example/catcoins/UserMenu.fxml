@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane prefHeight="668.0" prefWidth="300.0" styleClass="root" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserMenuController">
+    <children>
+        <AnchorPane fx:id="editorRoot" prefHeight="668.0" prefWidth="172.0" />
+        <HBox fx:id="UserMenu" alignment="CENTER_RIGHT" prefHeight="668.0" prefWidth="172.0">
+            <children>
+                <VBox alignment="TOP_CENTER" fillWidth="true" onMouseClicked="#Close" prefHeight="668.0" prefWidth="176.0" styleClass="sidebar">
+                    <children>
+                        <Button fx:id="backBtn1" prefHeight="29.0" prefWidth="130.0" styleClass="sidebar-button-text" text="Configurações">
+                            <VBox.margin>
+                                <Insets bottom="30.0" top="20.0" />
+                            </VBox.margin>
+                            <font>
+                                <Font size="22.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="backBtn" onAction="#GoHome" prefHeight="29.0" prefWidth="149.0" styleClass="sidebar-button-text" text="Adicionar Saldo">
+                            <VBox.margin>
+                                <Insets bottom="30.0" />
+                            </VBox.margin>
+                        </Button>
+                        <Button fx:id="infoBtn" onAction="#GoMarket" prefHeight="29.0" prefWidth="132.0" styleClass="sidebar-button-text" text="Gerir moedas" VBox.vgrow="ALWAYS">
+                            <VBox.margin>
+                                <Insets bottom="30.0" />
+                            </VBox.margin>
+                        </Button>
+                        <Separator prefHeight="0.0" prefWidth="86.0">
+                            <VBox.margin>
+                                <Insets left="20.0" right="20.0" />
+                            </VBox.margin>
+                        </Separator>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+      <Button fx:id="backBtn11" onAction="#Open" prefHeight="29.0" prefWidth="104.0" styleClass="sidebar-button-text" text="Configurações">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Button>
+    </children>
+</StackPane>
