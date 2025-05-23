@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<DialogPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <content>
+        <VBox spacing="10">
+            <Label text="Quantidade a adicionar:" style="-fx-font-size: 14;"/>
+            <TextField fx:id="amountField" promptText="Ex: 50.00" style="-fx-font-size: 14;"/>
+            <Label fx:id="errorLabel" style="-fx-text-fill: red; -fx-font-size: 12;" visible="false"/>
+        </VBox>
+    </content>
+    <buttonTypes>
+        <ButtonType text="Adicionar" buttonData="OK_DONE"/>
+        <ButtonType text="Cancelar" buttonData="CANCEL_CLOSE"/>
+    </buttonTypes>
+</DialogPane>

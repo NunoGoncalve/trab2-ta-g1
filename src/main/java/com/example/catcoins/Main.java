@@ -9,9 +9,9 @@ import javafx.scene.Parent;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("registo.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("UserMenu.fxml"));
         Scene scene = new Scene(root);
-        primaryStage.setTitle("Registo");
+        primaryStage.setTitle("Menu");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
