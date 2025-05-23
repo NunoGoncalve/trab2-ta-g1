@@ -101,7 +101,7 @@ public class MenuController {
     @FXML
     void Logout(Event event) {
         try {
-            root = FXMLLoader.load(getClass().getResource("main.fxml"));
+            root = FXMLLoader.load(getClass().getResource("Login.fxml"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

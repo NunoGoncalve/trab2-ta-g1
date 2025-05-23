@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane styleClass="root" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.LoginController">
+
+    <VBox alignment="CENTER" maxWidth="481.0" prefHeight="444.0" prefWidth="400.0" spacing="15" styleClass="form-container">
+        <padding>
+            <Insets bottom="40" left="40" right="40" top="40" />
+        </padding>
+
+        <!-- Título -->
+        <Label styleClass="label-title" text="Login" />
+
+        <!-- Email -->
+        <TextField fx:id="emailField" promptText="Email" style="-fx-border-radius: 15px;" styleClass="text-field" />
+        <HBox alignment="CENTER">
+            <!-- Stack com os dois campos (oculto e visível) -->
+            <StackPane>
+                <!-- Campo de senha oculto -->
+                <PasswordField fx:id="passwordField" prefWidth="250" promptText="Password" style="-fx-border-radius: 15px;" styleClass="text-field" />
+                <!-- Campo de senha visível (inicialmente oculto) -->
+                <TextField fx:id="passwordVisibleField" managed="false" prefWidth="250" promptText="Password" style="-fx-border-radius: 15px;" styleClass="text-field" visible="false" />
+                <!-- Botão com ícone de olho -->
+                <Button fx:id="togglePasswordBtn" onAction="#togglePasswordVisibility" prefHeight="20" prefWidth="20" style="-fx-background-radius: 50%; -fx-padding: 0.1; -fx-cursor: hand;" styleClass="sidebar-button" text="👁" StackPane.alignment="CENTER_RIGHT">
+               <StackPane.margin>
+                  <Insets right="10.0" />
+               </StackPane.margin></Button>
+            </StackPane>
+        </HBox>
+
+        <!-- Termos e condições -->
+        <HBox alignment="CENTER_LEFT" spacing="5" />
+        <Hyperlink fx:id="esqueceuSenhaLink" onAction="#handleEsqueceuSenha" text="Esqueceu sua senha?" visible="false">
+         <VBox.margin>
+            <Insets left="-135.0" top="-20.0" />
+         </VBox.margin></Hyperlink>
+
+        <!-- Botão de login -->
+        <Button fx:id="LoginButton" onAction="#initialize" styleClass="button-login" text="Login">
+         <VBox.margin>
+            <Insets />
+         </VBox.margin></Button>
+      <Hyperlink fx:id="termsLink1" accessibleRole="TEXT" alignment="CENTER" onAction="#GoRegister" prefHeight="34.0" prefWidth="252.0" styleClass="hyperlink" text="Cria aqui!" textAlignment="CENTER">
+         <graphic>
+            <Label alignment="CENTER" prefHeight="26.0" prefWidth="147.0" text="Ainda não tens conta?" textAlignment="RIGHT" textFill="WHITE" />
+         </graphic>
+      </Hyperlink>
+    </VBox>
+</StackPane>

@@ -1,5 +1,6 @@
 package com.example.catcoins;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -87,12 +88,12 @@ public class RegisterController {
         } else if (!acceptedTerms) {
             ToggleErroLabel(errorLabelTerms, true);
             errorLabelTerms.setText("Deve aceitar os termos e condições !");
-        }else if (passwordStrengthBar.getProgress() == 1 && errorLabelEmail.isVisible()) {
+        }else if (passwordStrengthBar.getProgress() == 1 && !errorLabelEmail.isVisible()) {
             String salt = PasswordUtils.generateSalt();
             String PasswordHash = null;
 
             try {
-                PasswordHash = PasswordUtils.hashPassword(password, salt);
+                PasswordHash = PasswordUtils.hashPassword(password);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -228,5 +229,19 @@ public class RegisterController {
         stage.setScene(new Scene(root));
         stage.setTitle("Bem-vindo");
         stage.show();
+    }
+
+    @FXML
+    private void GoLogin(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) registerButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Bem-vindo");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
