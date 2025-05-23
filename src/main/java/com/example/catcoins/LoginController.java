@@ -6,10 +6,13 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -32,13 +35,14 @@ public class LoginController {
     @FXML private Button LoginButton;
     @FXML private Button togglePasswordBtn;
     @FXML private Hyperlink esqueceuSenhaLink;
+    @FXML private StackPane Background;
 
     @FXML
     private void initialize() {
         LoginButton.setOnAction(this::handlelogin);
     }
 
-    public static class HashUtil {
+    /*public static class HashUtil {
         public static String sha256(String input) {
             try {
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -52,7 +56,7 @@ public class LoginController {
                 throw new RuntimeException(e);
             }
         }
-    }
+    }*/
 
     private User verificarUsuario(String email, String password, Event event) {
         String sql = "SELECT * FROM User WHERE email = ? AND password = ?";
@@ -74,18 +78,19 @@ public class LoginController {
                 Role UserRole;
                 Status UserStatus;
 
-                if(rs.getString("role").equals("Client")) {
+                if(rs.getString("Role").equals("Client")) {
                     UserRole =  Role.Client;
 
                 }
                 else{UserRole = Role.Admin;}
 
-                if(rs.getString("status").equals("Active")) {
+                if(rs.getString("Status").equals("Active")) {
                     UserStatus =  Status.Active;
 
                 }
                 else{UserStatus = Status.Disabled;}
-                return new User (rs.getString("Name"), email, UserRole, UserStatus);
+                User LoggedUser = new User(rs.getString("Name"), email, UserRole, UserStatus);;
+                return LoggedUser;
             }
 
         } catch (SQLException e) {
@@ -112,12 +117,15 @@ public class LoginController {
         }
     }
 
-    private void trocarCena(String fxmlPath, Event event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+    private void trocarCena(String fxmlPath, User loggedInUser) throws IOException {
+        /*Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
         Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.show();
+        stage.setFullScreenExitHint("");
+        stage.setFullScreen(true);
+        stage.show();*/
+        Main.setRoot(fxmlPath, loggedInUser);
     }
 
     @FXML
@@ -148,7 +156,7 @@ public class LoginController {
             limparCampos();
 
             try {
-                trocarCena("paginaPrincipal.fxml", event); // vá para sua tela principal
+                trocarCena("Main.fxml", usuario);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -162,7 +170,7 @@ public class LoginController {
     @FXML
     private void GoRegister(ActionEvent event) {
         try {
-            trocarCena("registo.fxml", event);
+            trocarCena("registo.fxml", null);
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de registro.");
@@ -175,10 +183,38 @@ public class LoginController {
         passwordVisibleField.clear();
     }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
+    private void showAlert(Alert.AlertType type, String title, String Message) {
+        /*Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setContentText(message);
-        alert.showAndWait();
+        alert.initOwner(stage);
+        alert.showAndWait();*/
+
+        // Assume your main scene's root is a StackPane called 'root'
+
+        // Create the dialog content (not fullscreen)
+        VBox dialog = new VBox(15);
+        dialog.setAlignment(Pos.CENTER);
+        dialog.setStyle("-fx-background-color: white; -fx-padding: 30; -fx-border-radius: 10; -fx-background-radius: 10;");
+        dialog.setMaxWidth(320);
+        dialog.setMaxHeight(300);
+        Label message = new Label(Message);
+        Button okButton = new Button("OK");
+        dialog.getChildren().addAll(message, okButton);
+
+        // Optional: create a semi-transparent background overlay
+        StackPane overlay = new StackPane();
+        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.4 = 40% opacity
+
+        // Add the dialog to the overlay and center it
+        overlay.getChildren().add(dialog);
+        overlay.setAlignment(Pos.CENTER);
+
+        // Add overlay to the root StackPane
+        Background.getChildren().add(overlay);
+
+        // Remove overlay when OK is clicked
+        okButton.setOnAction(e -> Background.getChildren().remove(overlay));
+
     }
 }

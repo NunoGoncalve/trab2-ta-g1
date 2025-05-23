@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:id="MainPanel" prefHeight="800.0" prefWidth="800.0" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.MainController">
+
+    <center>
+        <VBox maxHeight="487.0" maxWidth="701.0" prefHeight="487.0" prefWidth="701.0" spacing="15" styleClass="main-container">
+            <padding>
+                <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+            </padding>
+            <BorderPane.margin>
+                <Insets bottom="40.0" left="20.0" right="20.0" top="40.0" />
+            </BorderPane.margin>
+            <children>
+                <Label text="Welcome to CatCoins" textFill="WHITE">
+                    <font>
+                        <Font name="Arial Rounded MT Bold" size="50.0" />
+                    </font>
+                </Label>
+            <Label alignment="CENTER" layoutX="50.0" layoutY="40.0" prefHeight="116.0" prefWidth="641.0" style="-fx-font-size: 100;" text="🛠" textFill="WHITE">
+               <font>
+                  <Font name="Arial Rounded MT Bold" size="50.0" />
+               </font>
+            </Label>
+            <Label layoutX="50.0" layoutY="40.0" prefHeight="48.0" prefWidth="575.0" style="-fx-font-size: 40;" text="This page is in progress" textFill="WHITE">
+               <font>
+                  <Font name="Arial Rounded MT Bold" size="27.0" />
+               </font>
+            </Label>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

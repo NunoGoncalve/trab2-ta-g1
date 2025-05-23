@@ -222,26 +222,21 @@ public class RegisterController {
         Wallet ClientWallet = new Wallet(0.00, "$");
         ClientRegistred.SetWallet(ClientWallet);
 
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("paginaPrincipal.fxml"));
+        Main.setRoot("Main.fxml", ClientRegistred);
+        /*FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
         Parent root = loader.load();
         Stage stage = (Stage) registerButton.getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.setTitle("Bem-vindo");
-        stage.show();
+        stage.show();*/
     }
 
     @FXML
     private void GoLogin(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) registerButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Bem-vindo");
-            stage.show();
+            Main.setRoot("Login.fxml", null);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

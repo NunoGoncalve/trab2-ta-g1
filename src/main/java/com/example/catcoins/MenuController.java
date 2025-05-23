@@ -17,6 +17,7 @@ public class MenuController {
     private Stage stage;
     private Scene scene;
     private Parent root;
+    private User LoggedInUser;
 
     @FXML
     private HBox Menu;
@@ -34,6 +35,14 @@ public class MenuController {
     void Close() {
         CloseAnimation(ExtendedMenu);
         OpenAnimation(Menu);
+    }
+
+    public void setUser(User user) {
+        this.LoggedInUser = user;
+    }
+
+    public User getUser() {
+        return this.LoggedInUser;
     }
 
     private void CloseAnimation(HBox menu){
@@ -55,60 +64,44 @@ public class MenuController {
     }
 
     @FXML
-    void GoHome(Event event) {
-        try {
-            root = FXMLLoader.load(getClass().getResource("main.fxml"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-
+    void GoHome() {
+        GoTo("Main.fxml");
     }
 
     @FXML
-    void GoMarket(Event event) {
+    void GoWallet() {
+        GoTo("UserPanel.fxml");
+    }
 
-        try {
-            root = FXMLLoader.load(getClass().getResource("UserMenu.fxml"));
+    @FXML
+    void Logout() {
+        LoggedInUser = null;
+        GoTo("Login.fxml");
+    }
+
+    @FXML
+    void GoMarket() {
+        GoTo("Main.fxml");
+    }
+
+    private void GoTo(String View) {
+
+        /*try {
+            root = FXMLLoader.load(getClass().getResource(View+".fxml"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root, 1000, 1000);
         stage.setScene(scene);
-        stage.show();
-
-    }
-
-    @FXML
-    void GoWallet(Event event) {
-
+        stage.setScene(scene);
+        stage.setFullScreen(true);
+        stage.show();*/
         try {
-            root = FXMLLoader.load(getClass().getResource("UserMenu.fxml"));
+            Main.setRoot(View, LoggedInUser);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-
-    }
-
-    @FXML
-    void Logout(Event event) {
-        try {
-            root = FXMLLoader.load(getClass().getResource("Login.fxml"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
 
     }
 }
