@@ -6,6 +6,7 @@ public class User {
     private Role role;
     private Status status;
 
+
     public User(String nome, String email, Enum role, Enum status) {
         this.nome = nome;
         this.email = email;
