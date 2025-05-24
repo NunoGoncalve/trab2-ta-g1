@@ -29,13 +29,18 @@ public class UserMenuController {
     private Parent root;
     private User LoggedUser;
 
-    @FXML
-    private HBox UserMenu;
+    @FXML private HBox UserMenu;
+    @FXML private Button ManageCoinBttn;
+
     @FXML
     private Button BalanceButton;
 
     public void setUser(User user) {
         this.LoggedUser = user;
+        if(user.getRole()==Role.Admin) {
+            ManageCoinBttn.setVisible(true);
+            ManageCoinBttn.setManaged(true);
+        }
     }
 
     @FXML
@@ -133,17 +138,16 @@ public class UserMenuController {
 
     // Método para atualizar o saldo na tabela Wallet
     private boolean updateWalletBalance(double amount) {
-
+        Client client = (Client) LoggedUser;
         // Atualiza o saldo na tabela Wallet para o ID especificado
         String sql = "UPDATE Wallet SET balance = balance + ? WHERE ID = ?"; // Adiciona o ID como parâmetro
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-                System.out.println("Conectado ao banco!");
-
 
                 stmt.setDouble(1, amount); // Define o valor a ser adicionado ao saldo
-                stmt.setInt(2, 1); // Substitua 1 pelo ID correto se necessário
+                stmt.setInt(2, LoggedUser.getId()); // Substitua 1 pelo ID correto se necessário
+                client.getWallet().SetBalance(client.getWallet().getBalance() + amount);
 
             int rowsAffected = stmt.executeUpdate(); // Executa a atualização
             return rowsAffected > 0; // Retorna verdadeiro se a atualização foi bem-sucedida
@@ -175,10 +179,9 @@ public class UserMenuController {
 
     @FXML
     void ManageCoin() {
-        GoTo("Main.fxml");
+        GoTo("ManageCoin.fxml");
 
     }
-
 
     private void GoTo(String View) {
         try {

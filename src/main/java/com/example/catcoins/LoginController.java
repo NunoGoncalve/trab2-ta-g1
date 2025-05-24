@@ -59,38 +59,47 @@ public class LoginController {
     }*/
 
     private User verificarUsuario(String email, String password, Event event) {
-        String sql = "SELECT * FROM User WHERE email = ? AND password = ?";
-
-        try {  //verificando hased
+       /* try {  //verificando hased
             PasswordUtils.hashPassword(password);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection()){
+            String sql = "SELECT * FROM User WHERE email = ? AND password = ?";
+             PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, email);
             stmt.setString(2, password);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet UserResult = stmt.executeQuery();
 
-            if (rs.next()) {
+            if (UserResult.next()) {
                 Role UserRole;
                 Status UserStatus;
 
-                if(rs.getString("Role").equals("Client")) {
-                    UserRole =  Role.Client;
-
-                }
-                else{UserRole = Role.Admin;}
-
-                if(rs.getString("Status").equals("Active")) {
+                if(UserResult.getString("Status").equals("Active")) {
                     UserStatus =  Status.Active;
 
+                }else{UserStatus = Status.Disabled;}
+
+                if(UserResult.getString("Role").equals("Client")) {
+                    UserRole =  Role.Client;
+                    sql = "SELECT Wallet.* FROM Client inner join Wallet on Client.Wallet = Wallet.ID WHERE Client.ID = ?";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.setDouble(1, Integer.parseInt(UserResult.getString("ID")));
+
+                    ResultSet Walletresult = stmt.executeQuery();
+                    Walletresult.next();
+                    Wallet ClientWallet = new Wallet(Double.parseDouble(Walletresult.getString("Balance")), Walletresult.getString("Currency"));
+                    Client LoggedClient = new Client(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, UserRole, UserStatus, ClientWallet);
+                    return LoggedClient;
                 }
-                else{UserStatus = Status.Disabled;}
-                User LoggedUser = new User(rs.getString("Name"), email, UserRole, UserStatus);;
-                return LoggedUser;
+                else{
+                    UserRole = Role.Admin;
+                    User LoggedAdmin = new User(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, UserRole, UserStatus);
+                    return LoggedAdmin;
+                }
+
             }
 
         } catch (SQLException e) {
@@ -118,13 +127,6 @@ public class LoginController {
     }
 
     private void trocarCena(String fxmlPath, User loggedInUser) throws IOException {
-        /*Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setFullScreenExitHint("");
-        stage.setFullScreen(true);
-        stage.show();*/
         Main.setRoot(fxmlPath, loggedInUser);
     }
 

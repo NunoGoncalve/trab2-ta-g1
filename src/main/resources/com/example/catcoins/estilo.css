@@ -1,17 +1,29 @@
 .root {
-    -fx-background-color: #1e2833;
+    -fx-background-color: #252D36;
     -fx-alignment: center;
 }
 
 .form-container {
-    -fx-background-color: #252D36;
+    -fx-background-color: #28323E;
     -fx-padding: 40px;
     -fx-spacing: 15px;
     -fx-border-radius: 30px;
     -fx-background-radius: 25px;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
-    -fx-min-width: 400px;
+    -fx-min-width: 200px;
     -fx-max-width: 400px;
+    -fx-max-height: 570px;
+}
+
+.viewbalance-container {
+    -fx-background-color: #28323E;
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+    -fx-border-radius: 30px;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+    -fx-min-width: 100px;
+    -fx-max-width: 200px;
     -fx-max-height: 570px;
 }
 

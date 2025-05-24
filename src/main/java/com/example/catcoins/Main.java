@@ -38,6 +38,9 @@ public class Main extends Application {
        else if(fxml.equals("UserPanel.fxml")) {
            UserPanelController controller = loader.getController();
            controller.setUser(LoggedUser);
+       }else if(fxml.equals("ManageCoin.fxml")) {
+           ManageCoinController controller = loader.getController();
+           controller.setUser(LoggedUser);
        }
 
        scene.setRoot(root);

@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -17,7 +19,7 @@ public class UserConfigController {
     private User LoggedUser;
 
     @FXML
-    private BorderPane rootPane;
+    private BorderPane MainPanel;
 
     @FXML
     private TextField Email;
@@ -28,10 +30,11 @@ public class UserConfigController {
     @FXML
     private Button EditButton;
 
-    public void setUser(User user) {
-        this.LoggedUser = user;
-        Name.setText(user.getName());
-        Email.setText(user.getEmail());
+    public void setUser(User LoggedUser) {
+        this.LoggedUser = LoggedUser;
+        Email.setText(LoggedUser.getEmail());
+        Name.setText(LoggedUser.getName());
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu.fxml"));
         Parent menu = null;
         try {
@@ -41,7 +44,7 @@ public class UserConfigController {
         }
         MenuController controller = loader.getController();
         controller.setUser(LoggedUser);
-        rootPane.setLeft(menu);
+        MainPanel.setLeft(menu);
 
         loader = new FXMLLoader(getClass().getResource("UserMenu.fxml"));
         Parent usermenu = null;
@@ -50,9 +53,9 @@ public class UserConfigController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        UserMenuController controllers = loader.getController();
-        controller.setUser(LoggedUser);
-        rootPane.setRight(usermenu);
+        UserMenuController controller2 = loader.getController();
+        controller2.setUser(LoggedUser);
+        MainPanel.setRight(usermenu);
     }
 
     @FXML

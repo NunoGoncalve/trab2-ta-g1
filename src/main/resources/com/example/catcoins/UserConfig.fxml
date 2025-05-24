@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane fx:id="rootPane" prefHeight="800.0" prefWidth="800.0" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserConfigController">
+<BorderPane fx:id="MainPanel" prefHeight="800.0" prefWidth="800.0" styleClass="root" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserConfigController">
 
     <center>
         <VBox maxHeight="487.0" maxWidth="400.0" prefHeight="487.0" prefWidth="400.0" spacing="15" styleClass="main-container">
@@ -35,14 +35,6 @@
             <Label styleClass="text" text="Email address" />
             <TextField fx:id="Email" editable="false" maxWidth="380.0" prefHeight="35.0" prefWidth="380.0" styleClass="user-field" />
             <Label styleClass="user-label" text="User@gmail.com" />
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="157.0" styleClass="user-button" text="Change Password">
-               <VBox.margin>
-                  <Insets bottom="20.0" />
-               </VBox.margin>
-               <font>
-                  <Font name="Sans Serif Collection" size="10.0" />
-               </font>
-            </Button>
             <Separator prefWidth="400.0" />
          </children>
         </VBox>
