@@ -13,4 +13,8 @@ public class Wallet {
         this.balance = balance;
         return balance;
     }
+
+    public Double getBalance() {
+        return balance;
+    }
 }

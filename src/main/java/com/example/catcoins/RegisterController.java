@@ -98,12 +98,14 @@ public class RegisterController {
                 throw new RuntimeException(e);
             }
 
-            if (NewUser(username, email, PasswordHash)) {
+            int NewClientID = NewUser(username, email, PasswordHash);
+
+            if (NewClientID!=0) {
                 ShowAlert(Alert.AlertType.INFORMATION, "Sucesso", "Registo guardado com sucesso!");
                 limparCampos();
 
                 try {
-                    Registered(username, email);
+                    Registered(NewClientID, username, email);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -166,7 +168,7 @@ public class RegisterController {
     }
 
 
-    private boolean NewUser(String username, String email, String password) {
+    private int NewUser(String username, String email, String password) {
         String sql = "INSERT INTO User (Name, Email, Password) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -194,12 +196,18 @@ public class RegisterController {
             stmt.setInt(2, Wallet);
             stmt.executeUpdate();
 
-            return true;
+            return UserID;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return 0;
         }
+    }
+
+    protected void Registered(int ID, String Username, String Email) throws IOException {
+        Wallet ClientWallet = new Wallet(0.00, "$");
+        Client ClientRegistred = new Client(ID, Username, Email, Role.Client, Status.Active, ClientWallet);
+        Main.setRoot("Main.fxml", ClientRegistred);
     }
 
     private void limparCampos() {
@@ -217,31 +225,12 @@ public class RegisterController {
         alert.showAndWait();
     }
 
-    protected void Registered(String Username, String Email) throws IOException {
-        Client ClientRegistred = new Client(Username, Email, Role.Client, Status.Active);
-        Wallet ClientWallet = new Wallet(0.00, "$");
-        ClientRegistred.SetWallet(ClientWallet);
-
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("paginaPrincipal.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) registerButton.getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Bem-vindo");
-        stage.show();
-    }
-
     @FXML
     private void GoLogin(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) registerButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Bem-vindo");
-            stage.show();
+            Main.setRoot("Login.fxml", null);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

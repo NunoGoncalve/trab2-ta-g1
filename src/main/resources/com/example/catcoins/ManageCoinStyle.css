@@ -1,6 +1,6 @@
 /* Estilos Modernos para CatCoin - Tema Escuro */
 .root {
-    -fx-background-color: #0d1522;
+    -fx-background-color: #252D36;
     -fx-font-family: 'Segoe UI', Arial, sans-serif;
 }
 
@@ -15,7 +15,7 @@
 
 /* Estilo de Cards */
 .card {
-    -fx-background-color: #111c2e;
+    -fx-background-color: #28323E;
     -fx-background-radius: 10px;
     -fx-padding: 20px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);

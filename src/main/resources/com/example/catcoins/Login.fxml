@@ -3,8 +3,9 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<StackPane styleClass="root" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.LoginController">
+<StackPane fx:id="Background" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.LoginController">
 
     <VBox alignment="CENTER" maxWidth="481.0" prefHeight="444.0" prefWidth="400.0" spacing="15" styleClass="form-container">
         <padding>
@@ -12,7 +13,10 @@
         </padding>
 
         <!-- Título -->
-        <Label styleClass="label-title" text="Login" />
+        <Label styleClass="label-title" text="Login">
+         <font>
+            <Font size="11.0" />
+         </font></Label>
 
         <!-- Email -->
         <TextField fx:id="emailField" promptText="Email" style="-fx-border-radius: 15px;" styleClass="text-field" />
@@ -45,7 +49,7 @@
          </VBox.margin></Button>
       <Hyperlink fx:id="termsLink1" accessibleRole="TEXT" alignment="CENTER" onAction="#GoRegister" prefHeight="34.0" prefWidth="252.0" styleClass="hyperlink" text="Cria aqui!" textAlignment="CENTER">
          <graphic>
-            <Label alignment="CENTER" prefHeight="26.0" prefWidth="147.0" text="Ainda não tens conta?" textAlignment="RIGHT" textFill="WHITE" />
+            <Label alignment="CENTER" prefHeight="26.0" prefWidth="160.0" text="Ainda não tens conta?" textAlignment="RIGHT" textFill="WHITE" />
          </graphic>
       </Hyperlink>
     </VBox>

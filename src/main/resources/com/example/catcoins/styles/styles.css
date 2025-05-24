@@ -1,6 +1,5 @@
 .root {
-    -fx-background-color: #1e293b;
-    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #252D36;
     -fx-text-fill: white;
 }
 
@@ -27,4 +26,56 @@
 
 .sidebar-icon{
     -fx-cursor: hand;
+}
+
+.welcome-text {
+    -fx-text-fill: white;
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+}
+
+.sub-welcome {
+    -fx-text-fill: gray;
+}
+
+.main-container {
+    -fx-background-color: #28323E;
+    -fx-background-radius: 20;
+}
+
+.user-field{
+    -fx-background-radius: 7px;
+    -fx-background-color: white ;
+    -fx-font-size: 16px;
+}
+
+.user-button{
+    -fx-background-color: black ;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.text{
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+
+.form-container {
+    -fx-background-color: #28323E;
+    -fx-padding: 40px;
+    -fx-spacing: 15px;
+    -fx-border-radius: 30px;
+    -fx-background-radius: 25px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+    -fx-min-width: 400px;
+    -fx-max-width: 400px;
+    -fx-max-height: 500px;
+}
+
+.label-title {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 10px 0;
 }

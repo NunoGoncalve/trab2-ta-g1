@@ -1,23 +1,41 @@
 package com.example.catcoins;
 
 public class User {
-    private String nome;
+    private int id;
+    private String name;
     private String email;
     private Role role;
     private Status status;
 
 
-    public User(String nome, String email, Enum role, Enum status) {
-        this.nome = nome;
+    public User(int id, String name, String email, Role role, Status status) {
+        this.id = id;
+        this.name = name;
         this.email = email;
+        this.role = role;
+        this.status = status;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     // Getters e setters
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
+
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 
     public String getEmail() {
         return email;
     }
+
+    public void setName(String name) { this.name = name; }
 }

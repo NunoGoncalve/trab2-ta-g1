@@ -4,9 +4,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane styleClass="root" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.RegisterController">
+<StackPane prefHeight="538.0" prefWidth="400.0" styleClass="root" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.RegisterController">
 
-    <VBox alignment="CENTER" spacing="15" styleClass="form-container">
+    <VBox alignment="CENTER" maxHeight="534.0" prefHeight="534.0" prefWidth="400.0" spacing="15" styleClass="form-container">
         <padding>
             <Insets bottom="40" left="40" right="40" top="40" />
         </padding>
@@ -49,7 +49,7 @@
         </HBox>
 
         <!-- Barra de progresso -->
-        <ProgressBar fx:id="passwordStrengthBar" onKeyPressed="#CalculateStrength" styleClass="strength-bar" />
+        <ProgressBar fx:id="passwordStrengthBar" onKeyPressed="#CalculateStrength" prefHeight="21.0" prefWidth="300.0" styleClass="strength-bar" />
 
         <!-- Termos e condições -->
         <HBox alignment="CENTER_LEFT" spacing="5">
