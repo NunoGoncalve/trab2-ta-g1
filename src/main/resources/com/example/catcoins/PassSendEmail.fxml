@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane fx:id="Background" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.RecoverPassword">
+
+<VBox alignment="CENTER" maxHeight="659.0" maxWidth="481.0" prefHeight="473.0" prefWidth="400.0" spacing="15" styleClass="form-container">
+    <padding>
+        <Insets bottom="40" left="40" right="40" top="40" />
+    </padding>
+
+    <!-- Título -->
+    <Label alignment="CENTER" prefHeight="50.0" prefWidth="195.0" styleClass="label-title" text="Recuperação" textAlignment="CENTER">
+        <font>
+            <Font size="14.0" />
+        </font>
+         <VBox.margin>
+            <Insets top="40.0" />
+         </VBox.margin></Label>
+
+    <!-- Email -->
+    <TextField fx:id="emailField" promptText="Email" style="-fx-border-radius: 15px;" styleClass="text-field" />
+    <HBox alignment="CENTER" />
+   
+    <!-- Botão de login -->
+    <Button fx:id="SendEmail" styleClass="button-login" onAction="#SendEmail" text="Enviar" />
+    <VBox.margin>
+            <Insets />
+        </VBox.margin>
+
+    <!-- Botão de voltar-->
+    <Button alignment="TOP_LEFT" contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#GoLogin" rotate="270.0" styleClass="return-button" text="⤴">
+         <VBox.margin>
+            <Insets top="100.0" />
+         </VBox.margin></Button>
+</VBox>
+</StackPane>

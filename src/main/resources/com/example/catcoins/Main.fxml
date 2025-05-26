@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1920.0" styleClass="root" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.MainController">
+<BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1920.0" styleClass="root" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.MainController">
 
     <center>
       <VBox fx:id="Stack" alignment="CENTER_RIGHT">

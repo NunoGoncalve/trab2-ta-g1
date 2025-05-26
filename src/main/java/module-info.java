@@ -12,6 +12,7 @@ module com.example.catcoins {
     requires com.almasb.fxgl.all;
     requires java.sql;
     requires java.desktop;
+    requires java.mail;
 
     opens com.example.catcoins to javafx.fxml;
     exports com.example.catcoins;
