@@ -59,11 +59,11 @@ public class LoginController {
     }*/
 
     private User verificarUsuario(String email, String password, Event event) {
-       /* try {  //verificando hased
-            PasswordUtils.hashPassword(password);
+        try {
+            password = PasswordUtils.hashPassword(password);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }*/
+        }
 
         try (Connection conn = DatabaseConnection.getConnection()){
             String sql = "SELECT * FROM User WHERE email = ? AND password = ?";
