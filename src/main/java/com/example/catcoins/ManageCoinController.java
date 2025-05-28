@@ -6,7 +6,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-
 import java.io.IOException;
 import java.sql.*;
 
