@@ -31,6 +31,7 @@ public class UserMenuController {
 
     @FXML private HBox UserMenu;
     @FXML private Button ManageCoinBttn;
+    @FXML private Button ManageUserBttn;
 
     @FXML
     private Button BalanceButton;
@@ -40,6 +41,9 @@ public class UserMenuController {
         if(user.getRole()==Role.Admin) {
             ManageCoinBttn.setVisible(true);
             ManageCoinBttn.setManaged(true);
+            ManageUserBttn.setVisible(true);
+            ManageUserBttn.setManaged(true);
+
         }
     }
 
@@ -181,6 +185,12 @@ public class UserMenuController {
     void ManageCoin() {
         GoTo("ManageCoin.fxml");
 
+    }
+
+    // Função que manda após clicar no botão gerir users manda para a pagina certa
+    @FXML
+    void ManageUser() {
+        GoTo("ManageUser.fxml");
     }
 
     private void GoTo(String View) {

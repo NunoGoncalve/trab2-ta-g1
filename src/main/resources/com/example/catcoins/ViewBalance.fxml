@@ -12,12 +12,13 @@
             <Insets bottom="20.0" left="10.0" right="20.0" top="20.0" />
         </padding>
 
-        <Label fx:id="balanceLabel" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="125.0" style="-fx-text-fill: white; -fx-font-size: 16px;" text="0.00" textAlignment="RIGHT" />
-        <Label fx:id="currencyLabel" alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="44.0" style="-fx-text-fill: white; -fx-font-size: 14px;" text="EUR €" />
-        <Label prefHeight="27.0" prefWidth="20.0" style="-fx-font-size: 18px;" text="👛" textFill="#ff6f00">
-            <HBox.margin>
-                <Insets left="10.0" right="20.0" />
-            </HBox.margin></Label>
+        <Label fx:id="balanceLabel" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="125.0" style="-fx-text-fill: white; -fx-font-size: 16px;" text="0.00€" textAlignment="RIGHT" />
+        <Label fx:id="currencyLabel" alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="44.0" style="-fx-text-fill: white; -fx-font-size: 14px;" text="EUR €" /> 
+        <Label style="-fx-font-size: 18px;" text="👛" textFill="#ff6f00" styleClass="WalletIcon">
+         <HBox.margin>
+            <Insets left="10.0" right="20.0" />
+         </HBox.margin></Label>
+
         <Label fx:id="usernameLabel" prefHeight="25.0" prefWidth="64.0" style="-fx-text-fill: white; -fx-font-size: 16px;" text="Usuário">
             <HBox.margin>
                 <Insets right="10.0" />
