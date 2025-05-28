@@ -150,7 +150,7 @@ public class UserMenuController {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                 stmt.setDouble(1, amount); // Define o valor a ser adicionado ao saldo
-                stmt.setInt(2, LoggedUser.getId()); // Substitua 1 pelo ID correto se necessário
+                stmt.setInt(2, LoggedUser.getId());
                 client.getWallet().SetBalance(client.getWallet().getBalance() + amount);
 
             int rowsAffected = stmt.executeUpdate(); // Executa a atualização
