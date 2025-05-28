@@ -37,6 +37,8 @@ public class LoginController {
     @FXML private Hyperlink esqueceuSenhaLink;
     @FXML private StackPane Background;
 
+
+
     @FXML
     private void initialize() {
         LoginButton.setOnAction(this::handlelogin);
@@ -90,7 +92,7 @@ public class LoginController {
 
                     ResultSet Walletresult = stmt.executeQuery();
                     Walletresult.next();
-                    Wallet ClientWallet = new Wallet(Double.parseDouble(Walletresult.getString("Balance")), Walletresult.getString("Currency"));
+                    Wallet ClientWallet = new Wallet(Integer.parseInt(Walletresult.getString("ID")), Double.parseDouble(Walletresult.getString("Balance")), Walletresult.getString("Currency"));
                     Client LoggedClient = new Client(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, UserRole, UserStatus, ClientWallet);
                     return LoggedClient;
                 }
@@ -110,7 +112,7 @@ public class LoginController {
     }
 
     @FXML
-    private void togglePasswordVisibility() {
+    public void togglePasswordVisibility() {
         if (passwordField.isVisible()) {
             passwordVisibleField.setText(passwordField.getText());
             passwordField.setVisible(false);
@@ -126,14 +128,25 @@ public class LoginController {
         }
     }
 
-    private void trocarCena(String fxmlPath, User loggedInUser) throws IOException {
+    public void trocarCena(String fxmlPath, User loggedInUser) throws IOException {
         Main.setRoot(fxmlPath, loggedInUser);
     }
 
     @FXML
     private void handleEsqueceuSenha(ActionEvent event) {
-        showAlert(Alert.AlertType.INFORMATION, "Recuperação de senha", "Por favor, contacte o suporte ou utilize o sistema de recuperação de senha.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("RecoverPassword.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de recuperação de senha.");
+        }
     }
+
 
     public void handlelogin(ActionEvent event) {
         String email = emailField.getText();

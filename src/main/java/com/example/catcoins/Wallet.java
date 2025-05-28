@@ -1,10 +1,11 @@
 package com.example.catcoins;
 
 public class Wallet {
+    int ID;
     Double balance;
     String currency;
 
-    public Wallet(Double balance, String currency) {
+    public Wallet(int ID, Double balance, String currency) {
         this.balance = balance;
         this.currency = currency;
     }
