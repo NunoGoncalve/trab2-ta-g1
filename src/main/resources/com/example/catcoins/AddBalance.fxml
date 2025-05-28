@@ -1,18 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+        <?import javafx.geometry.*?>
+        <?import javafx.scene.control.*?>
+        <?import javafx.scene.layout.*?>
+        <?import javafx.scene.text.*?>
 
-<DialogPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
-    <content>
-        <VBox spacing="10">
-            <Label text="Quantidade a adicionar:" style="-fx-font-size: 14;"/>
-            <TextField fx:id="amountField" promptText="Ex: 50.00" style="-fx-font-size: 14;"/>
-            <Label fx:id="errorLabel" style="-fx-text-fill: red; -fx-font-size: 12;" visible="false"/>
-        </VBox>
-    </content>
-    <buttonTypes>
-        <ButtonType text="Adicionar" buttonData="OK_DONE"/>
-        <ButtonType text="Cancelar" buttonData="CANCEL_CLOSE"/>
-    </buttonTypes>
-</DialogPane>
+<StackPane fx:id="Background" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserMenuController">
+
+    <VBox alignment="CENTER" maxWidth="450.0" prefHeight="296.0" prefWidth="400.0" spacing="15" styleClass="form-container">
+        <padding>
+            <Insets bottom="40" left="40" right="40" top="40" />
+        </padding>
+
+        <!-- Título -->
+        <Label styleClass="label-title" text="Add Balance">
+            <font>
+                <Font size="11.0" />
+            </font></Label>
+
+        <!-- Email -->
+        <TextField fx:id="amountField" prefHeight="76.0" prefWidth="300.0" promptText="Amount       Ex: 5000€"  style="-fx-border-radius: 15px;" styleClass="text-field">
+            <VBox.margin>
+                <Insets bottom="20.0" />
+            </VBox.margin></TextField>
+        <HBox alignment="TOP_RIGHT" prefHeight="45.0" prefWidth="320.0">
+            <children>
+
+                <!-- Botão de login -->
+                <Button fx:id="ConfirmButton" minWidth="90.0"  prefHeight="28.0" prefWidth="90.0" styleClass="button-balance" text="Confirm" />
+                <Button fx:id="CancelButton" alignment="CENTER" minWidth="90.0" prefHeight="28.0" prefWidth="90.0" styleClass="button-balance" text="Cancel" style="-fx-background-color: #bf0603;-fx-text-fill: white;">
+                    <HBox.margin>
+                        <Insets left="15.0" right="15.0" />
+                    </HBox.margin>
+                </Button>
+            </children>
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+        </HBox>
+    </VBox>
+</StackPane>
