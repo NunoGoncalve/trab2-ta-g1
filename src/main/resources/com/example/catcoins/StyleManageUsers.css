@@ -1,0 +1,298 @@
+/* Estilos para Gerenciamento de Usuários - Tema Escuro */
+.root {
+    -fx-background-color: #252D36;
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Cards */
+.card {
+    -fx-background-color: #28323E;
+    -fx-background-radius: 10px;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+    -fx-border-color: #1a2740;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+}
+
+/* Títulos de Seções */
+.section-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e6f0;
+    -fx-padding: 0 0 10 0;
+}
+
+/* Cabeçalho da Grid */
+.grid-header {
+    -fx-background-color: #1a2740;
+    -fx-background-radius: 8px;
+    -fx-padding: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e6f0;
+}
+
+/* Entradas de Usuários */
+.user-entry {
+    -fx-background-color: #162237;
+    -fx-background-radius: 8px;
+    -fx-border-color: #2a3950;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 12px;
+    -fx-text-fill: WHITE;
+}
+
+.user-entry:hover {
+    -fx-background-color: #1c2a43;
+    -fx-border-color: #3f5277;
+}
+
+/* Avatar do Usuário */
+.user-avatar {
+    -fx-font-size: 24px;
+    -fx-text-fill: #e0e6f0;
+}
+
+/* Status do Usuário */
+.user-status {
+    -fx-font-weight: bold;
+    -fx-padding: 5px 10px;
+    -fx-background-radius: 10px;
+}
+
+.active-status {
+    -fx-text-fill: #4caf50;
+    -fx-background-color: rgba(76, 175, 80, 0.1);
+}
+
+.inactive-status {
+    -fx-text-fill: #f44336;
+    -fx-background-color: rgba(244, 67, 54, 0.1);
+}
+
+/* Labels de Usuário */
+.UserName, .UserNamee, .UserEmail, .UserRole {
+    -fx-font-size: 14px;
+    -fx-text-fill: #8d99ad;
+}
+
+/* Botões */
+.button {
+    -fx-cursor: hand;
+    -fx-background-radius: 6px;
+    -fx-transition: all 0.2s;
+}
+
+/* Botão de Editar */
+.edit-btn {
+    -fx-background-color: #ffb300;
+    -fx-text-fill: #111c2e;
+    -fx-font-weight: bold;
+    -fx-min-height: 30px;
+    -fx-min-width: 30px;
+    -fx-font-size: 14px;
+}
+
+.edit-btn:hover {
+    -fx-background-color: #ffc107;
+    -fx-effect: dropshadow(gaussian, rgba(255, 179, 0, 0.4), 4, 0, 0, 1);
+}
+
+/* Botão de Deletar */
+.delete-btn {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-min-height: 30px;
+    -fx-min-width: 30px;
+    -fx-font-size: 14px;
+}
+
+.delete-btn:hover {
+    -fx-background-color: #ff5252;
+    -fx-effect: dropshadow(gaussian, rgba(255, 82, 82, 0.4), 4, 0, 0, 1);
+}
+
+/* Botão de Adicionar */
+.add-btn {
+    -fx-background-color: #4caf50;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-background-radius: 20px;
+}
+
+.add-btn:hover {
+    -fx-background-color: #60d165;
+    -fx-effect: dropshadow(gaussian, rgba(76, 175, 80, 0.4), 4, 0, 0, 1);
+}
+
+/* Botão de Enviar */
+.submit-btn {
+    -fx-background-color: #4f8dff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-min-height: 40px;
+}
+
+.submit-btn:hover {
+    -fx-background-color: #6aa0ff;
+    -fx-effect: dropshadow(gaussian, rgba(79, 141, 255, 0.4), 4, 0, 0, 1);
+}
+
+/* Campos de Texto */
+.text-field {
+    -fx-background-color: #1c2a43;
+    -fx-background-radius: 6px;
+    -fx-border-color: #2a3950;
+    -fx-border-radius: 6px;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #8d99ad;
+    -fx-min-height: 40px;
+    -fx-text-fill: #e0e6f0;
+}
+
+.text-field:focused {
+    -fx-background-color: #243152;
+    -fx-border-color: #4f8dff;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-color: #1c2a43;
+    -fx-background-radius: 6px;
+    -fx-border-color: #2a3950;
+    -fx-border-radius: 6px;
+    -fx-padding: 0 10px;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #8d99ad;
+    -fx-text-fill: #e0e6f0;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #1c2a43;
+    -fx-text-fill: #e0e6f0;
+}
+
+.combo-box .list-view {
+    -fx-background-color: #1c2a43;
+    -fx-border-color: #2a3950;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #8d99ad;
+}
+
+/* Separador */
+.separator {
+    -fx-background-color: #2a3950;
+    -fx-opacity: 0.7;
+}
+
+/* Nome do usuário sendo editado */
+.editing-user-name {
+    -fx-font-size: 18px;
+    -fx-text-fill: #4f8dff;
+    -fx-font-weight: bold;
+}
+
+/* Botão de Cancelar */
+.cancel-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ff4d4d;
+    -fx-font-size: 13px;
+    -fx-border-color: #ff4d4d;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1px;
+    -fx-padding: 5px 10px;
+}
+
+.cancel-btn:hover {
+    -fx-background-color: rgba(255, 77, 77, 0.1);
+}
+
+/* Labels de formulário*/
+.label {
+    -fx-text-fill: #8d99ad;
+}
+
+/* Animações para os botões */
+.button:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+.pagination-controls {
+    -fx-padding: 15 0 0 0;
+}
+
+.page-button {
+    -fx-background-color: #2b2d42;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-background-radius: 15px;
+}
+
+.page-button:hover {
+    -fx-background-color: #4a4e69;
+}
+
+.page-button:disabled {
+    -fx-opacity: 0.5;
+}
+
+.page-info {
+    -fx-text-fill: #2b2d42;
+    -fx-font-size: 14px;
+}
+
+/* Estilo para o ScrollPane */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Estilo para o conteúdo do ScrollPane */
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Estilo da barra de rolagem vertical */
+.scroll-bar:vertical {
+    -fx-background-color: #1e1e2f;
+    -fx-pref-width: 8px;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #3a3f51;
+    -fx-background-insets: 2;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #5a5f71;
+}
+
+.scroll-bar:vertical .track {
+    -fx-background-color: #2a2f3e;
+    -fx-background-radius: 4;
+}
+
+/* Esconde a barra horizontal se não for necessária */
+.scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-max-height: 0;
+}
+.logo {
+    -fx-font-size: 20px;
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFA630;
+    -fx-font-weight: bold;
+}

@@ -144,3 +144,7 @@
     -fx-font-size: 18px;
     -fx-cursor: hand;
 }
+
+.WalletIcon{
+    -fx-text-fill: #FFA630;
+}
