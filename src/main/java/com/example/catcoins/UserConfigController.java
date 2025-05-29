@@ -17,9 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserConfigController {
-
-    private User LoggedUser;
+public class UserConfigController extends MenuLoader{
 
     @FXML
     private BorderPane MainPanel;
@@ -41,10 +39,15 @@ public class UserConfigController {
     private final double USD_TO_EUR_RATE = 0.88;
     private final double EUR_TO_USD_RATE = 1.0 / USD_TO_EUR_RATE;
 
-    public void setUser(User LoggedUser) {
-        this.LoggedUser = LoggedUser;
-        Email.setText(LoggedUser.getEmail());
-        Name.setText(LoggedUser.getName());
+    @Override
+    public void setLoggedUser(User user) {
+        super.setLoggedUser(user);
+        LoadInfo();
+    }
+
+    public void LoadInfo() {
+        Email.setText(super.getLoggedUser().getEmail());
+        Name.setText(super.getLoggedUser().getName());
 
         loadCurrencyPreference();  // Carrega a preferência de moeda do usuário
 
@@ -56,19 +59,8 @@ public class UserConfigController {
             throw new RuntimeException(e);
         }
         MenuController controller = loader.getController();
-        controller.setUser(LoggedUser);
+        controller.setUser(super.getLoggedUser());
         MainPanel.setLeft(menu);
-
-        loader = new FXMLLoader(getClass().getResource("UserMenu.fxml"));
-        Parent usermenu = null;
-        try {
-            usermenu = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        UserMenuController controller2 = loader.getController();
-        controller2.setUser(LoggedUser);
-        MainPanel.setRight(usermenu);
     }
 
     @FXML
@@ -94,7 +86,7 @@ public class UserConfigController {
             }
             EditButton.setText("Edit");
             Name.setEditable(false);
-            LoggedUser.setName(Name.getText().toString());
+            super.getLoggedUser().setName(Name.getText().toString());
         }
 
 
@@ -160,12 +152,12 @@ public class UserConfigController {
      */
     private void saveCurrencyPreference() {
         // Verifica se o usuário está logado e é um cliente
-        if (LoggedUser != null && LoggedUser instanceof Client) {
+        if (super.getLoggedUser() != null && super.getLoggedUser() instanceof Client) {
             try (Connection conn = DatabaseConnection.getConnection()) {
                 // Obtém o ID da carteira do cliente
                 String getWalletIdSql = "SELECT Wallet FROM Client WHERE ID = ?";
                 PreparedStatement getWalletStmt = conn.prepareStatement(getWalletIdSql);
-                getWalletStmt.setInt(1, LoggedUser.getId());
+                getWalletStmt.setInt(1, super.getLoggedUser().getId());
                 ResultSet rs = getWalletStmt.executeQuery();
 
                 if (rs.next()) {
@@ -191,12 +183,12 @@ public class UserConfigController {
     // Lê o campo Currency da tabela Wallet.
     private void loadCurrencyPreference() {
         // Verifica se o usuário está logado e é um cliente
-        if (LoggedUser != null && LoggedUser instanceof Client) {
+        if (super.getLoggedUser() != null && super.getLoggedUser() instanceof Client) {
             try (Connection conn = DatabaseConnection.getConnection()) {
                 // Obtém o ID da carteira do cliente
                 String getWalletSql = "SELECT w.Currency FROM Client c INNER JOIN Wallet w ON c.Wallet = w.ID WHERE c.ID = ?";
                 PreparedStatement stmt = conn.prepareStatement(getWalletSql);
-                stmt.setInt(1, LoggedUser.getId());
+                stmt.setInt(1, super.getLoggedUser().getId());
                 ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
@@ -231,7 +223,7 @@ public class UserConfigController {
     // Atualizar a exibição de valores monetários na interface
     private void updateCurrencyDisplay(String fromCurrency, String toCurrency) {
         // Se o usuário estiver logado, atualiza as informações de saldo
-        if (LoggedUser != null && LoggedUser instanceof Client) {
+        if (super.getLoggedUser() instanceof Client) {
             try {
                 // Tenta encontrar e atualizar o ViewBalanceController
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("ViewBalance.fxml"));
@@ -251,17 +243,13 @@ public class UserConfigController {
         }
     }
 
-    /**
-     * Retorna o nome de exibição da moeda com símbolo
-     * @return Nome da moeda com símbolo ("USD $" ou "EUR €")
-     */
-    public String getCurrencyDisplayName() {
-        if (selectedCurrency.equals("USD")) {
-            return "USD $";
-        } else if (selectedCurrency.equals("EUR")) {
-            return "EUR €";
-        } else {
-            return selectedCurrency;
+    @FXML
+    public void goBack(){
+        try {
+            Main.setRoot("Userpanel.fxml", super.getLoggedUser());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
+
 }

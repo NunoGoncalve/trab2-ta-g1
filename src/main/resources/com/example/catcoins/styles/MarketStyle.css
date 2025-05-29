@@ -1,0 +1,47 @@
+.chart {
+    -fx-background-color: #28323E; /* Fundo escuro */
+    -fx-padding: 10px;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-opacity: 0.2;
+    -fx-stroke-dash-array: null;
+}
+
+.chart-series-line {
+    -fx-stroke: #FFFF99; /* Linha amarela clara */
+    -fx-stroke-width: 1.5px;
+}
+
+.chart-line-symbol {
+    -fx-background-color: #FFFF99, white;
+    -fx-background-insets: 0, 2;
+    -fx-padding: 4px;
+    /*-fx-shape: "M0,0 h1 v1 h-1 z";
+    -fx-shape: "M25,25 m-25,0 a25,25 0 1,0 50,0 a25,25 0 1,0 -50,0";*/
+    -fx-shape: "M0";
+
+}
+
+.chart-title,
+.axis-label,
+.axis-tick-mark,
+.axis-tick-mark > Text {
+    -fx-text-fill: #FFFFFF; /* Texto em amarelo claro */
+    -fx-font-weight: bold;
+    -fx-tick-label-font-size: 14px;
+}
+
+.axis {
+    -fx-tick-label-fill: #FFFFFF;
+
+}
+
+.market-button{
+    -fx-background-color: #FFA630;
+    -fx-background-radius: 12;
+}

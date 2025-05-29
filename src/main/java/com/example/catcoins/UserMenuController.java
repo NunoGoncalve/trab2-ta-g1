@@ -129,6 +129,13 @@ public class UserMenuController {
                     // Atualiza o saldo na tabela Wallet
                     if (updateWalletBalance(amount)) {
                         showSuccessMessage(amount);
+                        scene = stage.getScene();
+                        root = scene.getRoot();
+                        Node node = root.lookup("#balanceLabel");
+                        if (node instanceof Label) {
+                            Label label = (Label) node;
+                            label.setText(String.valueOf(amount));
+                        }
                         addBalanceStage.close(); // Fecha a janela após sucesso
                     } else {
                         showAlert("Erro", "Falha ao atualizar o saldo na carteira.");
@@ -161,7 +168,7 @@ public class UserMenuController {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setDouble(1, amount); // Define o valor a ser adicionado ao saldo
-            stmt.setInt(2, LoggedUser.getId()); // Substitua 1 pelo ID correto se necessário
+            stmt.setInt(2, ((Client) LoggedUser).getWallet().getID()); // Substitua 1 pelo ID correto se necessário
             client.getWallet().SetBalance(client.getWallet().getBalance() + amount);
 
             int rowsAffected = stmt.executeUpdate(); // Executa a atualização

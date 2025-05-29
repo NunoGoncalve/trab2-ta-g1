@@ -48,59 +48,29 @@ public class ViewBalanceController {
 
     public void setUser(User LoggedUser) {
         if (LoggedUser instanceof Client) {
-            String sql = "SELECT Balance,Currency FROM Client INNER JOIN Wallet ON Client.Wallet = Wallet.ID WHERE Client.ID = ?";
+            Client LoggedClient = (Client) LoggedUser;
 
-            try (Connection conn = DatabaseConnection.getConnection()){
-                 PreparedStatement stmt = conn.prepareStatement(sql);
+            double Balance = LoggedClient.getWallet().getBalance();
+            currentDisplayBalance = currentBalanceInDol;
 
-                stmt.setInt(1,LoggedUser.getId());
-                ResultSet rs = stmt.executeQuery();
-
-                if (rs.next()) {
-                    String Name = LoggedUser.getName();
-                    double Balance = rs.getDouble("Balance");
-                    currentDisplayBalance = currentBalanceInDol;
-
-                    String dbCurrency = rs.getString("Currency");
-                    if (dbCurrency != null && !dbCurrency.isEmpty()) {
-                        // Atualiza a moeda e converte o saldo se necessário
-                        updateCurrency(dbCurrency);
-                    }
-
-                    usernameLabel.setText(Name);
-
-                    if (Balance <= 0) {
-                        balanceLabel.setText("0.00€");
-                        //  mostrar uma mensagem em outro label, alerta, ou até trocar o texto do usernameLabel
-                        //  usar o usernameLabel para mostrar a mensagem:
-                    } else {
-                        balanceLabel.setText(String.format("%.2f€", Balance));
-                    }
-
-                } else {
-                    usernameLabel.setText("Desconhecido");
-                    balanceLabel.setText("0.00€");
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                usernameLabel.setText("0000");
-                balanceLabel.setText("Erro");
+            String dbCurrency = LoggedClient.getWallet().getCurrency();
+            if (dbCurrency != null && !dbCurrency.isEmpty()) {
+                // Atualiza a moeda e converte o saldo se necessário
+                updateCurrency(dbCurrency);
             }
+
+            usernameLabel.setText(LoggedClient.getName());
+
+            if (Balance <= 0) {
+                balanceLabel.setText("0.00");
+                //  mostrar uma mensagem em outro label, alerta, ou até trocar o texto do usernameLabel
+                //  usar o usernameLabel para mostrar a mensagem:
+            } else {
+                balanceLabel.setText(String.format("%.2f", Balance));
+            }
+
         }else{
-            try (Connection conn = DatabaseConnection.getConnection()){
-                String sql = "SELECT Name From User WHERE User.ID = ?";
-
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, LoggedUser.getId());
-                ResultSet rs = stmt.executeQuery();
-                usernameLabel.setText(LoggedUser.getName());
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                usernameLabel.setText("Erro");
-                balanceLabel.setText("Erro");
-            }
+            usernameLabel.setText(LoggedUser.getName());
 
         }
     }

@@ -14,7 +14,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
         scene = new Scene(root);
         primaryStage.setTitle("Login");
@@ -27,26 +26,12 @@ public class Main extends Application {
     public static void setRoot(String fxml, User LoggedUser) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxml));
         Parent root = loader.load();
-       if (fxml.equals("UserConfig.fxml")){
-            UserConfigController controller = loader.getController();
-            controller.setUser(LoggedUser);
-       }
-       else if(fxml.equals("Main.fxml")) {
-           MainController controller = loader.getController();
-           controller.setUser(LoggedUser);
-       }
-       else if(fxml.equals("UserPanel.fxml")) {
-           UserPanelController controller = loader.getController();
-           controller.setUser(LoggedUser);
-       }else if(fxml.equals("ManageCoin.fxml")) {
-           ManageCoinController controller = loader.getController();
-           controller.setUser(LoggedUser);
-       } else if(fxml.equals("ManageUser.fxml")) {
-            ManageUserController controller = loader.getController();
-            controller.setUser(LoggedUser);
-    }
+        Object controller = loader.getController();
+        if (controller instanceof MenuLoader) {
+            ((MenuLoader) controller).setLoggedUser(LoggedUser);
+        }
 
-       scene.setRoot(root);
+        scene.setRoot(root);
     }
 
     public static void main(String[] args) {

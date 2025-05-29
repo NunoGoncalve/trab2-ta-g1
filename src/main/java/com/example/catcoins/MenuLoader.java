@@ -1,35 +1,24 @@
 package com.example.catcoins;
 
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
-public class UserPanelController extends MenuLoader{
+public abstract class MenuLoader implements Loader {
 
-    @FXML
-    private BorderPane MainPanel;
+    private User LoggedUser;
 
-    @FXML
-    private VBox Stack;
-
-    @Override
     public void setLoggedUser(User user) {
-        super.setLoggedUser(user);
-        super.LoadMenus(Stack, MainPanel);
+        this.LoggedUser = user;
     }
 
-    /*public void setUser(User LoggedUser) {
+    public User getLoggedUser() {
+        return LoggedUser;
+    }
+
+    public void LoadMenus(VBox Stack, BorderPane MainPanel){
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu.fxml"));
         Parent menu = null;
         try {
@@ -40,7 +29,6 @@ public class UserPanelController extends MenuLoader{
         MenuController controller = loader.getController();
         controller.setUser(LoggedUser);
         MainPanel.setLeft(menu);
-
         loader = new FXMLLoader(getClass().getResource("UserMenu.fxml"));
         Parent usermenu = null;
         try {
@@ -63,8 +51,5 @@ public class UserPanelController extends MenuLoader{
         controller3.setUser(LoggedUser);
         controller3.setUserMenu((HBox)usermenu.lookup("#UserMenu"), (StackPane)usermenu.lookup("#UserMenuPane"));
         Stack.getChildren().add(0, Balance);
-
-
-    }*/
-
+    }
 }

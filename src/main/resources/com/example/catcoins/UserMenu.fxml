@@ -4,9 +4,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane fx:id="UserMenuPane" prefHeight="668.0" prefWidth="231.0" styleClass="root" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserMenuController">
+<StackPane fx:id="UserMenuPane" prefHeight="668.0" prefWidth="182.0" styleClass="root" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserMenuController">
     <children>
-        <HBox fx:id="UserMenu" alignment="CENTER_RIGHT" prefHeight="668.0" prefWidth="172.0">
+        <HBox fx:id="UserMenu" alignment="CENTER_RIGHT" prefHeight="668.0" prefWidth="210.0" visible="false">
             <children>
                 <VBox alignment="TOP_CENTER" fillWidth="true" onMouseClicked="#Close" prefHeight="668.0" prefWidth="190.0" styleClass="sidebar">
                     <children>
