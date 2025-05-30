@@ -26,6 +26,7 @@ public class UserMenuController {
     private Parent root;
     private User LoggedUser;
 
+    @FXML private Button BalanceButton;
     @FXML private HBox UserMenu;
     @FXML private Button ManageCoinBttn;
     @FXML private Button ManageUserBttn;
@@ -37,6 +38,8 @@ public class UserMenuController {
             ManageCoinBttn.setManaged(true);
             ManageUserBttn.setVisible(true);
             ManageUserBttn.setManaged(true);
+            BalanceButton.setVisible(false);
+            BalanceButton.setManaged(false);
 
         }
     }
