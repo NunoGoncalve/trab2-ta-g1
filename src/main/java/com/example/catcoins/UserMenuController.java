@@ -30,9 +30,6 @@ public class UserMenuController {
     @FXML private Button ManageCoinBttn;
     @FXML private Button ManageUserBttn;
 
-    @FXML
-    private Button BalanceButton;
-
     public void setUser(User user) {
         this.LoggedUser = user;
         if(user.getRole()==Role.Admin) {
@@ -72,23 +69,6 @@ public class UserMenuController {
 
     }
 
-    //    @FXML
-//    void AddBalance(ActionEvent event) {
-//         double balance = 0.0; // Variável para armazenar o saldo
-//
-//
-//
-////        try {
-////            root = FXMLLoader.load(getClass().getResource("UserMenu.fxml"));
-////        } catch (IOException e) {
-////            throw new RuntimeException(e);
-////        }
-////        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-////        scene = new Scene(root);
-////        stage.setScene(scene);
-////        stage.show();
-//
-//    }
     @FXML
     void AddBalance(ActionEvent event) {
         try {
@@ -127,15 +107,8 @@ public class UserMenuController {
                     }
 
                     // Atualiza o saldo na tabela Wallet
-                    if (updateWalletBalance(amount)) {
+                    if (updateWalletBalance(amount, event)) {
                         showSuccessMessage(amount);
-                        scene = stage.getScene();
-                        root = scene.getRoot();
-                        Node node = root.lookup("#balanceLabel");
-                        if (node instanceof Label) {
-                            Label label = (Label) node;
-                            label.setText(String.valueOf(amount));
-                        }
                         addBalanceStage.close(); // Fecha a janela após sucesso
                     } else {
                         showAlert("Erro", "Falha ao atualizar o saldo na carteira.");
@@ -159,7 +132,7 @@ public class UserMenuController {
     }
 
     // Método para atualizar o saldo na tabela Wallet
-    private boolean updateWalletBalance(double amount) {
+    private boolean updateWalletBalance(double amount, ActionEvent event) {
         Client client = (Client) LoggedUser;
         // Atualiza o saldo na tabela Wallet para o ID especificado
         String sql = "UPDATE Wallet SET balance = balance + ? WHERE ID = ?"; // Adiciona o ID como parâmetro
@@ -172,6 +145,13 @@ public class UserMenuController {
             client.getWallet().SetBalance(client.getWallet().getBalance() + amount);
 
             int rowsAffected = stmt.executeUpdate(); // Executa a atualização
+            scene = ((Node) event.getSource()).getScene();
+            root = scene.getRoot();
+            Node node = root.lookup("#balanceLabel");
+            if (node instanceof Label) {
+                Label label = (Label) node;
+                label.setText(String.format("%.2f", client.getWallet().getBalance()));
+            }
             return rowsAffected > 0; // Retorna verdadeiro se a atualização foi bem-sucedida
 
         } catch (SQLException e) {
