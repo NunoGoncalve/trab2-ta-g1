@@ -19,6 +19,8 @@ public class RegisterController {
     @FXML
     private PasswordField passwordField;
     @FXML
+    private TextField passwordVisibleField;
+    @FXML
     private ProgressBar passwordStrengthBar;
     @FXML
     private CheckBox termsCheckBox;
@@ -32,22 +34,6 @@ public class RegisterController {
     private Label errorLabelFields;
     @FXML
     private Label errorLabelTerms;
-
-    //@FXML
-    //private void initialize() {
-        /*passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
-            CalculateStrength(newValue);
-        });*/
-
-        /*registerButton.setOnAction(event -> {
-            try {
-                handleRegister();
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao registar utilizador.");
-            }
-        });*/
-    //}
 
     public void ToggleErroLabel(Label errorLabel, Boolean IsVisible) {
         if (IsVisible) {
@@ -98,14 +84,18 @@ public class RegisterController {
                 throw new RuntimeException(e);
             }
 
-            int NewClientID = NewUser(username, email, PasswordHash);
+            String NewIDs = NewUser(username, email, PasswordHash);
+            String[] partes = NewIDs.split(";");
 
-            if (NewClientID!=0) {
+            int UserID = Integer.parseInt(partes[0]);
+            int WalletID = Integer.parseInt(partes[1]);
+
+            if (UserID!=0) {
                 ShowAlert(Alert.AlertType.INFORMATION, "Sucesso", "Registo guardado com sucesso!");
                 limparCampos();
 
                 try {
-                    Registered(NewClientID, username, email);
+                    Registered(UserID ,WalletID, username, email);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -168,7 +158,7 @@ public class RegisterController {
     }
 
 
-    private int NewUser(String username, String email, String password) {
+    private String NewUser(String username, String email, String password) {
         String sql = "INSERT INTO User (Name, Email, Password) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -196,17 +186,17 @@ public class RegisterController {
             stmt.setInt(2, Wallet);
             stmt.executeUpdate();
 
-            return UserID;
+            return UserID+";"+Wallet;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return 0;
+            return "0";
         }
     }
 
-    protected void Registered(int ID, String Username, String Email) throws IOException {
-        Wallet ClientWallet = new Wallet(0.00, "$");
-        Client ClientRegistred = new Client(ID, Username, Email, Role.Client, Status.Active, ClientWallet);
+    protected void Registered(int WalletID, int UserID, String Username, String Email) throws IOException {
+        Wallet ClientWallet = new Wallet(WalletID,0.00, "USD $");
+        Client ClientRegistred = new Client(UserID, Username, Email, Role.Client, Status.Active, ClientWallet);
         Main.setRoot("Main.fxml", ClientRegistred);
     }
 
@@ -231,6 +221,23 @@ public class RegisterController {
             Main.setRoot("Login.fxml", null);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    public void togglePasswordVisibility() {
+        if (passwordField.isVisible()) {
+            passwordVisibleField.setText(passwordField.getText());
+            passwordField.setVisible(false);
+            passwordField.setManaged(false);
+            passwordVisibleField.setVisible(true);
+            passwordVisibleField.setManaged(true);
+        } else {
+            passwordField.setText(passwordVisibleField.getText());
+            passwordVisibleField.setVisible(false);
+            passwordVisibleField.setManaged(false);
+            passwordField.setVisible(true);
+            passwordField.setManaged(true);
         }
     }
 }

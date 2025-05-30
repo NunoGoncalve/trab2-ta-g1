@@ -24,8 +24,21 @@
         <Label fx:id="errorLabelEmail" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
 
         <!-- Password -->
-        <PasswordField fx:id="passwordField" onKeyReleased="#CalculateStrength" promptText="Password" styleClass="text-field" />
 
+        <HBox alignment="CENTER">
+            <!-- Stack com os dois campos (oculto e visível) -->
+            <StackPane>
+                <!-- Campo de senha oculto -->
+                <PasswordField fx:id="passwordField" onKeyReleased="#CalculateStrength" promptText="Password" styleClass="text-field" />
+                <!-- Campo de senha visível (inicialmente oculto) -->
+                <TextField fx:id="passwordVisibleField" managed="false" prefWidth="250" promptText="Password" style="-fx-border-radius: 15px;" styleClass="text-field" visible="false" />
+                <!-- Botão com ícone de olho -->
+                <Button fx:id="togglePasswordBtn" onAction="#togglePasswordVisibility" prefHeight="20" prefWidth="20" style="-fx-background-radius: 50%; -fx-padding: 0.1; -fx-cursor: hand;" styleClass="sidebar-button" text="👁" StackPane.alignment="CENTER_RIGHT">
+                    <StackPane.margin>
+                        <Insets right="10.0" />
+                    </StackPane.margin></Button>
+            </StackPane>
+        </HBox>
         <!-- Lable do Erro  -->
         <Label fx:id="errorLabelPassword" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
 

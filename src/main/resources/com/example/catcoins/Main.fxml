@@ -20,7 +20,6 @@
                   <font>
                      <Font name="Bell MT Bold" size="40.0" />
                   </font></Label>
-
                     <Separator style="-fx-background-color: #555;" />
 
                     <!-- Cabeçalho -->

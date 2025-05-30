@@ -79,6 +79,7 @@
     -fx-font-weight: bold;
     -fx-padding: 0 0 10px 0;
 }
+
 .header-label {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
@@ -148,3 +149,4 @@
     -fx-background-color: #2a3950;
     -fx-opacity: 0.7;
 }
+
