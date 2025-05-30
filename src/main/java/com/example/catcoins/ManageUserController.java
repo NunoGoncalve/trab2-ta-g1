@@ -161,9 +161,13 @@ public class ManageUserController extends MenuLoader{
                 statusLabel.getStyleClass().add(status.toLowerCase() + "-status");
                 grid.add(statusLabel, 4, 0);
 
-                // Botões de ação
+                //Botões de ação
                 HBox buttonsBox = new HBox(10);
                 buttonsBox.setAlignment(Pos.CENTER);
+
+                Button detailsButton = new Button("🔍");
+                detailsButton.getStyleClass().add("details-btn");
+                detailsButton.setOnAction(e -> UserDetails(id));
 
                 Button editButton = new Button("✏");
                 editButton.getStyleClass().add("edit-btn");
@@ -173,7 +177,7 @@ public class ManageUserController extends MenuLoader{
                 deleteButton.getStyleClass().add("delete-btn");
                 deleteButton.setOnAction(e -> deletarUtilizador(id));
 
-                buttonsBox.getChildren().addAll(editButton, deleteButton);
+                buttonsBox.getChildren().addAll(detailsButton, editButton, deleteButton);
                 grid.add(buttonsBox, 5, 0);
 
                 userListVBox.getChildren().add(grid);
@@ -365,6 +369,19 @@ public class ManageUserController extends MenuLoader{
         editUserForm.setManaged(false);
 
         currentEditUserId = -1;
+    }
+
+    public class GlobalData {
+        public static int userId; // Variável pública e estática
+    }
+
+    public void UserDetails(int id) {
+        GlobalData.userId = id; // Armazena o ID globalmente
+        try {
+            Main.setRoot("UserDetails.fxml", getLoggedUser());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void deletarUtilizador(int id) {
