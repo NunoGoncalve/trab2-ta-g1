@@ -88,13 +88,20 @@ public class LoginController {
                     UserRole =  Role.Client;
                     sql = "SELECT Wallet.* FROM Client inner join Wallet on Client.Wallet = Wallet.ID WHERE Client.ID = ?";
                     stmt = conn.prepareStatement(sql);
-                    stmt.setDouble(1, Integer.parseInt(UserResult.getString("ID")));
+                    stmt.setInt(1, UserResult.getInt("ID"));
 
                     ResultSet Walletresult = stmt.executeQuery();
-                    Walletresult.next();
-                    Wallet ClientWallet = new Wallet(Integer.parseInt(Walletresult.getString("ID")), Double.parseDouble(Walletresult.getString("Balance")), Walletresult.getString("Currency"));
-                    Client LoggedClient = new Client(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, UserRole, UserStatus, ClientWallet);
-                    return LoggedClient;
+                    if(Walletresult.next()){
+                        Wallet ClientWallet = new Wallet(
+                                Walletresult.getInt("ID"),
+                                Walletresult.getDouble("Balance"),
+                                Walletresult.getString("Currency"));
+                        Client LoggedClient = new Client(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, UserRole, UserStatus, ClientWallet);
+                        return LoggedClient;
+                    }
+
+
+
                 }
                 else{
                     UserRole = Role.Admin;
@@ -171,7 +178,7 @@ public class LoginController {
             limparCampos();
 
             try {
-                trocarCena("Main.fxml", usuario);
+                trocarCena("Market.fxml", usuario);
             } catch (IOException e) {
                 e.printStackTrace();
             }

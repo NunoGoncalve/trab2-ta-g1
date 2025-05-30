@@ -11,7 +11,7 @@ import javafx.scene.layout.*;
 import java.io.IOException;
 import java.sql.*;
 
-public class ManageUserController {
+public class ManageUserController extends MenuLoader{
 
     @FXML private VBox userListVBox;
     @FXML private TextField userNameField;
@@ -39,20 +39,17 @@ public class ManageUserController {
     private int totalUsers = 0;
     private int currentEditUserId;
 
+    @Override
+    public void setLoggedUser(User user) {
+        super.setLoggedUser(user);
+        super.LoadMenus(Stack, MainPanel);
+    }
+
     @FXML
     public void initialize() {
         LoadTotalUsers();
         LoadUsersPage(currentPage);
         initializeComboBoxes();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu.fxml"));
-        Parent menu = null;
-        try {
-            menu = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        MainPanel.setLeft(menu);
-
         // Configurar eventos dos botões de paginação
         prevPageButton.setOnAction(e -> {
             if (currentPage > 0) {
@@ -211,42 +208,6 @@ public class ManageUserController {
         // Definir valores padrão
         userRoleField.setValue("Client");
         userStatusField.setValue("Active");
-    }
-
-    public void setUser(User LoggedUser) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu.fxml"));
-        Parent menu = null;
-        try {
-            menu = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        MenuController controller = loader.getController();
-        controller.setUser(LoggedUser);
-        MainPanel.setLeft(menu);
-
-        loader = new FXMLLoader(getClass().getResource("UserMenu.fxml"));
-        Parent usermenu = null;
-        try {
-            usermenu = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        UserMenuController controller2 = loader.getController();
-        controller2.setUser(LoggedUser);
-        MainPanel.setRight(usermenu);
-
-        loader = new FXMLLoader(getClass().getResource("ViewBalance.fxml"));
-        Parent Balance = null;
-        try {
-            Balance = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        ViewBalanceController controller3 = loader.getController();
-        controller3.setUser(LoggedUser);
-        controller3.setUserMenu((HBox)usermenu.lookup("#UserMenu"), (StackPane)usermenu.lookup("#UserMenuPane"));
-        Stack.getChildren().add(0, Balance);
     }
 
     @FXML

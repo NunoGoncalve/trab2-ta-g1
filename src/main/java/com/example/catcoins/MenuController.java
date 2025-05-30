@@ -81,22 +81,10 @@ public class MenuController {
 
     @FXML
     void GoMarket() {
-        GoTo("Main.fxml");
+        GoTo("Market.fxml");
     }
 
     private void GoTo(String View) {
-
-        /*try {
-            root = FXMLLoader.load(getClass().getResource(View+".fxml"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root, 1000, 1000);
-        stage.setScene(scene);
-        stage.setScene(scene);
-        stage.setFullScreen(true);
-        stage.show();*/
         try {
             Main.setRoot(View, LoggedInUser);
         } catch (IOException e) {

@@ -35,22 +35,6 @@ public class RegisterController {
     @FXML
     private Label errorLabelTerms;
 
-    //@FXML
-    //private void initialize() {
-        /*passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
-            CalculateStrength(newValue);
-        });*/
-
-        /*registerButton.setOnAction(event -> {
-            try {
-                handleRegister();
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao registar utilizador.");
-            }
-        });*/
-    //}
-
     public void ToggleErroLabel(Label errorLabel, Boolean IsVisible) {
         if (IsVisible) {
             errorLabel.setVisible(true);
