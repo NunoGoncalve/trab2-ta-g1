@@ -33,6 +33,12 @@ public class ViewBalanceController {
     @FXML
     private Label currencyLabel;
 
+    @FXML
+    private Label WalletIcon;
+
+    @FXML
+    private HBox UserInfo;
+
     // Moeda atual para exibição (padrão é USD)
     private String currentCurrency = "USD $";
 
@@ -71,7 +77,10 @@ public class ViewBalanceController {
 
         }else{
             usernameLabel.setText(LoggedUser.getName());
-
+            balanceLabel.setManaged(false);
+            currencyLabel.setManaged(false);
+            WalletIcon.setManaged(false);
+            UserInfo.setMaxWidth(200);
         }
     }
 

@@ -3,12 +3,15 @@ package com.example.catcoins;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -34,6 +37,12 @@ public class UserConfigController extends MenuLoader{
     @FXML
     private ComboBox<String> currencyComboBox;
 
+    @FXML
+    private Label currencyLabel;
+
+    @FXML
+    private VBox Stack;
+
     private String selectedCurrency = "USD"; // USD padrão
     // Taxa de conversão conforme especificado: 1 USD = 0.88 EUR
     private final double USD_TO_EUR_RATE = 0.88;
@@ -49,8 +58,6 @@ public class UserConfigController extends MenuLoader{
         Email.setText(super.getLoggedUser().getEmail());
         Name.setText(super.getLoggedUser().getName());
 
-        loadCurrencyPreference();  // Carrega a preferência de moeda do usuário
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu.fxml"));
         Parent menu = null;
         try {
@@ -61,6 +68,15 @@ public class UserConfigController extends MenuLoader{
         MenuController controller = loader.getController();
         controller.setUser(super.getLoggedUser());
         MainPanel.setLeft(menu);
+
+        if(super.getLoggedUser().getRole()==Role.Client){
+            loadCurrencyPreference();  // Carrega a preferência de moeda do usuário
+        }else{
+            currencyComboBox.setManaged(false);
+            currencyComboBox.setVisible(false);
+            currencyLabel.setManaged(false);
+        }
+
     }
 
     @FXML
@@ -70,9 +86,10 @@ public class UserConfigController extends MenuLoader{
             EditButton.setText("Save");
         }else{
             try (Connection conn = DatabaseConnection.getConnection()) {
-                String sql = "UPDATE User SET Name = ? WHERE ID = 1";
+                String sql = "UPDATE User SET Name = ? WHERE ID = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, Name.getText().toString());
+                stmt.setInt(2, super.getLoggedUser().getId());
                 stmt.executeUpdate();
                 /*int rowsUpdated = stmt.executeUpdate();
                 if (rowsUpdated > 0) {
