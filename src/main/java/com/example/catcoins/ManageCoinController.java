@@ -6,11 +6,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-
 import java.io.IOException;
 import java.sql.*;
 
 public class ManageCoinController {
+    private int currentEditCoinId;
+    private String nomeOriginal;
+    private double precoOriginal;
+    // Isto é utilizado na funcao de edicao, para comparacao com dados atuais - BD (TEMP)
 
     @FXML private VBox coinListVBox;
     @FXML private TextField coinNameField;
@@ -22,6 +25,7 @@ public class ManageCoinController {
     @FXML private VBox editCoinForm;
     @FXML private Label editingCoinLabel;
     @FXML private VBox Stack;
+    @FXML private VBox editCoinSection;
     @FXML
     public void initialize() {
         carregarMoedas();
@@ -79,6 +83,10 @@ public class ManageCoinController {
         newCoinForm.setVisible(!isVisible);
         newCoinForm.setManaged(!isVisible);
     }
+
+    @FXML
+    private BorderPane editCoinHeader;
+
 
     public void carregarMoedas() {
         String sql = "SELECT id, Name, Value FROM Coin";
@@ -182,40 +190,54 @@ public class ManageCoinController {
             return;
         }
 
-        String sql = "INSERT INTO Coin (Name, Value) VALUES (?, ?)";
+        String checkSql = "SELECT COUNT(*) FROM Coin WHERE Name = ?";
+        String insertSql = "INSERT INTO Coin (Name, Value) VALUES (?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nome);
-            stmt.setDouble(2, preco);
-            stmt.executeUpdate();
+        try (Connection conn = DatabaseConnection.getConnection()) {
+
+            // Verifica se já existe uma moeda com o mesmo nome
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setString(1, nome);
+                ResultSet rs = checkStmt.executeQuery();
+                if (rs.next() && rs.getInt(1) > 0) {
+                    showAlert(Alert.AlertType.WARNING, "Moeda Já Existe", "Já existe uma moeda com esse nome.");
+                    return;
+                }
+            }
+
+            // Insere a nova moeda
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                insertStmt.setString(1, nome);
+                insertStmt.setDouble(2, preco);
+                insertStmt.executeUpdate();
+            }
 
             coinNameField.clear();
             coinPriceField.clear();
 
-            // Fechar o formulário após adicionar com sucesso
             newCoinForm.setVisible(false);
             newCoinForm.setManaged(false);
 
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Moeda adicionada com sucesso!");
             carregarMoedas();
+
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erro no Banco de Dados", "Erro ao adicionar moeda: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    // Variável para armazenar o ID da moeda a ser editada
-    private int currentEditCoinId;
-
     /**
-     * Abre o formulário de edição de moeda preenchido com os dados da moeda selecionada
+     * Abre o formulário de edição preenchido com os dados da moeda
      */
+    @FXML
     private void editarMoeda(int id, String nome, double preco) {
         currentEditCoinId = id;
+        nomeOriginal = nome;
+        precoOriginal = preco;
 
         editCoinNameField.setText(nome);
-        editCoinPriceField.setText(String.valueOf(preco));
+        editCoinPriceField.setText(String.format("%.2f", preco));  // ou use vírgula se preferir
         editingCoinLabel.setText("• " + nome);
 
         editCoinForm.setVisible(true);
@@ -225,15 +247,17 @@ public class ManageCoinController {
         newCoinForm.setManaged(false);
     }
 
+
+
+
     /**
-     * Método para confirmar a edição da moeda
+     * Confirma a edição da moeda
      */
     @FXML
     public void confirmarEdicaoMoeda() {
         String nome = editCoinNameField.getText().trim();
         String precoText = editCoinPriceField.getText().trim();
 
-        // Validação básica
         if (nome.isEmpty() || precoText.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Dados Incompletos", "Por favor, preencha todos os campos.");
             return;
@@ -246,40 +270,41 @@ public class ManageCoinController {
             showAlert(Alert.AlertType.WARNING, "Formato Inválido", "O preço deve ser um número válido.");
             return;
         }
-        if (nome.equalsIgnoreCase(editingCoinLabel.getText().replace("• ", "")) &&
-                preco == Double.parseDouble(editCoinPriceField.getText().replace(",", "."))) {
+
+        // Verifica se houve alterações REAIS
+        if (nome.equalsIgnoreCase(nomeOriginal) && Double.compare(preco, precoOriginal) == 0) {
             showAlert(Alert.AlertType.INFORMATION, "Sem Alterações", "Nenhuma modificação foi feita.");
             return;
         }
-        // Atualiza a moeda no banco de dados
+
         String sql = "UPDATE Coin SET Name = ?, Value = ? WHERE id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, nome);
             stmt.setDouble(2, preco);
             stmt.setInt(3, currentEditCoinId);
+
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Moeda atualizada com sucesso!");
-
-                // Limpa os campos e fecha o formulário de edição
                 cancelarEdicao();
-
-                // Recarrega a lista de moedas
                 carregarMoedas();
             } else {
                 showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma moeda foi atualizada.");
             }
+
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erro no Banco de Dados", "Erro ao atualizar moeda: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+
     /**
-     * Método para cancelar a edição
+     * Cancela a edição da moeda
      */
     @FXML
     public void cancelarEdicao() {
