@@ -1,12 +1,13 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Client;
+import com.example.catcoins.model.Role;
+import com.example.catcoins.model.Status;
+import com.example.catcoins.model.Wallet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.sql.*;
 
@@ -161,7 +162,7 @@ public class RegisterController {
     private String NewUser(String username, String email, String password) {
         String sql = "INSERT INTO User (Name, Email, Password) VALUES (?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection()) {
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, username);
             stmt.setString(2, email);

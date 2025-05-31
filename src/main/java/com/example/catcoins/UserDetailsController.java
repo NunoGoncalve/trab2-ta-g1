@@ -1,5 +1,7 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Transaction;
+import com.example.catcoins.model.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -54,7 +56,7 @@ public class UserDetailsController extends MenuLoader {
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
     private final NumberFormat coinFormat = NumberFormat.getNumberInstance(Locale.getDefault());
 
-    int userId = ManageUserController.GlobalData.userId;
+    private int userId;
 
     @Override
     public void setLoggedUser(User user) {
@@ -67,6 +69,10 @@ public class UserDetailsController extends MenuLoader {
         } else {
             clearUserDetails();
         }
+    }
+
+    public void setUserDetails(int id) {
+        userId = id;
     }
 
     @FXML
@@ -127,7 +133,7 @@ public class UserDetailsController extends MenuLoader {
 
 
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              // Primeira query para dados do usuário
              PreparedStatement userStmt = conn.prepareStatement(userSql);
              // Segunda query para dados da carteira
@@ -180,7 +186,7 @@ public class UserDetailsController extends MenuLoader {
         ORDER BY t.Date DESC
         """;
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);

@@ -1,22 +1,22 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.User;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.sql.*;
 
-public class MainController {
+public class MainController extends MenuLoader {
 
     public void initialize() {
         carregarMoedas();
@@ -28,59 +28,43 @@ public class MainController {
     @FXML
     private VBox Stack;
 
-    public void setUser(User user) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu.fxml"));
-        Parent menu = null;
-        try {
-            menu = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        MenuController controller = loader.getController();
-        controller.setUser(user);
-        MainPanel.setLeft(menu);
-        loader = new FXMLLoader(getClass().getResource("UserMenu.fxml"));
-        Parent usermenu = null;
-        try {
-            usermenu = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        UserMenuController controller2 = loader.getController();
-        controller2.setUser(user);
-        MainPanel.setRight(usermenu);
-
-        loader = new FXMLLoader(getClass().getResource("ViewBalance.fxml"));
-        Parent Balance = null;
-        try {
-            Balance = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        ViewBalanceController controller3 = loader.getController();
-        controller3.setUser(user);
-        controller3.setUserMenu((HBox)usermenu.lookup("#UserMenu"), (StackPane)usermenu.lookup("#UserMenuPane"));
-        Stack.getChildren().add(0, Balance);
-    }
 
     @FXML
     private VBox coinListVBox; // Este é o GridPane com fx:id="coinGrid" no FXML
 
+    @Override
+    public void setLoggedUser(User user) {
+        super.setLoggedUser(user);
+        super.LoadMenus(Stack, MainPanel);
+    }
+
     public void carregarMoedas() {
         String sql = "SELECT id, Name, Value FROM Coin"; // Assumindo que "Tax" é a quarta coluna
+        String sqlV = "SELECT Value from CoinHistory where Coin = ? order by Date Desc limit 1,1";
+        double variance = 0.00;
 
-        try (Connection conn = DatabaseConnection.getConnection();
+
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet CoinInfo = stmt.executeQuery(sql);
+             PreparedStatement ValueStat = conn.prepareStatement(sqlV);
 
-            // Remove coin entries but keep the header
+                    // Remove coin entries but keep the header
             coinListVBox.getChildren().removeIf(node ->
                     node instanceof GridPane && node.getStyleClass().contains("coin-entry"));
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                double price = rs.getDouble("value");
-                double tax = 0.05; // ou rs.getDouble("tax");
+            while (CoinInfo.next()) {
+
+                int id = CoinInfo.getInt("id");
+                String name = CoinInfo.getString("name");
+                double price = CoinInfo.getDouble("value");
+
+                ValueStat.setInt(1, id);
+                ResultSet ValueInfo = ValueStat.executeQuery();
+                if(ValueInfo.next()){
+                    variance = (CoinInfo.getDouble("Value") - ValueInfo.getDouble("Value")) / ValueInfo.getDouble("Value") * 100;
+                }else{
+                    variance = 0.00;
+                }
 
                 GridPane grid = new GridPane();
                 grid.setAlignment(Pos.CENTER);
@@ -89,6 +73,8 @@ public class MainController {
                 grid.getStyleClass().add("coin-entry");
                 grid.setPrefWidth(799); // Igual ao exemplo do FXML
                 grid.setPrefHeight(59); // Igual ao FXML
+                grid.setOnMouseClicked(mouseEvent -> {ViewDetails(mouseEvent);});
+                grid.setId(String.valueOf(id));
 
                 // Colunas
                 ColumnConstraints col0 = new ColumnConstraints();
@@ -125,14 +111,19 @@ public class MainController {
                 nameLabel.getStyleClass().add("coin-label");
                 grid.add(nameLabel, 1, 0);
 
-                Label priceLabel = new Label(String.format("%.2f$", price));
+                Label priceLabel = new Label(String.format("%.2f€", price));
                 priceLabel.setPrefSize(78, 25);
                 priceLabel.getStyleClass().add("coin-price");
                 grid.add(priceLabel, 2, 0);
 
-                Label taxLabel = new Label(String.format("%.2f", tax));
+                Label taxLabel = new Label(String.format("%.2f", variance)+"%");
                 taxLabel.setPrefSize(87, 25);
                 taxLabel.getStyleClass().add("coin-price");
+                if(variance>=0){
+                    taxLabel.setStyle("-fx-text-fill: #4caf50");
+                }else{
+                    taxLabel.setStyle("-fx-text-fill: red");
+                }
                 grid.add(taxLabel, 3, 0);
 
                 // Centraliza e limita a largura dentro da VBox
@@ -152,12 +143,23 @@ public class MainController {
     }
 
 
-        private void showAlert(Alert.AlertType type, String title, String message) {
-            Alert alert = new Alert(type);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public void ViewDetails(MouseEvent mouseEvent) {
+        Node ClickedNode = (Node) mouseEvent.getTarget();
+        int CoinID = Integer.parseInt(ClickedNode.getId());
+        try {
+            Main.setRoot("Market.fxml", super.getLoggedUser(), CoinID);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
+    }
 
 }

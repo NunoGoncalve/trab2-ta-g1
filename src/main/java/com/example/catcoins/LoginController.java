@@ -1,7 +1,6 @@
 package com.example.catcoins;
 
-import com.example.catcoins.DatabaseConnection;
-import com.example.catcoins.User;
+import com.example.catcoins.model.*;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -11,13 +10,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,13 +36,6 @@ public class LoginController {
     @FXML private Hyperlink esqueceuSenhaLink;
     @FXML private StackPane Background;
 
-
-
-    @FXML
-    private void initialize() {
-        LoginButton.setOnAction(this::handlelogin);
-    }
-
     /*public static class HashUtil {
         public static String sha256(String input) {
             try {
@@ -60,16 +52,16 @@ public class LoginController {
         }
     }*/
 
-    private User verificarUsuario(String email, String password, Event event) {
+    private User verificarUsuario(String email, String password) {
         try {
             password = PasswordUtils.hashPassword(password);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        try (Connection conn = DatabaseConnection.getConnection()){
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
             String sql = "SELECT * FROM User WHERE email = ? AND password = ?";
-             PreparedStatement stmt = conn.prepareStatement(sql);
+            PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, email);
             stmt.setString(2, password);
@@ -99,9 +91,6 @@ public class LoginController {
                         Client LoggedClient = new Client(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, UserRole, UserStatus, ClientWallet);
                         return LoggedClient;
                     }
-
-
-
                 }
                 else{
                     UserRole = Role.Admin;
@@ -140,14 +129,9 @@ public class LoginController {
     }
 
     @FXML
-    private void handleEsqueceuSenha(ActionEvent event) {
+    private void handleEsqueceuSenha() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("RecoverPassword.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            Main.setRoot("RecoverPassword.fxml", null);
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de recuperação de senha.");
@@ -155,7 +139,7 @@ public class LoginController {
     }
 
 
-    public void handlelogin(ActionEvent event) {
+    public void handlelogin() {
         String email = emailField.getText();
         String password = passwordField.isVisible()
                 ? passwordField.getText()
@@ -171,14 +155,14 @@ public class LoginController {
             return;
         }
 
-        User usuario = verificarUsuario(email, password, event);
+        User usuario = verificarUsuario(email, password);
 
         if (usuario != null) {
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Login realizado com sucesso!");
             limparCampos();
 
             try {
-                trocarCena("Market.fxml", usuario);
+                trocarCena("Main.fxml", usuario);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -190,7 +174,7 @@ public class LoginController {
     }
 
     @FXML
-    private void GoRegister(ActionEvent event) {
+    private void GoRegister() {
         try {
             trocarCena("registo.fxml", null);
         } catch (IOException e) {
@@ -203,6 +187,13 @@ public class LoginController {
         emailField.clear();
         passwordField.clear();
         passwordVisibleField.clear();
+    }
+
+    @FXML
+    private void handleEnter(KeyEvent event) {
+        if(event.getCode() == KeyCode.ENTER){
+            handlelogin();
+        }
     }
 
     private void showAlert(Alert.AlertType type, String title, String Message) {

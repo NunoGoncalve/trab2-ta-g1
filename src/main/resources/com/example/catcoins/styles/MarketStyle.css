@@ -74,3 +74,9 @@
     -fx-pref-width: 3px;
 }
 
+.return-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-font-size: 30;
+}

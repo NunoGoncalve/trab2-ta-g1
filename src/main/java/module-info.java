@@ -16,4 +16,6 @@ module com.example.catcoins {
 
     opens com.example.catcoins to javafx.fxml;
     exports com.example.catcoins;
+    exports com.example.catcoins.model;
+    opens com.example.catcoins.model to javafx.fxml;
 }

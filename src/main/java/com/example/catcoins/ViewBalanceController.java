@@ -1,17 +1,14 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Client;
+import com.example.catcoins.model.User;
 import javafx.animation.FadeTransition;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
-
-import java.sql.*;
 
 public class ViewBalanceController {
 
@@ -38,6 +35,9 @@ public class ViewBalanceController {
 
     @FXML
     private HBox UserInfo;
+
+    @FXML
+    private StackPane Stack;
 
     // Moeda atual para exibição (padrão é USD)
     private String currentCurrency = "USD $";
@@ -80,7 +80,7 @@ public class ViewBalanceController {
             balanceLabel.setManaged(false);
             currencyLabel.setManaged(false);
             WalletIcon.setManaged(false);
-            UserInfo.setMaxWidth(200);
+            Stack.setMaxWidth(200);
         }
     }
 

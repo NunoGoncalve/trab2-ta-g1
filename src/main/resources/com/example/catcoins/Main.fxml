@@ -15,7 +15,7 @@
         <VBox fx:id="Stack" alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
             <children>
                 <!-- Lista de Moedas -->
-                <VBox fx:id="coinListVBox" alignment="TOP_CENTER" maxWidth="1338.0" prefHeight="748.0" prefWidth="1338.0" spacing="20" styleClass="main-container">
+                <VBox fx:id="coinListVBox" alignment="TOP_CENTER" maxWidth="1892.0" prefHeight="780.0" prefWidth="1760.0" spacing="20" styleClass="main-container">
                     <Label alignment="CENTER" prefHeight="107.0" prefWidth="1354.0" style="-fx-font-size: 60;" styleClass="label-title" text="Lista de Moedas" textAlignment="CENTER" textFill="WHITE">
                   <font>
                      <Font name="Bell MT Bold" size="40.0" />
@@ -108,13 +108,13 @@
 
                     <!-- Ajustando margem do VBox -->
                     <VBox.margin>
-                        <Insets right="300.0" />
+                        <Insets />
                     </VBox.margin>
 
                 </VBox>
             </children>
          <BorderPane.margin>
-            <Insets right="10.0" />
+             <Insets bottom="40.0" left="20.0" right="40.0" top="40.0" />
          </BorderPane.margin>
         </VBox>
    </center>

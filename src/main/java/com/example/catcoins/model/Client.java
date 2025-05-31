@@ -1,6 +1,6 @@
-package com.example.catcoins;
+package com.example.catcoins.model;
 
-public class Client extends User{
+public class Client extends User {
 
     Wallet wallet;
 

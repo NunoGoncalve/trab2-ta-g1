@@ -1,17 +1,16 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Coin;
+import com.example.catcoins.model.User;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 
 
@@ -23,11 +22,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class MarketController extends MenuLoader{
+public class MarketController extends MenuLoader {
+
+    private Coin CryptoCoin;
 
     @FXML
     private BorderPane MainPanel;
@@ -49,11 +49,25 @@ public class MarketController extends MenuLoader{
         super.LoadMenus(Stack, MainPanel);
     }
 
-    public void initialize() {
+    public void setCoin(int CoinID){
+        CryptoCoin = new Coin(CoinID);
+        loadData();
+    }
+
+    @FXML
+    private void goBack(){
+        try {
+            Main.setRoot("Main.fxml", super.getLoggedUser());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void loadData() {
         // Create a new series
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
-        try (Connection conn = DatabaseConnection.getConnection()){
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime last24h = now.minusHours(24);
 
@@ -61,22 +75,22 @@ public class MarketController extends MenuLoader{
             String nowStr = now.format(formatter);
             String last24hStr = last24h.format(formatter);
 
-            String sql = "SELECT * FROM CoinHistory WHERE Coin = 1 " +
+            String sql = "SELECT * FROM CoinHistory WHERE Coin = ? " +
                     "AND Date >= '" + last24hStr + "' " +
                     "AND Date <= '" + nowStr + "'";
 
 
             PreparedStatement stmt = conn.prepareStatement(sql);
-            //stmt.setString(1, CoinID);
+            stmt.setInt(1, CryptoCoin.getID());
             ResultSet CoinResult = stmt.executeQuery();
             formatter = DateTimeFormatter.ofPattern("HH:mm");
             while (CoinResult.next()) {
                 series.getData().add(new XYChart.Data<>(CoinResult.getTimestamp("Date").toLocalDateTime().format(formatter), CoinResult.getDouble("Value")));
             }
 
-            sql = "SELECT Type, Value, Amount FROM Transaction WHERE Coin = 1";
+            sql = "SELECT Type, Value, Amount FROM Transaction WHERE Coin = ?";
             stmt = conn.prepareStatement(sql);
-            //stmt.setString(1, CoinID);
+            stmt.setInt(1, CryptoCoin.getID());
             ResultSet TransactResult = stmt.executeQuery();
             while (TransactResult.next()) {
                 GridPane grid = new GridPane();
@@ -123,7 +137,7 @@ public class MarketController extends MenuLoader{
     }
 
     @FXML
-    public void exportLineChartToCSV() throws IOException {
+    private void exportLineChartToCSV() throws IOException {
         try (FileWriter writer = new FileWriter("src/main/resources/CSV/market.csv")) {
             // Write header
             writer.write("Hour,Value\n");

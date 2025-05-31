@@ -17,7 +17,7 @@
 
 <BorderPane fx:id="MainPanel" styleClass="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.ManageUserController">
     <stylesheets>
-        <URL value="@StyleManageUsers.css" />
+        <URL value="@styles/StyleManageUsers.css" />
     </stylesheets>
     <center>
         <ScrollPane fitToHeight="false" fitToWidth="true" pannable="true" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
@@ -28,7 +28,7 @@
                     </padding>
 
                     <!-- Lista de Utilizadores -->
-                    <VBox fx:id="userListVBox" maxWidth="1330.0" prefHeight="400.0" prefWidth="1330.0" spacing="20" styleClass="card">
+                    <VBox fx:id="userListVBox" prefHeight="400.0" prefWidth="1330.0" spacing="20" styleClass="card">
                         <Label styleClass="section-title" text="Manage Users" />
 
                         <Separator />
