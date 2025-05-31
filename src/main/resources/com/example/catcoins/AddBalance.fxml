@@ -5,7 +5,7 @@
         <?import javafx.scene.layout.*?>
         <?import javafx.scene.text.*?>
 
-<StackPane fx:id="Background" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserMenuController">
+<StackPane fx:id="Background" stylesheets="@styles/estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserMenuController">
 
     <VBox alignment="CENTER" maxWidth="450.0" prefHeight="296.0" prefWidth="400.0" spacing="15" styleClass="form-container">
         <padding>

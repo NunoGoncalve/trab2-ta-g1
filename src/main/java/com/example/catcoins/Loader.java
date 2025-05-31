@@ -1,7 +1,7 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.User;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 public interface Loader {

@@ -48,7 +48,7 @@
                  </items>
              </ComboBox>
             <Separator prefWidth="400.0" />
-            <Button alignment="TOP_LEFT" contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#goBack" prefHeight="78.0" prefWidth="58.0" rotate="270.0" styleClass="return-button" stylesheets="@estilo.css" text="⤴" />
+            <Button alignment="TOP_LEFT" contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#goBack" prefHeight="78.0" prefWidth="58.0" rotate="270.0" styleClass="return-button" stylesheets="@styles/estilo.css" text="⤴" />
          </children>
         </VBox>
     </center>

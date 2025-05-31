@@ -1,4 +1,4 @@
-package com.example.catcoins;
+package com.example.catcoins.model;
 
 public enum Status {
     Active, Disabled

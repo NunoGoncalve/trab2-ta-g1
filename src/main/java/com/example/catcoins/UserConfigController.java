@@ -1,26 +1,22 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Client;
+import com.example.catcoins.model.Role;
+import com.example.catcoins.model.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-public class UserConfigController extends MenuLoader{
+public class UserConfigController extends MenuLoader {
 
     @FXML
     private BorderPane MainPanel;
@@ -69,7 +65,7 @@ public class UserConfigController extends MenuLoader{
         controller.setUser(super.getLoggedUser());
         MainPanel.setLeft(menu);
 
-        if(super.getLoggedUser().getRole()==Role.Client){
+        if(super.getLoggedUser().getRole()== Role.Client){
             loadCurrencyPreference();  // Carrega a preferência de moeda do usuário
         }else{
             currencyComboBox.setManaged(false);
@@ -85,29 +81,12 @@ public class UserConfigController extends MenuLoader{
             Name.setEditable(true);
             EditButton.setText("Save");
         }else{
-            try (Connection conn = DatabaseConnection.getConnection()) {
-                String sql = "UPDATE User SET Name = ? WHERE ID = ?";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, Name.getText().toString());
-                stmt.setInt(2, super.getLoggedUser().getId());
-                stmt.executeUpdate();
-                /*int rowsUpdated = stmt.executeUpdate();
-                if (rowsUpdated > 0) {
-                    messageLabel.setText("User updated successfully!");
-                } else {
-                    messageLabel.setText("Update failed.");
-                }*/
-            } catch (SQLException e) {
-                e.printStackTrace();
-                //messageLabel.setText("Database error.");
-            }
             EditButton.setText("Edit");
             Name.setEditable(false);
             super.getLoggedUser().setName(Name.getText().toString());
         }
-
-
     }
+
     @FXML
     public void initialize() {
         // Garante que o valor padrão do ComboBox seja USD $
@@ -170,29 +149,7 @@ public class UserConfigController extends MenuLoader{
     private void saveCurrencyPreference() {
         // Verifica se o usuário está logado e é um cliente
         if (super.getLoggedUser() != null && super.getLoggedUser() instanceof Client) {
-            try (Connection conn = DatabaseConnection.getConnection()) {
-                // Obtém o ID da carteira do cliente
-                String getWalletIdSql = "SELECT Wallet FROM Client WHERE ID = ?";
-                PreparedStatement getWalletStmt = conn.prepareStatement(getWalletIdSql);
-                getWalletStmt.setInt(1, super.getLoggedUser().getId());
-                ResultSet rs = getWalletStmt.executeQuery();
-
-                if (rs.next()) {
-                    int walletId = rs.getInt("Wallet");
-
-                    // Atualiza a moeda na tabela Wallet
-                    String updateCurrencySql = "UPDATE Wallet SET Currency = ? WHERE ID = ?";
-                    PreparedStatement updateStmt = conn.prepareStatement(updateCurrencySql);
-                    updateStmt.setString(1, selectedCurrency);
-                    updateStmt.setInt(2, walletId);
-                    updateStmt.executeUpdate();
-
-                    System.out.println("Preferência de moeda salva no banco de dados: " + selectedCurrency);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.err.println("Erro ao salvar preferência de moeda: " + e.getMessage());
-            }
+            ((Client) super.getLoggedUser()).getWallet().setCurrency(selectedCurrency);
         }
     }
 
@@ -201,38 +158,24 @@ public class UserConfigController extends MenuLoader{
     private void loadCurrencyPreference() {
         // Verifica se o usuário está logado e é um cliente
         if (super.getLoggedUser() != null && super.getLoggedUser() instanceof Client) {
-            try (Connection conn = DatabaseConnection.getConnection()) {
-                // Obtém o ID da carteira do cliente
-                String getWalletSql = "SELECT w.Currency FROM Client c INNER JOIN Wallet w ON c.Wallet = w.ID WHERE c.ID = ?";
-                PreparedStatement stmt = conn.prepareStatement(getWalletSql);
-                stmt.setInt(1, super.getLoggedUser().getId());
-                ResultSet rs = stmt.executeQuery();
+            String currency = ((Client) super.getLoggedUser()).getWallet().getCurrency();;
+            // Se a moeda não for nula, atualiza a seleção
+            if (currency != null && !currency.isEmpty()) {
+                selectedCurrency = currency;
 
-                if (rs.next()) {
-                    String currency = rs.getString("Currency");
-
-                    // Se a moeda não for nula, atualiza a seleção
-                    if (currency != null && !currency.isEmpty()) {
-                        selectedCurrency = currency;
-
-                        // Atualiza o ComboBox se já estiver inicializado
-                        if (currencyComboBox != null) {
-                            // Adiciona os símbolos às moedas para exibição
-                            if (selectedCurrency.equals("USD")) {
-                                currencyComboBox.setValue("USD $");
-                            } else if (selectedCurrency.equals("EUR")) {
-                                currencyComboBox.setValue("EUR €");
-                            } else {
-                                currencyComboBox.setValue(selectedCurrency);
-                            }
-                        }
-
-                        System.out.println("Preferência de moeda carregada do banco de dados: " + selectedCurrency);
+                // Atualiza o ComboBox se já estiver inicializado
+                if (currencyComboBox != null) {
+                    // Adiciona os símbolos às moedas para exibição
+                    if (selectedCurrency.equals("USD")) {
+                        currencyComboBox.setValue("USD $");
+                    } else if (selectedCurrency.equals("EUR")) {
+                        currencyComboBox.setValue("EUR €");
+                    } else {
+                        currencyComboBox.setValue(selectedCurrency);
                     }
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.err.println("Erro ao carregar preferência de moeda: " + e.getMessage());
+
+                System.out.println("Preferência de moeda carregada do banco de dados: " + selectedCurrency);
             }
         }
     }

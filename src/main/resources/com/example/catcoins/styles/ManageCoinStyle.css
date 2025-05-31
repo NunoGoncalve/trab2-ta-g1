@@ -19,8 +19,6 @@
     -fx-background-radius: 10px;
     -fx-padding: 20px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
-    -fx-max-width: 800px;
-    -fx-min-width: 800px;
     -fx-alignment: center;
     -fx-border-color: #1a2740;
     -fx-border-radius: 10px;

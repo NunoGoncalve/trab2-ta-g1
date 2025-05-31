@@ -1,17 +1,16 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.User;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
 import java.io.IOException;
 import java.sql.*;
 
-public class ManageUserController extends MenuLoader{
+public class ManageUserController extends MenuLoader {
 
     @FXML private VBox userListVBox;
     @FXML private TextField userNameField;
@@ -68,7 +67,7 @@ public class ManageUserController extends MenuLoader{
 
     private void LoadTotalUsers() {
         String sql = "SELECT COUNT(*) FROM User";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             if (rs.next()) {
@@ -83,7 +82,7 @@ public class ManageUserController extends MenuLoader{
         int offset = pagina * usersPerPage;
         String sql = "SELECT ID, Name, Email, Password, Role, Status FROM User ORDER BY Status ASC LIMIT ? OFFSET ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, usersPerPage);
             stmt.setInt(2, offset);
@@ -255,7 +254,7 @@ public class ManageUserController extends MenuLoader{
 
         String sql = "INSERT INTO User (Name, Email, Password, Role, Status) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, nome);
             stmt.setString(2, email);
@@ -329,7 +328,7 @@ public class ManageUserController extends MenuLoader{
         // Atualiza o utilizador no banco de dados
         String sql = "UPDATE User SET Name = ?, Email = ?, Password = ?, Role = ?, Status = ? WHERE ID = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, nome);
             stmt.setString(2, email);
@@ -371,14 +370,9 @@ public class ManageUserController extends MenuLoader{
         currentEditUserId = -1;
     }
 
-    public class GlobalData {
-        public static int userId; // Variável pública e estática
-    }
-
     public void UserDetails(int id) {
-        GlobalData.userId = id; // Armazena o ID globalmente
         try {
-            Main.setRoot("UserDetails.fxml", getLoggedUser());
+            Main.setRoot("UserDetails.fxml", getLoggedUser(), id);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -391,7 +385,7 @@ public class ManageUserController extends MenuLoader{
 
         String sql = "UPDATE User SET Status = 'Disabled'  WHERE ID = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             int linhasAfetadas = stmt.executeUpdate();
@@ -420,7 +414,7 @@ public class ManageUserController extends MenuLoader{
 
     private boolean emailExists(String email) {
         String sql = "SELECT COUNT(*) FROM User WHERE Email = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
@@ -435,7 +429,7 @@ public class ManageUserController extends MenuLoader{
 
     private boolean emailExistsExceptCurrent(String email, int currentUserId) {
         String sql = "SELECT COUNT(*) FROM User WHERE Email = ? AND ID != ?";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.setInt(2, currentUserId);

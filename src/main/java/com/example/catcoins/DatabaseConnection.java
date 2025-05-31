@@ -5,14 +5,33 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    //private static final String URL = "jdbc:mysql://localhost:3306/testetrabalho1";
-    private static final String URL = "jdbc:mysql://fixstuff.net:3306/catcoin";
+    private static DatabaseConnection instance;
+    private Connection connection;
+    private static final String Url = "jdbc:mysql://fixstuff.net:3306/catcoin"; //host
+    private static final String User = "catcoin"; // user
+    private static final String Password = "d64o99yA$"; // pass
 
-    private static final String USER = "catcoin"; // teu usuário do MySQL root
-    private static final String PASSWORD = "d64o99yA$"; // tua senha do MySQL vazio
+    private DatabaseConnection() throws SQLException {
+        try {
+            this.connection = DriverManager.getConnection(Url, User, Password);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error connecting to the database", e);
+        }
+    }
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    public static synchronized DatabaseConnection getInstance() throws SQLException {
+        if (instance == null || instance.getConnection().isClosed()) {
+            instance = new DatabaseConnection();
+        }
+        return instance;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void close() throws SQLException {
+
     }
 }
 

@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane prefHeight="538.0" prefWidth="400.0" styleClass="root" stylesheets="@estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.RegisterController">
+<StackPane prefHeight="538.0" prefWidth="400.0" styleClass="root" stylesheets="@styles/estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.RegisterController">
 
     <VBox alignment="CENTER" maxHeight="534.0" prefHeight="534.0" prefWidth="400.0" spacing="15" styleClass="form-container">
         <padding>

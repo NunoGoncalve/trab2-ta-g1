@@ -1,5 +1,8 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Client;
+import com.example.catcoins.model.Role;
+import com.example.catcoins.model.User;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,7 +36,7 @@ public class UserMenuController {
 
     public void setUser(User user) {
         this.LoggedUser = user;
-        if(user.getRole()==Role.Admin) {
+        if(user.getRole()== Role.Admin) {
             ManageCoinBttn.setVisible(true);
             ManageCoinBttn.setManaged(true);
             ManageUserBttn.setVisible(true);
@@ -140,7 +143,7 @@ public class UserMenuController {
         // Atualiza o saldo na tabela Wallet para o ID especificado
         String sql = "UPDATE Wallet SET balance = balance + ? WHERE ID = ?"; // Adiciona o ID como parâmetro
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setDouble(1, amount); // Define o valor a ser adicionado ao saldo

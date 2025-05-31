@@ -1,9 +1,3 @@
-/* Fundo principal */
-.root, .border-pane, #MainPanel {
-    -fx-background-color: #252D36;
-    -fx-font-family: 'Segoe UI', Arial, sans-serif;
-}
-
 /* Estilo do VBox principal */
 #Stack {
     -fx-padding: 20;

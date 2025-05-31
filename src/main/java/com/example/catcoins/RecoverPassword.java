@@ -209,7 +209,7 @@ public class RecoverPassword implements Initializable {
 
         // Verificar se o email existe no banco de dados
         if (!CheckIfEmail(email)) {
-            showAlert(Alert.AlertType.INFORMATION, "Email não encontrado", "Este email não está registrado.", () -> GoToScreen("registo.fxml", event));
+            showAlert(Alert.AlertType.INFORMATION, "Email não encontrado", "Este email não está registrado.", () -> GoToScreen("registo.fxml"));
             return;
         }
 
@@ -228,7 +228,7 @@ public class RecoverPassword implements Initializable {
     private boolean CheckIfEmail(String email) {
         String query = "SELECT 1 FROM User WHERE Email = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, email);
@@ -264,13 +264,9 @@ public class RecoverPassword implements Initializable {
 
 
      //Navega para outra tela FXML
-    private void GoToScreen(String fxmlPath, ActionEvent event) {
+    private void GoToScreen(String fxmlPath) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
+            Main.setRoot(fxmlPath, null);
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela: " + fxmlPath);
@@ -279,8 +275,8 @@ public class RecoverPassword implements Initializable {
 
 
     @FXML
-    private void GoLogin(ActionEvent event) {
-        GoToScreen("Login.fxml", event);
+    private void GoLogin() {
+        GoToScreen("Login.fxml");
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
@@ -367,7 +363,7 @@ public class RecoverPassword implements Initializable {
             // Comando SQL para atualizar senha do usuário pelo email
             String sql = "UPDATE User SET Password = ? WHERE Email = ?";
 
-            try (Connection conn = DatabaseConnection.getConnection();
+            try (Connection conn = DatabaseConnection.getInstance().getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                 stmt.setString(1, hashedSenha);
@@ -377,7 +373,7 @@ public class RecoverPassword implements Initializable {
 
                 if (rowsAffected > 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Senha alterada com sucesso!", () -> {
-                        GoToScreen("Login.fxml", event);
+                        GoToScreen("Login.fxml");
                     });
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado ou senha não alterada.");

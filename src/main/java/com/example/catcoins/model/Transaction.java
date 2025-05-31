@@ -1,4 +1,4 @@
-package com.example.catcoins;
+package com.example.catcoins.model;
 
 public class Transaction {
     private int id;
