@@ -1,8 +1,12 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Client;
 import com.example.catcoins.model.Transaction;
 import com.example.catcoins.model.User;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
@@ -11,7 +15,13 @@ import javafx.scene.text.Text;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.stage.Stage;
 
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +29,7 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-public class UserDetailsController extends MenuLoader {
+public class TransactionHistoryController extends MenuLoader {
 
     @FXML
     private Text userNameText;
@@ -55,29 +65,29 @@ public class UserDetailsController extends MenuLoader {
     private final ObservableList<Transaction> transactionList = FXCollections.observableArrayList();
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
     private final NumberFormat coinFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+    private Stage stage;
 
-    private int userId;
+
+
 
     @Override
     public void setLoggedUser(User user) {
         super.setLoggedUser(user);
         super.LoadMenus(Stack, MainPanel);
-
-        if (user != null) {
-            loadUserDetails(userId);
-            loadTransactions(userId);
-        }
-    }
-
-    public void setUserDetails(int id) {
-        userId = id;
-    }
-
-    @FXML
-    public void initialize() {
+        loadTransactions();
         configureTableColumns();
         configureNumberFormats();
+
     }
+
+
+//    @FXML
+//    public void initialize() {
+//        configureTableColumns();
+//        configureNumberFormats();
+//        loadTransactions();
+//
+//    }
 
     private void configureTableColumns() {
         // Configuração das colunas da tabela
@@ -87,7 +97,6 @@ public class UserDetailsController extends MenuLoader {
         valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-
         // Formatação personalizada para valores monetários
         valueColumn.setCellFactory(column -> new javafx.scene.control.TableCell<Transaction, Double>() {
             @Override
@@ -121,72 +130,14 @@ public class UserDetailsController extends MenuLoader {
     }
 
 
-    private void loadUserDetails(int userId) {
-        // Query 1: Busca informações básicas do usuário
-        String userSql = "SELECT Name, Email, Role, Status FROM User WHERE ID = ?";
+    private void loadTransactions() {
 
-        // Query 2: Busca informações da carteira do usuário
-        String walletSql = "SELECT Balance, Currency FROM UserClientWallet WHERE ID = ?";
-
-
-
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             // Primeira query para dados do usuário
-             PreparedStatement userStmt = conn.prepareStatement(userSql);
-             // Segunda query para dados da carteira
-             PreparedStatement walletStmt = conn.prepareStatement(walletSql)) {
-
-            // Executa a primeira query (dados do usuário)
-            userStmt.setInt(1, userId);
-            ResultSet userRs = userStmt.executeQuery();
-
-            if (userRs.next()) {
-                // Atualiza os campos com os dados básicos do usuário
-                userNameText.setText(userRs.getString("Name"));
-                userEmailText.setText(userRs.getString("Email"));
-                userRoleText.setText(userRs.getString("Role"));
-                userStatusText.setText(userRs.getString("Status"));
-
-                // Executa a segunda query (dados da carteira)
-                walletStmt.setInt(1, userId);
-                ResultSet walletRs = walletStmt.executeQuery();
-
-                if (walletRs.next()) {
-                    // Atualiza os campos financeiros
-                    double balance = walletRs.getDouble("Balance");
-                    String currency = walletRs.getString("Currency");
-                    balanceText.setText(String.format("%.2f %s", balance, currency));
-                } else {
-                    balanceText.setText("0.00 USD"); // Valor padrão se não encontrar carteira
-                }
-
-                System.out.println("User details loaded successfully for user ID: " + userId);
-            } else {
-                System.out.println("No user found with ID: " + userId);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error loading user details: " + e.getMessage());
-            handleDatabaseError(e);
-        }
-    }
-
-    private void loadTransactions(int userId) {
-        String sql = """
-        SELECT t.ID, t.Type, c.Name AS Coin, t.Value, t.Amount, t.Date
-        FROM Transaction t
-        JOIN Wallet w ON t.Wallet = w.ID
-        JOIN Coin c ON t.Coin = c.ID
-        JOIN UserClientWallet ucw ON ucw.WalletID = w.ID
-        WHERE ucw.ID = ?
-        ORDER BY t.Date DESC
-        """;
+        String sql = " SELECT * FROM Transaction WHERE Wallet = ? ";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, userId);
+            Client LoggedClient = (Client) super.getLoggedUser();
+            stmt.setInt(1,   LoggedClient.getWallet().getID());
             ResultSet rs = stmt.executeQuery();
 
             transactionList.clear();
@@ -201,9 +152,10 @@ public class UserDetailsController extends MenuLoader {
                 );
                 transactionList.add(t);
             }
-            transactionsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+            transactionsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY) ; // removeu aquele espaço branco
             transactionsTable.setItems(transactionList);
-            System.out.println("Loaded " + transactionList.size() + " transactions for user ID: " + userId);
+            System.out.println("Loaded " + transactionList.size() + " transactions for user ID: " + LoggedClient.getWallet().getID());
 
         } catch (SQLException e) {
             System.err.println("Error loading transactions: " + e.getMessage());
@@ -215,11 +167,57 @@ public class UserDetailsController extends MenuLoader {
     private void handleDatabaseError(SQLException e) {
         e.printStackTrace();
         System.err.println("Database error: " + e.getMessage());
-        // Aqui você poderia adicionar um alerta para o usuário
-        // Alert alert = new Alert(Alert.AlertType.ERROR);
-        // alert.setTitle("Database Error");
-        // alert.setHeaderText("Error accessing database");
-        // alert.setContentText("Could not load user data: " + e.getMessage());
-        // alert.showAndWait();
     }
+
+    @FXML
+    private void exportLineChartToCSV() throws IOException {
+        // Garante que o diretório existe
+        java.nio.file.Path dirPath = Paths.get("src/main/resources/CSV");
+        if (!Files.exists(dirPath)) {
+            Files.createDirectories(dirPath);
+        }
+
+        // Cria o arquivo CSV com separador ponto e vírgula
+        try (FileWriter writer = new FileWriter("src/main/resources/CSV/transactions.csv")) {
+            writer.write("ID;Type;Coin;Value;Amount;Date\n");
+            for (Transaction transaction : transactionsTable.getItems()) {
+                String line = String.format(
+                        "%d;\"%s\";\"%s\";%.2f;%.4f;\"%s\"\n",
+                        transaction.getId(),
+                        transaction.getType(),
+                        transaction.getCoin(),
+                        transaction.getValue(),
+                        transaction.getAmount(),
+                        transaction.getDate()
+                );
+                writer.write(line);
+            }
+        }
+
+        String subject = "Histórico de Transações CatCoins";
+        String content = "Este e-mail foi gerado automaticamente pelo sistema CatCoins.";
+
+        // Envia o e-mail com texto simples e anexo
+        EmailConfig.SendEmailAttach(super.getLoggedUser().getEmail(), content, subject, "src/main/resources/CSV/transactions.csv");
+
+        // Limpa o arquivo temporário
+        java.nio.file.Path path = Paths.get("src/main/resources/CSV/transactions.csv");
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            System.out.println("Erro ao remover arquivo: " + e.getMessage());
+        }
+
+        // Feedback visual
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Exportação concluída");
+        alert.setHeaderText(null);
+        alert.setContentText("O histórico completo foi enviado para seu e-mail!");
+        alert.initOwner((Stage) MainPanel.getScene().getWindow());
+        alert.showAndWait();
+    }
+
+
+
+
 }

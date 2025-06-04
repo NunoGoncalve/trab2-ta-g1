@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1792.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserDetailsController">
@@ -28,24 +29,51 @@
               <VBox alignment="CENTER_RIGHT" prefHeight="780.0" prefWidth="1760.0" spacing="15" style="-fx-padding: 20;" styleClass="main-container">
                   <!-- Seção de Informações do Usuário -->
                   <VBox spacing="5" style="-fx-padding: 0 0 10 0;">
-                      <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="User Details" textFill="#ffa630" />
+                      <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="User Details" textFill="#ffa630">
+                     <VBox.margin>
+                        <Insets top="-100.0" />
+                     </VBox.margin></Label>
                       <GridPane hgap="10" vgap="5">
                           <columnConstraints>
-                              <ColumnConstraints hgrow="NEVER" prefWidth="100" />
-                              <ColumnConstraints hgrow="ALWAYS" />
+                              <ColumnConstraints hgrow="NEVER" maxWidth="95.0" minWidth="57.0" prefWidth="61.0" />
+                              <ColumnConstraints hgrow="ALWAYS" maxWidth="1625.0" minWidth="1587.0" prefWidth="1621.0" />
                           </columnConstraints>
       
-                          <Label style="-fx-font-weight: bold;" text="Name:" />
-                          <Text fx:id="userNameText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" />
+                          <Label style="-fx-font-weight: bold;" text="Name:">
+                        <font>
+                           <Font size="18.0" />
+                        </font></Label>
+                          <Text fx:id="userNameText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1">
+                        <font>
+                           <Font size="18.0" />
+                        </font></Text>
       
-                          <Label style="-fx-font-weight: bold;" text="Email:" GridPane.rowIndex="1" />
-                          <Text fx:id="userEmailText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                          <Label style="-fx-font-weight: bold;" text="Email:" GridPane.rowIndex="1">
+                        <font>
+                           <Font size="18.0" />
+                        </font></Label>
+                          <Text fx:id="userEmailText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <font>
+                           <Font size="18.0" />
+                        </font></Text>
       
-                          <Label style="-fx-font-weight: bold;" text="Role:" GridPane.rowIndex="2" />
-                          <Text fx:id="userRoleText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                          <Label style="-fx-font-weight: bold;" text="Role:" GridPane.rowIndex="2">
+                        <font>
+                           <Font size="18.0" />
+                        </font></Label>
+                          <Text fx:id="userRoleText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <font>
+                           <Font size="18.0" />
+                        </font></Text>
       
-                          <Label style="-fx-font-weight: bold;" text="Status:" GridPane.rowIndex="3" />
-                          <Text fx:id="userStatusText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                          <Label style="-fx-font-weight: bold;" text="Status:" GridPane.rowIndex="3">
+                        <font>
+                           <Font size="18.0" />
+                        </font></Label>
+                          <Text fx:id="userStatusText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <font>
+                           <Font size="18.0" />
+                        </font></Text>
                      <rowConstraints>
                         <RowConstraints />
                         <RowConstraints />
@@ -53,16 +81,18 @@
                         <RowConstraints />
                      </rowConstraints>
                       </GridPane>
+                  <VBox.margin>
+                     <Insets />
+                  </VBox.margin>
                   </VBox>
       
                   <Separator style="-fx-padding: 5 0 5 0;" />
       
                   <!-- Seção de Saldo -->
                   <VBox spacing="5" style="-fx-padding: 0 0 10 0;">
-                      <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="Balance" textFill="#ffa630" />
+                      <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="Fiat Balance" textFill="#ffa630" />
                       <HBox alignment="CENTER_LEFT" spacing="20">
                           <VBox spacing="2">
-                              <Label style="-fx-font-weight: bold;" text="Fiat Balance:" />
                               <Text fx:id="balanceText" style="-fx-font-size: 16px; -fx-fill: #27ae60;" />
                           </VBox>
                           <VBox spacing="2">

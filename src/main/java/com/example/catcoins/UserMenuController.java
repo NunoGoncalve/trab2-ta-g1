@@ -33,6 +33,7 @@ public class UserMenuController {
     @FXML private HBox UserMenu;
     @FXML private Button ManageCoinBttn;
     @FXML private Button ManageUserBttn;
+    @FXML private Button TransactionHistoryBttn;
 
     public void setUser(User user) {
         this.LoggedUser = user;
@@ -43,6 +44,8 @@ public class UserMenuController {
             ManageUserBttn.setManaged(true);
             BalanceButton.setVisible(false);
             BalanceButton.setManaged(false);
+            TransactionHistoryBttn.setVisible(false);
+            TransactionHistoryBttn.setManaged(false);
 
         }
     }
@@ -189,6 +192,11 @@ public class UserMenuController {
     void ManageCoin() {
         GoTo("ManageCoin.fxml");
 
+    }
+
+    @FXML
+    void TransactionHistory() {
+        GoTo("TransactionHistory.fxml");
     }
 
     // Função que manda após clicar no botão gerir users manda para a pagina certa
