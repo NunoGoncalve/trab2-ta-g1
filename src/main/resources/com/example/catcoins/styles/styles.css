@@ -57,10 +57,10 @@
     -fx-font-weight: bold;
 }
 
-.text{
+/*.text{
     -fx-text-fill: white;
     -fx-font-size: 16px;
-}
+}*/
 
 .form-container {
     -fx-background-color: #28323E;
@@ -150,5 +150,19 @@
 .separator {
     -fx-background-color: #2a3950;
     -fx-opacity: 0.7;
+}
+
+.export-csv-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffae42;
+    -fx-font-size: 18px;
+    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+    -fx-cursor: hand;
+    -fx-padding: 0 6 0 0;
+    -fx-border-width: 0;
+    -fx-alignment: center-right;
+}
+.export-csv-btn:hover {
+    -fx-underline: true;
 }
 

@@ -152,7 +152,7 @@ public class MarketController extends MenuLoader {
         }
 
         String content = "Data related to the Chart", subject ="Chart CSV data";
-        EmailConfig.SendEmailAttach(super.getLoggedUser().getEmail(), content , subject);
+        EmailConfig.SendEmailAttach(super.getLoggedUser().getEmail(), content , subject, "src/main/resources/CSV/market.csv");
         java.nio.file.Path path = Paths.get("src/main/resources/CSV/market.csv");
         try {
             Files.delete(path);
