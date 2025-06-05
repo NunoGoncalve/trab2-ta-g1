@@ -13,12 +13,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.StackPane?>
 <BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1792.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.TransactionHistoryController">
     <stylesheets>
         <URL value="@styles/styles.css" />
         <URL value="@styles/UserDetails.css" />
     </stylesheets>
     <center>
+        <StackPane fx:id="Background">
         <VBox fx:id="Stack" alignment="CENTER_RIGHT">
             <BorderPane.margin>
                 <Insets bottom="40.0" left="20.0" right="40.0" top="40.0" />
@@ -67,5 +69,6 @@
                 </VBox>
             </children>
         </VBox>
+        </StackPane>
     </center>
 </BorderPane>

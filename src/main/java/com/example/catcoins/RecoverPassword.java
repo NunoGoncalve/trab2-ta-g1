@@ -3,33 +3,24 @@ package com.example.catcoins;
 // JavaFX imports
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 // JavaMail imports (versão clássica)
-import javax.mail.*;
-import javax.mail.internet.*;
 
 // Java standard imports
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Base64;
-import java.util.Properties;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -48,6 +39,8 @@ public class RecoverPassword implements Initializable {
     @FXML private Button togglePasswordBtn;
     @FXML private ProgressBar passwordStrengthBar;
     @FXML private Label errorLabelPassword;
+    @FXML private Label errorLabelFields;
+    @FXML private Label errorLabelEmail;
     @FXML private Button SendEmail;
     @FXML private StackPane Background;
     @FXML private HBox strengthIndicator; // Referência ao HBox do indicador de força
@@ -191,38 +184,43 @@ public class RecoverPassword implements Initializable {
         return true;
     }
 
+    public void HandleEmail() {
+        String email = emailField.getText();
+        if(email.isEmpty()) {
+            ToggleErroLabel(errorLabelEmail, false);
+        } else if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            ToggleErroLabel(errorLabelEmail, true);
+            errorLabelEmail.setText("Email Inválido !");
+        }else {
+            ToggleErroLabel(errorLabelEmail, false);
+        }
+    }
+
 
      //Processa o envio de email e avança para a próxima etapa
     @FXML
     private void SendEmail(ActionEvent event) {
         String email = emailField.getText();
 
-        if (email.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "O campo de email não pode estar vazio.");
-            return;
-        }
+        if (email.isEmpty()){
+            ToggleErroLabel(errorLabelFields, true);
+            errorLabelFields.setText("Campo obrigatório!");
+            ToggleErroLabel(errorLabelEmail, false);
 
-        if (!email.contains("@") || !(email.endsWith(".com") || email.endsWith(".pt"))) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Email inválido. Use um email válido como exemplo@dominio.com ou .pt");
-            return;
-        }
-
-        // Verificar se o email existe no banco de dados
-        if (!CheckIfEmail(email)) {
-            showAlert(Alert.AlertType.INFORMATION, "Email não encontrado", "Este email não está registrado.", () -> GoToScreen("registo.fxml"));
-            return;
+            // Verificar se o email existe no banco de dados
+        }else if (email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") && (!CheckIfEmail(email))){
+            showAlert(Alert.AlertType.INFORMATION, "Email não encontrado", "Este email não está registrado.\nVá para o registo", () -> GoToScreen("registo.fxml"));
         }
 
         // Enviar o código de verificação para o email
         if (sendVerificationCode(email)) {
             storedEmail = email; // Armazena o email para uso posterior
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Código de verificação enviado para: " + email, this::showVerificationCode);
+            showAlert(Alert.AlertType.ERROR, "Sucesso", "Código de verificação enviado para: \n" + email, this::showVerificationCode);
             System.out.println("COD: " + storedCode);
         } else {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível enviar o código de verificação. Verifique sua conexão com a internet ou tente novamente mais tarde.");
+            showAlert(Alert.AlertType.ERROR,  "ERRO", "Tente Novamente");
         }
     }
-
 
      //Verifica se o email existe no banco de dados
     private boolean CheckIfEmail(String email) {
@@ -232,7 +230,7 @@ public class RecoverPassword implements Initializable {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, email);
-            return stmt.executeQuery().next(); // Retorna true se encontrou o email
+            return stmt.executeQuery().next();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -249,17 +247,16 @@ public class RecoverPassword implements Initializable {
         String email = emailField.getText();
 
         if (code == null || code.trim().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "O campo de código não pode estar vazio.");
-            return;
+            ToggleErroLabel(errorLabelFields, true);
+            errorLabelFields.setText("Campo obrigatório!");
+            ToggleErroLabel(errorLabelEmail, false);
+
+        } else if (!verifyCode(email, code)) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Código incorreto!");
         }
 
-        // Verificar o código usando o método verifyCode
-        if (!verifyCode(email, code)) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Código incorreto ou expirado. Solicite um novo código.");
-            return;
-        }
+        else showAlert(Alert.AlertType.INFORMATION, "Código Verificado", "O código inserido foi aceito.", this::showNewPassword);
 
-        showAlert(Alert.AlertType.INFORMATION, "Código Verificado", "O código inserido foi aceito.", this::showNewPassword);
     }
 
 
@@ -269,7 +266,7 @@ public class RecoverPassword implements Initializable {
             Main.setRoot(fxmlPath, null);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela: " + fxmlPath);
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela: \n" + fxmlPath);
         }
     }
 
@@ -278,38 +275,6 @@ public class RecoverPassword implements Initializable {
     private void GoLogin() {
         GoToScreen("Login.fxml");
     }
-
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        showAlert(type, title, message, null);
-    }
-
-
-     //Exibe um alerta personalizado com callback
-    private void showAlert(Alert.AlertType type, String title, String message, Runnable onClose) {
-        VBox dialog = new VBox(15);
-        dialog.setAlignment(Pos.CENTER);
-        dialog.setStyle("-fx-background-color: white; -fx-padding: 30; -fx-border-radius: 10; -fx-background-radius: 10;");
-        dialog.setMaxWidth(320);
-        dialog.setMaxHeight(300);
-        Label messageLabel = new Label(message);
-        Button okButton = new Button("OK");
-        dialog.getChildren().addAll(messageLabel, okButton);
-
-        StackPane overlay = new StackPane();
-        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);");
-        overlay.getChildren().add(dialog);
-        overlay.setAlignment(Pos.CENTER);
-
-        Background.getChildren().add(overlay);
-
-        okButton.setOnAction(e -> {
-            Background.getChildren().remove(overlay);
-            if (onClose != null) {
-                onClose.run();
-            }
-        });
-    }
-
 
     //Alterna a visibilidade do campo de senha
     @FXML
@@ -376,13 +341,12 @@ public class RecoverPassword implements Initializable {
                         GoToScreen("Login.fxml");
                     });
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado ou senha não alterada.");
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Verifique as credenciais.");
                 }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao alterar a senha.");
         }
     }
 
@@ -438,20 +402,61 @@ public class RecoverPassword implements Initializable {
     //Valida os requisitos da senha
     private String validatePassword(String password) {
         if (password == null || password.isEmpty()) {
-            return "A senha não pode ser vazia.";
+        return "Verifique as credenciais.";
         }
         if (password.length() < 10) {
-            return "A senha deve ter pelo menos 10 caracteres.";
+            return "Verifique os requisitos.";
         }
         if (password.equals(password.toLowerCase())) {
-            return "A senha deve conter pelo menos uma letra maiúscula.";
+            return "Verifique os requisitos.";
         }
         if (!password.matches(".*\\d.*")) {
-            return "A senha deve conter pelo menos um número.";
+            return "Verifique os requisitos.";
         }
         if (!password.matches(".*[!@#$%^&*()\\-_=+\\\\|\\[\\]{};:'\",.<>/?].*")) {
-            return "A senha deve conter pelo menos um caractere especial.";
+            return "Verifique os requisitos.";
         }
         return null;
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String Message) {
+        showAlert(type, title, Message, null); // Chama a versão com callback, mas sem ação
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String Message, Runnable onClose) {
+        StackPane overlay = createDialogBox(Message, onClose);
+        Background.getChildren().add(overlay); // Adiciona o overlay ao StackPane principal
+    }
+
+    private StackPane createDialogBox(String Message, Runnable onClose) {
+        // Create the dialog content (not fullscreen)
+        VBox dialog = new VBox(3);
+        dialog.setSpacing(25);
+        dialog.setAlignment(Pos.CENTER);
+        dialog.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: white;");
+        dialog.setMaxWidth(320);
+        dialog.setMaxHeight(170);
+        Label message = new Label(Message);
+        message.setStyle("-fx-text-fill: white");
+        Button okButton = new Button("OK");
+        okButton.setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
+        dialog.getChildren().addAll(message, okButton);
+
+        // Optional: create a semi-transparent background overlay
+        StackPane overlay = new StackPane();
+        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.4 = 40% opacity
+        // Add the dialog to the overlay and center it
+        overlay.getChildren().add(dialog);
+        overlay.setAlignment(Pos.CENTER);
+        // Add overlay to the root StackPane
+        Background.getChildren().add(overlay);
+
+        okButton.setOnAction(e -> {
+            Background.getChildren().remove(overlay);
+            if (onClose != null) {
+                onClose.run();
+            }
+        });
+        return overlay;
     }
 }

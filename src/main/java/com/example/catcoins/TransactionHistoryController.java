@@ -4,12 +4,14 @@ import com.example.catcoins.model.Client;
 import com.example.catcoins.model.Transaction;
 import com.example.catcoins.model.User;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -61,6 +63,9 @@ public class TransactionHistoryController extends MenuLoader {
     private VBox Stack;
     @FXML
     private BorderPane MainPanel;
+    @FXML
+    private StackPane Background;
+
 
     private final ObservableList<Transaction> transactionList = FXCollections.observableArrayList();
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
@@ -208,16 +213,86 @@ public class TransactionHistoryController extends MenuLoader {
             System.out.println("Erro ao remover arquivo: " + e.getMessage());
         }
 
-        // Feedback visual
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Exportação concluída");
-        alert.setHeaderText(null);
-        alert.setContentText("O histórico completo foi enviado para seu e-mail!");
-        alert.initOwner((Stage) MainPanel.getScene().getWindow());
-        alert.showAndWait();
+    // Substituindo o Alert padrão pelo ShowAlert personalizado
+        showAlert(Alert.AlertType.INFORMATION, "Exportação concluída", "O histórico completo foi enviado para seu e-mail!");
     }
 
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        // Verifica se o Background está disponível
+        if (Background == null) {
+            // Se não estiver disponível, tenta encontrar um StackPane na hierarquia
+            try {
+                Scene currentScene = MainPanel.getScene();
+                if (currentScene != null) {
+                    Parent currentRoot = currentScene.getRoot();
+                    if (currentRoot instanceof StackPane) {
+                        Background = (StackPane) currentRoot;
+                    } else {
+                        // Procura por um StackPane na hierarquia
+                        Node backgroundNode = currentRoot.lookup("#Background");
+                        if (backgroundNode instanceof StackPane) {
+                            Background = (StackPane) backgroundNode;
+                        } else {
+                            // Se não encontrar o Background, cria um alerta padrão como fallback
+                            Alert alert = new Alert(type);
+                            alert.setTitle(title);
+                            alert.setHeaderText(null);
+                            alert.setContentText(message);
+                            alert.initOwner((Stage) MainPanel.getScene().getWindow());
+                            alert.showAndWait();
+                            return;
+                        }
+                    }
+                } else {
+                    // Se não houver cena, cria um alerta padrão como fallback
+                    Alert alert = new Alert(type);
+                    alert.setTitle(title);
+                    alert.setHeaderText(null);
+                    alert.setContentText(message);
+                    alert.showAndWait();
+                    return;
+                }
+            } catch (Exception e) {
+                // Em caso de erro, usa o alerta padrão como fallback
+                Alert alert = new Alert(type);
+                alert.setTitle(title);
+                alert.setHeaderText(null);
+                alert.setContentText(message);
+                alert.showAndWait();
+                return;
+            }
+        }
 
+        // Cria o conteúdo do diálogo (não em tela cheia)
+        VBox dialog = new VBox(3);
+        dialog.setSpacing(25);
+        dialog.setAlignment(Pos.CENTER);
+        dialog.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: white;");
+        dialog.setMaxWidth(320);
+        dialog.setMaxHeight(170);
+
+        Label messageLabel = new Label(message);
+        messageLabel.setStyle("-fx-text-fill: white");
+
+        Button okButton = new Button("OK");
+        okButton.setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
+
+        dialog.getChildren().addAll(messageLabel, okButton);
+
+        // Cria um overlay semi-transparente
+        StackPane overlay = new StackPane();
+        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.2 = 20% de opacidade
+
+        // Adiciona o diálogo ao overlay e centraliza
+        overlay.getChildren().add(dialog);
+        overlay.setAlignment(Pos.CENTER);
+
+        // Adiciona o overlay ao StackPane raiz
+        Background.getChildren().add(overlay);
+
+        // Remove o overlay quando OK é clicado
+        okButton.setOnAction(e -> Background.getChildren().remove(overlay));
+    }
 
 
 }
