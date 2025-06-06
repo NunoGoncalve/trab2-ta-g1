@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane prefHeight="538.0" prefWidth="400.0" styleClass="root" stylesheets="@styles/estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.RegisterController">
+<StackPane fx:id="Background" prefHeight="538.0" prefWidth="400.0" styleClass="root" stylesheets="@styles/estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.RegisterController">
 
     <VBox alignment="CENTER" maxHeight="534.0" prefHeight="534.0" prefWidth="400.0" spacing="15" styleClass="form-container">
         <padding>
@@ -24,7 +24,6 @@
         <Label fx:id="errorLabelEmail" managed="false" prefHeight="31.0" prefWidth="301.0" styleClass="error-message" textFill="#fc0000" visible="false" />
 
         <!-- Password -->
-
         <HBox alignment="CENTER">
             <!-- Stack com os dois campos (oculto e visível) -->
             <StackPane>
