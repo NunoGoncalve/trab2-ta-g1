@@ -1,121 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1920.0" styleClass="root" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.MainController">
-   <center>
+<BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.MainController">
+    <center>
         <VBox fx:id="Stack" alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
             <children>
-                <!-- Lista de Moedas -->
-                <VBox fx:id="coinListVBox" alignment="TOP_CENTER" maxWidth="1892.0" prefHeight="780.0" prefWidth="1760.0" spacing="20" styleClass="main-container">
-                    <Label alignment="CENTER" prefHeight="107.0" prefWidth="1354.0" style="-fx-font-size: 60;" styleClass="label-title" text="Lista de Moedas" textAlignment="CENTER" textFill="WHITE">
-                  <font>
-                     <Font name="Bell MT Bold" size="40.0" />
-                  </font></Label>
+                <!-- Container principal da lista de moedas -->
+                <VBox fx:id="coinListContainer" alignment="TOP_CENTER" maxWidth="1892.0" prefHeight="780.0" prefWidth="1760.0" spacing="20.0" styleClass="card">
+
+                    <!-- Título (fixo, fora do scroll) -->
+                    <Label alignment="TOP_LEFT" prefHeight="107.0" prefWidth="1888.0" style="-fx-font-size: 40;" styleClass="label-title" text="Market" textAlignment="CENTER" textFill="WHITE">
+                        <font>
+                            <Font size="25.0" />
+                        </font>
+                  <VBox.margin>
+                     <Insets left="50.0" />
+                  </VBox.margin>
+                    </Label>
+
+                    <HBox alignment="CENTER_RIGHT">
+                        <MenuButton fx:id="sortMenuButton" contentDisplay="RIGHT" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #252D36; -fx-font-size: 13px; -fx-background-radius: 15; -fx-border-radius: 15; -fx-border-color: white; -fx-border-width: 1px; -fx-padding: 4 12 4 12;" text="Sort by" textFill="WHITE">
+                            <items>
+                                <CustomMenuItem style="--body-background-color: blue">
+                                    <content>
+                                        <Label fx:id="sortPriceLabel" styleClass="menu-label" text="Price" textAlignment="RIGHT" />
+                                    </content>
+                                </CustomMenuItem>
+                                <CustomMenuItem>
+                                    <content>
+                                        <Label fx:id="sortVarianceLabel" styleClass="menu-label" text="Variance" />
+                                    </content>
+                                </CustomMenuItem>
+                                <CustomMenuItem>
+                                    <content>
+                                        <Label fx:id="sortNameLabel" styleClass="menu-label" text="Name" />
+                                    </content>
+                                </CustomMenuItem>
+                            </items>
+
+                            <HBox.margin>
+                                <Insets right="200.0" />
+                            </HBox.margin>
+
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </MenuButton>
+                    </HBox>
+
                     <Separator style="-fx-background-color: #555;" />
 
-                    <!-- Cabeçalho -->
-                    <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="1044.0" styleClass="header-label" vgap="10">
+                    <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="35.0" prefWidth="1015.0" styleClass="header-label" vgap="10">
                         <columnConstraints>
-                            <ColumnConstraints halignment="CENTER" percentWidth="12.0" />
-                            <ColumnConstraints halignment="CENTER" percentWidth="38.0" />
-                            <ColumnConstraints halignment="CENTER" percentWidth="15.0" />
+                            <ColumnConstraints halignment="CENTER" percentWidth="20.0" />
+                            <ColumnConstraints halignment="CENTER" percentWidth="48.0" />
+                            <ColumnConstraints halignment="CENTER" percentWidth="13.0" />
                         </columnConstraints>
                         <rowConstraints>
                             <RowConstraints valignment="CENTER" />
                         </rowConstraints>
-                        <Label alignment="CENTER" prefHeight="25.0" prefWidth="47.0" styleClass="header-label" text="Nome" />
-                        <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="147.0" styleClass="header-label" text="Preço" GridPane.columnIndex="1" />
-                  <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="160.0" styleClass="header-label" text="Variação 24/7" GridPane.columnIndex="2" />
+                        <children>
+                            <Label alignment="CENTER" prefHeight="25.0" prefWidth="47.0" styleClass="header-label" text="Name" />
+                            <Label alignment="CENTER" prefHeight="25.0" prefWidth="334.0" styleClass="header-label" text="Price" GridPane.columnIndex="1" />
+                            <Label alignment="CENTER" prefHeight="25.0" prefWidth="221.0" styleClass="header-label" text="Variation 24h" GridPane.columnIndex="2" />
+                        </children>
                     </GridPane>
 
-                    <!-- Exemplos de Moedas (Serão substituídos pelo código Java) -->
-                    <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="59.0" prefWidth="799.0" styleClass="coin-entry" vgap="15">
-                        <columnConstraints>
-                            <ColumnConstraints halignment="CENTER" percentWidth="5.0" />
-                            <ColumnConstraints halignment="CENTER" percentWidth="15.0" />
-                            <ColumnConstraints halignment="CENTER" percentWidth="47.0" />
-                            <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" percentWidth="13.0" />
-                        </columnConstraints>
-                        <rowConstraints>
-                            <RowConstraints valignment="CENTER" />
-                        </rowConstraints>
+                    <!-- ScrollPane APENAS para as moedas -->
+                    <ScrollPane fx:id="coinsScrollPane" fitToWidth="true" prefHeight="400.0" style="-fx-border-radius: 0%;" styleClass="form-container">
+                        <content>
+                            <VBox fx:id="coinListVBox" alignment="TOP_CENTER" prefHeight="401.0" prefWidth="1185.0" spacing="15" styleClass="main-container">
+                                <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="59.0" prefWidth="1090.0" styleClass="coin-entry" vgap="15">
+                                    <columnConstraints>
+                                        <ColumnConstraints halignment="CENTER" percentWidth="5.0" />
+                                        <ColumnConstraints halignment="CENTER" percentWidth="15.0" />
+                                        <ColumnConstraints halignment="CENTER" percentWidth="47.0" />
+                                        <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" percentWidth="13.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints valignment="CENTER" />
+                                    </rowConstraints>
+                                    <children>
+                                        <ImageView fitHeight="25.0" fitWidth="25.0" styleClass="coin-logo" GridPane.columnIndex="0">
+                                            <image>
+                                                <Image url="http://foodsorter.fixstuff.net/CatCoins/img/1.png" />
+                                            </image>
+                                        </ImageView>
+                                        <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" />
+                                        <Label prefHeight="25.0" prefWidth="78.0" styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" />
+                                        <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" styleClass="coin-price" text="0.05" GridPane.columnIndex="3" />
+                                    </children>
+                                </GridPane>
 
-                        <Label prefHeight="25.0" prefWidth="12.0" styleClass="coin-logo" text="₿" textFill="WHITE" GridPane.columnIndex="0" />
-                        <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" />
-                        <Label prefHeight="25.0" prefWidth="78.0" styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" />
-                  <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" styleClass="coin-price" text="0.05" GridPane.columnIndex="3" />
-                    </GridPane>
-               <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="59.0" prefWidth="799.0" styleClass="coin-entry" vgap="15">
-                  <columnConstraints>
-                     <ColumnConstraints halignment="CENTER" percentWidth="5.0" />
-                     <ColumnConstraints halignment="CENTER" percentWidth="15.0" />
-                     <ColumnConstraints halignment="CENTER" percentWidth="47.0" />
-                     <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" percentWidth="13.0" />
-                  </columnConstraints>
-                  <rowConstraints>
-                     <RowConstraints valignment="CENTER" />
-                  </rowConstraints>
-                  <children>
-                     <Label prefHeight="25.0" prefWidth="12.0" styleClass="coin-logo" text="₿" textFill="WHITE" GridPane.columnIndex="0" />
-                     <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" />
-                     <Label prefHeight="25.0" prefWidth="78.0" styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" />
-                     <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" text="0.05" GridPane.columnIndex="3" />
-                  </children>
-               </GridPane>
-               <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="59.0" prefWidth="799.0" styleClass="coin-entry" vgap="15">
-                  <columnConstraints>
-                     <ColumnConstraints halignment="CENTER" percentWidth="5.0" />
-                     <ColumnConstraints halignment="CENTER" percentWidth="15.0" />
-                     <ColumnConstraints halignment="CENTER" percentWidth="47.0" />
-                     <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" percentWidth="13.0" />
-                  </columnConstraints>
-                  <rowConstraints>
-                     <RowConstraints valignment="CENTER" />
-                  </rowConstraints>
-                  <children>
-                     <Label prefHeight="25.0" prefWidth="12.0" styleClass="coin-logo" text="₿" textFill="WHITE" GridPane.columnIndex="0" />
-                     <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" />
-                     <Label prefHeight="25.0" prefWidth="78.0" styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" />
-                     <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" styleClass="coin-price" text="0.05" GridPane.columnIndex="3" />
-                  </children>
-               </GridPane>
-               <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="59.0" prefWidth="799.0" styleClass="coin-entry" vgap="15">
-                  <columnConstraints>
-                     <ColumnConstraints halignment="CENTER" percentWidth="5.0" />
-                     <ColumnConstraints halignment="CENTER" percentWidth="15.0" />
-                     <ColumnConstraints halignment="CENTER" percentWidth="47.0" />
-                     <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" percentWidth="13.0" />
-                  </columnConstraints>
-                  <rowConstraints>
-                     <RowConstraints valignment="CENTER" />
-                  </rowConstraints>
-                  <children>
-                     <Label prefHeight="25.0" prefWidth="12.0" styleClass="coin-logo" text="₿" textFill="WHITE" GridPane.columnIndex="0" />
-                     <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" />
-                     <Label prefHeight="25.0" prefWidth="78.0" styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" />
-                     <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" styleClass="coin-price" text="0.05" GridPane.columnIndex="3" />
-                  </children>
-               </GridPane>
+                                <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="59.0" prefWidth="1090.0" styleClass="coin-entry" vgap="15">
+                                    <columnConstraints>
+                                        <ColumnConstraints halignment="CENTER" percentWidth="5.0" />
+                                        <ColumnConstraints halignment="CENTER" percentWidth="15.0" />
+                                        <ColumnConstraints halignment="CENTER" percentWidth="47.0" />
+                                        <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" percentWidth="13.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints valignment="CENTER" />
+                                    </rowConstraints>
+                                    <children>
+                                        <Label prefHeight="25.0" prefWidth="12.0" styleClass="coin-logo" text="₿" textFill="WHITE" GridPane.columnIndex="0" />
+                                        <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" />
+                                        <Label prefHeight="25.0" prefWidth="78.0" styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" />
+                                        <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" text="0.05" GridPane.columnIndex="3" />
+                                    </children>
+                                </GridPane>
 
-                    <!-- Ajustando margem do VBox -->
-                    <VBox.margin>
-                        <Insets />
-                    </VBox.margin>
+                                <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="59.0" prefWidth="1090.0" styleClass="coin-entry" vgap="15">
+                                    <columnConstraints>
+                                        <ColumnConstraints halignment="CENTER" percentWidth="5.0" />
+                                        <ColumnConstraints halignment="CENTER" percentWidth="15.0" />
+                                        <ColumnConstraints halignment="CENTER" percentWidth="47.0" />
+                                        <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" percentWidth="13.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints valignment="CENTER" />
+                                    </rowConstraints>
+                                    <children>
+                                        <Label prefHeight="25.0" prefWidth="12.0" styleClass="coin-logo" text="₿" textFill="WHITE" GridPane.columnIndex="0" />
+                                        <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" />
+                                        <Label prefHeight="25.0" prefWidth="78.0" styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" />
+                                        <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" styleClass="coin-price" text="0.05" GridPane.columnIndex="3" />
+                                    </children>
+                                </GridPane>
 
+                                <GridPane alignment="CENTER" hgap="20" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="59.0" prefWidth="1090.0" styleClass="coin-entry" vgap="15.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints halignment="CENTER" percentWidth="5.0" />
+                                        <ColumnConstraints halignment="CENTER" percentWidth="15.0" />
+                                        <ColumnConstraints halignment="CENTER" percentWidth="47.0" />
+                                        <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" percentWidth="13.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints valignment="CENTER" />
+                                    </rowConstraints>
+                                    <children>
+                                        <Label prefHeight="25.0" prefWidth="12.0" styleClass="coin-logo" text="₿" textFill="WHITE" GridPane.columnIndex="0" />
+                                        <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" />
+                                        <Label prefHeight="25.0" prefWidth="78.0" styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" />
+                                        <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" styleClass="coin-price" text="0.05" GridPane.columnIndex="3" />
+                                    </children>
+                                </GridPane>
+
+                            </VBox>
+                        </content>
+                    </ScrollPane>
                 </VBox>
             </children>
-         <BorderPane.margin>
-             <Insets bottom="40.0" left="20.0" right="40.0" top="40.0" />
-         </BorderPane.margin>
+            <BorderPane.margin>
+                <Insets bottom="40.0" left="20.0" right="40.0" top="40.0" />
+            </BorderPane.margin>
         </VBox>
-   </center>
+    </center>
 </BorderPane>

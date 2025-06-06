@@ -160,7 +160,7 @@ public class RecoverPassword implements Initializable {
                 + "Equipe de Suporte CatCoins",
                 subject = "Código de Verificação - CatCoins";
 
-        return EmailConfig.SendEmail(recipientEmail, content, subject);
+        return DatabaseConnection.EmailConfig.SendEmail(recipientEmail, content, subject);
     }
 
     //Gera um código de verificação aleatório de 6 dígitos

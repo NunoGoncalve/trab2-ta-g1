@@ -161,3 +161,9 @@
     -fx-text-fill: #FFA630;
 }
 
+.filter-style{
+    --body-background-color: #252D36;
+    -fx-text-fill: WHITE;
+    -fx-border-radius: 30px;
+    -fx-font-size: 10px;
+}

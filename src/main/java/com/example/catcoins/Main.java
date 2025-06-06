@@ -57,7 +57,6 @@ public class Main extends Application {
             ((UserDetailsController) controller).setLoggedUser(LoggedUser);
 
         }
-
         scene.setRoot(root);
     }
 
