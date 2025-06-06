@@ -24,33 +24,24 @@ import java.sql.SQLException;
 
 public class LoginController {
 
-    private Stage stage;
-    private Scene scene;
-    private Parent root;
 
-    @FXML private TextField emailField;
-    @FXML private PasswordField passwordField;
-    @FXML private TextField passwordVisibleField;
-    @FXML private Button LoginButton;
-    @FXML private Button togglePasswordBtn;
-    @FXML private Hyperlink esqueceuSenhaLink;
-    @FXML private StackPane Background;
+    @FXML
+    private TextField emailField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private TextField passwordVisibleField;
+    @FXML
+    private Hyperlink esqueceuSenhaLink;
+    @FXML
+    private Label errorLabelEmail;
+    @FXML
+    private Label errorLabelFields;
+    @FXML
+    private Label errorLabelEnd;
+    @FXML
+    private StackPane Background;
 
-    /*public static class HashUtil {
-        public static String sha256(String input) {
-            try {
-                MessageDigest md = MessageDigest.getInstance("SHA-256");
-                byte[] hashBytes = md.digest(input.getBytes());
-                StringBuilder sb = new StringBuilder();
-                for (byte b : hashBytes) {
-                    sb.append(String.format("%02x", b));
-                }
-                return sb.toString();
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }*/
 
     private User verificarUsuario(String email, String password) {
         try {
@@ -107,6 +98,71 @@ public class LoginController {
         return null;
     }
 
+
+    public void handlelogin() {
+        String email = emailField.getText();
+        String password = passwordField.isVisible()
+                ? passwordField.getText()
+                : passwordVisibleField.getText();
+
+        if (email.isEmpty() || password.isEmpty()) {
+            ToggleErroLabel(errorLabelFields, true);
+            errorLabelFields.setText("Todos os campos são obrigatórios!");
+            esqueceuSenhaLink.setVisible(false);
+            esqueceuSenhaLink.setManaged(false);
+            ToggleErroLabel(errorLabelEmail, false);
+
+
+        } else if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            ToggleErroLabel(errorLabelEmail, true);
+            errorLabelEmail.setText("Email Inválido !");
+
+        }else {
+            ToggleErroLabel(errorLabelEmail, false);
+            User usuario = verificarUsuario(email, password);
+
+            if (usuario != null) {
+                limparCampos();
+
+                try {
+                    trocarCena("Main.fxml", usuario);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else{
+                showAlert(Alert.AlertType.ERROR, "Erro", "Verifique as credenciais inseridas");
+                esqueceuSenhaLink.setVisible(true);
+               esqueceuSenhaLink.setManaged(true);
+            }
+        }
+
+    }
+
+    public void HandleEmail() {
+        String email = emailField.getText();
+        if (email.isEmpty()) {
+            ToggleErroLabel(errorLabelEmail, false);
+        } else if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            ToggleErroLabel(errorLabelEmail, true);
+            errorLabelEmail.setText("Email Inválido !");
+            esqueceuSenhaLink.setVisible(false);
+            esqueceuSenhaLink.setManaged(false);
+        } else {
+            ToggleErroLabel(errorLabelEmail, false);
+        }
+    }
+
+        @FXML
+    private void handleEsqueceuSenha() {
+        try {
+            Main.setRoot("RecoverPassword.fxml", null);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de recuperação de senha.");
+        }
+    }
+
     @FXML
     public void togglePasswordVisibility() {
         if (passwordField.isVisible()) {
@@ -126,51 +182,6 @@ public class LoginController {
 
     public void trocarCena(String fxmlPath, User loggedInUser) throws IOException {
         Main.setRoot(fxmlPath, loggedInUser);
-    }
-
-    @FXML
-    private void handleEsqueceuSenha() {
-        try {
-            Main.setRoot("RecoverPassword.fxml", null);
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de recuperação de senha.");
-        }
-    }
-
-
-    public void handlelogin() {
-        String email = emailField.getText();
-        String password = passwordField.isVisible()
-                ? passwordField.getText()
-                : passwordVisibleField.getText();
-
-        if (email.isEmpty() || password.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Todos os campos são obrigatórios.");
-            return;
-        }
-
-        if (!email.contains("@") || !(email.endsWith(".com") || email.endsWith(".pt"))) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Email inválido. Use um email válido como exemplo@dominio.com ou .pt");
-            return;
-        }
-
-        User usuario = verificarUsuario(email, password);
-
-        if (usuario != null) {
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Login realizado com sucesso!");
-            limparCampos();
-
-            try {
-                trocarCena("Main.fxml", usuario);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Dados incorretos. Confira seu email ou senha.");
-            esqueceuSenhaLink.setVisible(true);
-        }
     }
 
     @FXML
@@ -196,36 +207,41 @@ public class LoginController {
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String Message) {
-        /*Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setContentText(message);
-        alert.initOwner(stage);
-        alert.showAndWait();*/
+    public void ToggleErroLabel(Label errorLabel, Boolean IsVisible) {
+        if (IsVisible) {
+            errorLabel.setVisible(true);
+            errorLabel.setManaged(true);
 
-        // Assume your main scene's root is a StackPane called 'root'
+        } else {
+            errorLabel.setVisible(false);
+            errorLabel.setManaged(false);
+            errorLabel.setText(null);
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String Message) {
 
         // Create the dialog content (not fullscreen)
-        VBox dialog = new VBox(15);
+        VBox dialog = new VBox(3);
+        dialog.setSpacing(25);
         dialog.setAlignment(Pos.CENTER);
-        dialog.setStyle("-fx-background-color: white; -fx-padding: 30; -fx-border-radius: 10; -fx-background-radius: 10;");
+        dialog.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: white;");
         dialog.setMaxWidth(320);
-        dialog.setMaxHeight(300);
+        dialog.setMaxHeight(170);
         Label message = new Label(Message);
+        message.setStyle("-fx-text-fill: white");
         Button okButton = new Button("OK");
+        okButton.setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
         dialog.getChildren().addAll(message, okButton);
 
         // Optional: create a semi-transparent background overlay
         StackPane overlay = new StackPane();
         overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.4 = 40% opacity
-
         // Add the dialog to the overlay and center it
         overlay.getChildren().add(dialog);
         overlay.setAlignment(Pos.CENTER);
-
         // Add overlay to the root StackPane
         Background.getChildren().add(overlay);
-
         // Remove overlay when OK is clicked
         okButton.setOnAction(e -> Background.getChildren().remove(overlay));
 

@@ -66,8 +66,6 @@ public class UserDetailsController extends MenuLoader {
         if (user != null) {
             loadUserDetails(userId);
             loadTransactions(userId);
-        } else {
-            clearUserDetails();
         }
     }
 
@@ -166,7 +164,6 @@ public class UserDetailsController extends MenuLoader {
                 System.out.println("User details loaded successfully for user ID: " + userId);
             } else {
                 System.out.println("No user found with ID: " + userId);
-                clearUserDetails();
             }
 
         } catch (SQLException e) {
@@ -204,7 +201,7 @@ public class UserDetailsController extends MenuLoader {
                 );
                 transactionList.add(t);
             }
-
+            transactionsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             transactionsTable.setItems(transactionList);
             System.out.println("Loaded " + transactionList.size() + " transactions for user ID: " + userId);
 
@@ -213,15 +210,6 @@ public class UserDetailsController extends MenuLoader {
             handleDatabaseError(e);
             transactionsTable.setItems(FXCollections.emptyObservableList());
         }
-    }
-    private void clearUserDetails() {
-        userNameText.setText("");
-        userEmailText.setText("");
-        userRoleText.setText("");
-        userStatusText.setText("");
-        balanceText.setText("");
-        coinBalanceText.setText("");
-        transactionsTable.setItems(FXCollections.emptyObservableList());
     }
 
     private void handleDatabaseError(SQLException e) {

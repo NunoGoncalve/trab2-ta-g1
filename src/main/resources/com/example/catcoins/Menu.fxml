@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<StackPane styleClass="root" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.MenuController">
+<StackPane styleClass="root" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.MenuController">
     <children>
-        <AnchorPane fx:id="editorRoot" prefHeight="668.0" prefWidth="121.0" />
         <HBox fx:id="ExtendedMenu" alignment="CENTER_LEFT" prefHeight="668.0" prefWidth="123.0" visible="false">
             <children>
                 <VBox alignment="TOP_CENTER" fillWidth="true" maxWidth="185.0" onMouseClicked="#Close" styleClass="sidebar">
@@ -39,7 +32,7 @@
                             </VBox.margin>
                         </Button>
                         <Separator orientation="VERTICAL" prefHeight="480.0" visible="false" />
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                  <HBox alignment="CENTER" onMouseClicked="#Logout" prefHeight="100.0" prefWidth="200.0">
                      <children>
                         <Label prefHeight="23.0" prefWidth="63.0" styleClass="sidebar-button" text="Logout" />
                               <ImageView fitHeight="25.0" fitWidth="20.0" onMouseClicked="#Logout" opacity="0.75" pickOnBounds="true" preserveRatio="true">
