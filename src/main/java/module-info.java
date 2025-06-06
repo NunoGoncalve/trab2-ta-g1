@@ -13,6 +13,7 @@ module com.example.catcoins {
     requires java.sql;
     requires java.desktop;
     requires java.mail;
+    requires org.apache.commons.net;
 
     opens com.example.catcoins to javafx.fxml;
     exports com.example.catcoins;

@@ -149,7 +149,7 @@ public class UserConfigController extends MenuLoader {
     private void saveCurrencyPreference() {
         // Verifica se o usuário está logado e é um cliente
         if (super.getLoggedUser() != null && super.getLoggedUser() instanceof Client) {
-            ((Client) super.getLoggedUser()).getWallet().setCurrency(selectedCurrency);
+            ((Client) super.getLoggedUser()).getWallet().SetCurrency(selectedCurrency);
         }
     }
 

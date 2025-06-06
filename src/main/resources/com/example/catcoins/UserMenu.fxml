@@ -11,13 +11,13 @@
                 <VBox alignment="TOP_CENTER" fillWidth="true" onMouseClicked="#Close" prefHeight="668.0" prefWidth="190.0" styleClass="sidebar">
                     <children>
                         <!--ConfigButton-->
-                        <Button onAction="#GoConfig" prefHeight="35.0" prefWidth="156.0" styleClass="sidebar-button" text="Configurações">
+                        <Button onAction="#GoConfig" prefHeight="35.0" prefWidth="156.0" styleClass="sidebar-button" text="Settings">
                             <VBox.margin>
                                 <Insets bottom="30.0" top="20.0" />
                             </VBox.margin>
                         </Button>
                         <!--AddBalanceButton-->
-                        <Button fx:id="BalanceButton" onAction="#AddBalance" prefHeight="35.0" prefWidth="159.0" styleClass="sidebar-button" text="Adicionar Saldo">
+                        <Button fx:id="BalanceButton" onAction="#AddBalance" prefHeight="35.0" prefWidth="159.0" styleClass="sidebar-button" text="Add Balance">
                             <VBox.margin>
                                 <Insets bottom="30.0" />
                             </VBox.margin>
@@ -35,7 +35,7 @@
                             </VBox.margin>
                         </Button>
                         <!--TransactionHistoryButton-->
-                        <Button fx:id="TransactionHistoryBttn" onAction="#TransactionHistory" prefHeight="29.0" prefWidth="132.0" styleClass="sidebar-button" text="Transaction History" visible="true">
+                        <Button fx:id="TransactionHistoryBttn" onAction="#TransactionHistory" prefHeight="29.0" prefWidth="132.0" styleClass="sidebar-button" text="Transactions" visible="true">
                             <VBox.margin>
                                 <Insets bottom="30.0" />
                             </VBox.margin>

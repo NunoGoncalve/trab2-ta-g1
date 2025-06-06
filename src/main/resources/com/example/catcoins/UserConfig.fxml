@@ -18,9 +18,9 @@
             <Insets bottom="40.0" left="70.0" right="70.0" top="40.0" />
          </BorderPane.margin>
          <children>
-            <Label prefHeight="43.0" prefWidth="101.0" styleClass="welcome-text" text="My Account">
+            <Label prefHeight="58.0" prefWidth="241.0" styleClass="welcome-text" text="My Account">
                <font>
-                  <Font size="24.0" />
+                  <Font size="23.0" />
                </font>
             </Label>
             <Label styleClass="text" text="Username" />
@@ -39,7 +39,7 @@
             <Label styleClass="user-label" text="User@gmail.com" />
 
              <Label fx:id="currencyLabel" styleClass="text" text="Currency Preview" />
-             <ComboBox fx:id="currencyComboBox" onAction="#onCurrencyChanged" prefHeight="34.0" prefWidth="90.0" value="USD $">
+             <ComboBox fx:id="currencyComboBox" onAction="#onCurrencyChanged" prefHeight="25.0" prefWidth="81.0" value="USD $">
                  <items>
                      <FXCollections fx:factory="observableArrayList">
                          <String fx:value="USD $" />
