@@ -1,6 +1,6 @@
 .chart {
     -fx-background-color: #28323E; /* Fundo escuro */
-    -fx-padding: 10px;
+    -fx-padding: 5px;
 }
 
 .chart-plot-background {
@@ -12,7 +12,13 @@
     -fx-stroke-dash-array: null;
 }
 
-.chart-series-line {
+
+.chart-series-line.series1 {
+    -fx-stroke: #FF0000; /* Red for first series */
+    -fx-stroke-width: 2px;
+}
+
+.chart-series-line.series0 {
     -fx-stroke: #FFFF99; /* Linha amarela clara */
     -fx-stroke-width: 1.5px;
 }
@@ -45,6 +51,7 @@
     -fx-background-color: #FFA630;
     -fx-background-radius: 12;
     -fx-font-size: 16px;
+    -fx-cursor: hand;
 }
 
 .transaction{
@@ -78,5 +85,48 @@
     -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-cursor: hand;
-    -fx-font-size: 30;
+    -fx-font-size: 25;
+}
+
+.menu-item:hover, .menu-item:focused{
+    -fx-background-color: #FFA630;
+}
+
+.context-menu {
+    -fx-background-color: #252D36;
+    -fx-border-color: white;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 5;
+    -fx-text-fill: white;
+}
+
+.menu-label {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 10;
+    -fx-background-color: #252D36
+}
+
+.filters{
+    -fx-background-color: #252D36;
+    -fx-font-size: 13px;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: white;
+    -fx-border-width: 1px;
+    -fx-padding: 4 12 4 12;
+
+}
+
+.TransactLabel{
+    -fx-text-fill: #FFFFFF; /* Texto em amarelo claro */
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
+.tooltip {
+    -fx-font-size: 14px;
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
 }

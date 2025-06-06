@@ -4,6 +4,7 @@ import com.example.catcoins.model.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 
@@ -18,6 +19,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
         scene = new Scene(root);
         primaryStage.setTitle("Login");
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("imgs/logo.png")));
         primaryStage.setScene(scene);
         primaryStage.setFullScreenExitHint("");
         primaryStage.setMaximized(true);
@@ -40,9 +42,9 @@ public class Main extends Application {
         if (controller instanceof MenuLoader) {
             ((MenuLoader) controller).setLoggedUser(LoggedUser);
         }
-
         scene.setRoot(root);
     }
+
     public static void setRoot(String fxml, User LoggedUser, int ID) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxml));
         Parent root = loader.load();
@@ -55,7 +57,7 @@ public class Main extends Application {
             ((UserDetailsController) controller).setLoggedUser(LoggedUser);
 
         }
-        
+
         scene.setRoot(root);
     }
 
