@@ -151,7 +151,7 @@ public class MarketController extends MenuLoader {
             }
         }
 
-        String content = "Data related to the Chart", subject ="Chart CSV data";
+        /*String content = "Data related to the Chart", subject ="Chart CSV data";
         EmailConfig.SendEmailAttach(super.getLoggedUser().getEmail(), content , subject, "src/main/resources/CSV/market.csv");
         java.nio.file.Path path = Paths.get("src/main/resources/CSV/market.csv");
         try {
@@ -164,7 +164,7 @@ public class MarketController extends MenuLoader {
         alert.setTitle("Enviado");
         alert.setContentText("As informações foram enviadas para o seu email");
         alert.initOwner(stage);
-        alert.showAndWait();
+        alert.showAndWait();  */
 
     }
 }
