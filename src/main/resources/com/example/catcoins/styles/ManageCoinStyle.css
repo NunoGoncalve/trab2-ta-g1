@@ -140,6 +140,20 @@
     -fx-effect: dropshadow(gaussian, rgba(79, 141, 255, 0.4), 4, 0, 0, 1);
 }
 
+/* Botão de Enviar */
+.upload-btn {
+    -fx-background-color: #4f8dff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 30px;
+    -fx-min-height: 40px;
+}
+
+.upload-btn:hover {
+    -fx-background-color: #6aa0ff;
+    -fx-effect: dropshadow(gaussian, rgba(79, 141, 255, 0.4), 4, 0, 0, 1);
+}
+
 /* Campos de Texto */
 .text-field {
     -fx-background-color: #1c2a43;

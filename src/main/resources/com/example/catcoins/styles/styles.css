@@ -38,10 +38,14 @@
     -fx-text-fill: gray;
 }
 
+.text{
+    -fx-text-fill: white;
+}
 .main-container {
     -fx-background-color: #28323E;
     -fx-background-radius: 20;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+    -fx-text-fill: white;
 }
 
 .user-field{
@@ -129,7 +133,6 @@
 
 .coin-entry:hover {
     -fx-background-color: #1c2a43;
-    -fx-border-color: #3f5277;
 }
 
 /* Labels para Moedas */
@@ -152,3 +155,64 @@
     -fx-opacity: 0.7;
 }
 
+.menu-button {
+    -fx-background-color: #252D36;
+    -fx-font-size: 13px;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: white;
+    -fx-border-width: 1px;
+    -fx-padding: 4 12 4 12;
+}
+
+.menu-label {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 8 16;
+}
+
+.menu-item:hover, .menu-item:focused{
+    -fx-background-color: #FFA630;
+}
+.context-menu {
+    -fx-background-color: #252D36; /* azul do fundo do menu */
+    -fx-border-color: white;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 5;
+}
+
+/* Estilo de Cards */
+.card {
+    -fx-background-color: #28323E;
+    -fx-background-radius: 10px;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+    -fx-alignment: center;
+    -fx-border-color: #1a2740;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+}
+/* Scroll */
+.scroll-pane {
+    -fx-background: #0d1522;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color: #0d1522;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #243152;
+    -fx-background-radius: 5px;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #4f8dff;
+}

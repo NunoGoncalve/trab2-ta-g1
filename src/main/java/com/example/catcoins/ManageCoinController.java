@@ -5,7 +5,17 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 
 public class ManageCoinController extends MenuLoader {
@@ -24,10 +34,14 @@ public class ManageCoinController extends MenuLoader {
     @FXML private VBox editCoinForm;
     @FXML private Label editingCoinLabel;
     @FXML private VBox Stack;
-    @FXML private VBox editCoinSection;
+    @FXML private Button uploadImageButton;
+    @FXML private Label imageFileNameLabel;
+    private String localFilePath;
+
     @FXML
     public void initialize() {
         carregarMoedas();
+        uploadImageButton.setOnAction(event -> selecionarImagem());
     }
 
     @Override
@@ -131,12 +145,26 @@ public class ManageCoinController extends MenuLoader {
         }
     }
 
+    private void selecionarImagem() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecione uma imagem PNG");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Imagem PNG", "*.png")
+        );
+
+        File file = fileChooser.showOpenDialog(uploadImageButton.getScene().getWindow());
+
+        if (file != null) {
+            localFilePath = file.getAbsolutePath();
+            imageFileNameLabel.setText(file.getName());
+        }
+    }
+
     @FXML
     public void CriarMoeda() {
         String nome = coinNameField.getText().trim();
         String precoText = coinPriceField.getText().trim();
 
-        // Validação básica
         if (nome.isEmpty() || precoText.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Dados Incompletos", "Por favor, preencha todos os campos.");
             return;
@@ -150,12 +178,16 @@ public class ManageCoinController extends MenuLoader {
             return;
         }
 
+        if (localFilePath == null || localFilePath.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Imagem Não Selecionada", "Por favor, selecione uma imagem PNG.");
+            return;
+        }
+
         String checkSql = "SELECT COUNT(*) FROM Coin WHERE Name = ?";
         String insertSql = "INSERT INTO Coin (Name, Value) VALUES (?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
 
-            // Verifica se já existe uma moeda com o mesmo nome
             try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
                 checkStmt.setString(1, nome);
                 ResultSet rs = checkStmt.executeQuery();
@@ -165,15 +197,63 @@ public class ManageCoinController extends MenuLoader {
                 }
             }
 
-            // Insere a nova moeda
-            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+            int coinId = -1;
+
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
                 insertStmt.setString(1, nome);
                 insertStmt.setDouble(2, preco);
                 insertStmt.executeUpdate();
+
+                try (ResultSet generatedKeys = insertStmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        coinId = generatedKeys.getInt(1);
+                    } else {
+                        throw new SQLException("Erro ao obter o ID da nova moeda.");
+                    }
+                }
+            }
+
+            // Copiar imagem para imgs/logo/coinId.png
+            Path sourcePath = Paths.get(localFilePath);
+            Path targetPath = Paths.get("imgs/logo/" + coinId + ".png");
+
+            Files.createDirectories(targetPath.getParent()); // Garante que a pasta existe
+            Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Enviar para o FTP
+            FTPClient ftpClient = new FTPClient();
+            try {
+                ftpClient.connect("80.172.221.36", 21);
+                ftpClient.login("fixstuff.net_b8l1v8j37ew", "^7Vp39uh8");
+                ftpClient.enterLocalPassiveMode();
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+                    String remoteFilePath = "/foodsorter.fixstuff.net/CatCoins/img/" + coinId + ".png";
+                try (InputStream input = new FileInputStream("imgs/logo/"+coinId+".png")) {
+                    boolean done = ftpClient.storeFile(remoteFilePath, input);
+                    if (!done) {
+                        showAlert(Alert.AlertType.ERROR, "Erro de FTP", "Não foi possível enviar a imagem.");
+                        return;
+                    }
+                }
+
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro de FTP", "Erro ao conectar ou enviar imagem: " + e.getMessage());
+                e.printStackTrace();
+                return;
+            }
+
+            // Deleta imagem local após upload
+            try {
+                Files.deleteIfExists(targetPath);
+            } catch (IOException e) {
+                System.err.println("Erro ao apagar imagem local: " + e.getMessage());
             }
 
             coinNameField.clear();
             coinPriceField.clear();
+            imageFileNameLabel.setText("");
+            localFilePath = null;
 
             newCoinForm.setVisible(false);
             newCoinForm.setManaged(false);
@@ -181,11 +261,12 @@ public class ManageCoinController extends MenuLoader {
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Moeda adicionada com sucesso!");
             carregarMoedas();
 
-        } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro no Banco de Dados", "Erro ao adicionar moeda: " + e.getMessage());
+        } catch (SQLException | IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erro ao adicionar moeda", e.getMessage());
             e.printStackTrace();
         }
     }
+
 
     /**
      * Abre o formulário de edição preenchido com os dados da moeda
