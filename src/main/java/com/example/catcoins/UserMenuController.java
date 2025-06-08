@@ -28,7 +28,6 @@ import java.sql.SQLException;
 
 public class UserMenuController {
 
-    private Stage stage;
     private Scene scene;
     private Parent root;
     private User LoggedUser;
@@ -56,22 +55,14 @@ public class UserMenuController {
     }
 
     @FXML
-    void Open() {
-        FadeTransition OpenTransition = new FadeTransition(Duration.millis(500), UserMenu);
-        OpenTransition.setFromValue(0.0);
-        OpenTransition.setToValue(1.0);
-        OpenTransition.play();
-        UserMenu.setVisible(true);
-    }
-
-    @FXML
     void Close() {
-        FadeTransition CloseTransition = new FadeTransition(Duration.millis(500), UserMenu);
+        FadeTransition CloseTransition = new FadeTransition(Duration.millis(250), UserMenuPane);
         CloseTransition.setFromValue(1.0);
         CloseTransition.setToValue(0.0);
         CloseTransition.play();
         CloseTransition.setOnFinished(event -> {
-            UserMenu.setVisible(false);
+            UserMenuPane.setVisible(false);
+            UserMenuPane.setManaged(false);
         });
     }
 
@@ -110,26 +101,26 @@ public class UserMenuController {
                 try {
                     String amountText = amountField.getText();
                     if (amountText == null || amountText.trim().isEmpty()) {
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Por favor, insira o valor que deseja adicionar.", addBalanceBackground);
+                        showAlert(Alert.AlertType.ERROR, "Error", "Please, add the desired value to add.", addBalanceBackground);
                         return;
                     }
 
                     double amount = Double.parseDouble(amountText);
                     if (amount <= 0) {
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Por favor, insira um valor válido maior que 0 (zero).", addBalanceBackground);
+                        showAlert(Alert.AlertType.ERROR, "Error", "Please, insert a valid value, bigger than 0 (zero).", addBalanceBackground);
                         return;
                     }
 
                     // Atualiza o saldo na tabela Wallet
                     if (updateWalletBalance(amount, event)) {
-                        showAlert(Alert.AlertType.INFORMATION, "Sucesso", String.format("Foi adicionado %.2f à sua carteira com sucesso!", amount), addBalanceBackground);
+                        showAlert(Alert.AlertType.INFORMATION, "Sucesso", String.format("%.2f was added to your wallet with success!", amount), addBalanceBackground);
                         addBalanceStage.close(); // Fecha a janela após sucesso
                     } else {
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Falha ao atualizar o saldo na carteira.", addBalanceBackground);
+                        showAlert(Alert.AlertType.ERROR, "Error", "Balance update failed.", addBalanceBackground);
                     }
 
                 } catch (NumberFormatException ex) {
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Por favor, insira um valor válido. (ex: 5000.00)", addBalanceBackground);
+                    showAlert(Alert.AlertType.ERROR, "Error", "Please, insert a valid value (ex: 5000.00)", addBalanceBackground);
                 }
             });
 
@@ -141,7 +132,7 @@ public class UserMenuController {
 
         } catch (IOException e) {
             // Aqui usamos o UserMenuPane para mostrar o alerta no menu principal
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a janela de adição de saldo.", UserMenuPane);
+            showAlert(Alert.AlertType.ERROR, "Error", "It wasn't possible to load the deposit window.", UserMenuPane);
             e.printStackTrace();
         }
     }
@@ -274,7 +265,7 @@ public class UserMenuController {
         try {
             Main.setRoot(View, LoggedUser);
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a página solicitada.");
+            showAlert(Alert.AlertType.ERROR, "Error", "It wasn't possible to load the requested page.");
             e.printStackTrace();
         }
     }

@@ -59,9 +59,9 @@
          <VBox.margin>
             <Insets />
          </VBox.margin></Button>
-      <Hyperlink fx:id="termsLink1" accessibleRole="TEXT" alignment="CENTER" onAction="#GoRegister" prefHeight="34.0" prefWidth="252.0" styleClass="hyperlink" text="Cria aqui!" textAlignment="CENTER">
+      <Hyperlink fx:id="termsLink1" accessibleRole="TEXT" alignment="CENTER" onAction="#GoRegister" prefHeight="34.0" prefWidth="252.0" styleClass="hyperlink" text="Create one!" textAlignment="CENTER">
          <graphic>
-            <Label alignment="CENTER" prefHeight="26.0" prefWidth="160.0" text="Ainda não tens conta?" textAlignment="RIGHT" textFill="WHITE" />
+            <Label alignment="CENTER" prefHeight="26.0" prefWidth="160.0" text="Don't have an account?" textAlignment="RIGHT" textFill="WHITE" />
          </graphic>
       </Hyperlink>
     </VBox>

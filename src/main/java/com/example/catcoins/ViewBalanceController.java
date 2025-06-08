@@ -85,25 +85,27 @@ public class ViewBalanceController {
     }
 
     public void OpenUserMenu() {
-        FadeTransition OpenTransition = new FadeTransition(Duration.millis(500), UserMenu);
+        FadeTransition OpenTransition = new FadeTransition(Duration.millis(500), UserMenuPane);
         OpenTransition.setFromValue(0.0);
         OpenTransition.setToValue(1.0);
         OpenTransition.play();
         UserMenuPane.setManaged(true);
         UserMenuPane.setVisible(true);
-        UserMenu.setVisible(true);
         MenuBttn.setOnMouseClicked(event -> {CloseUserMenu();});
     }
 
     public void CloseUserMenu() {
-        FadeTransition CloseTransition = new FadeTransition(Duration.millis(500), UserMenu);
+        FadeTransition CloseTransition = new FadeTransition(Duration.millis(250), UserMenuPane);
         CloseTransition.setFromValue(1.0);
         CloseTransition.setToValue(0.0);
         CloseTransition.play();
-        UserMenuPane.setManaged(false);
-        UserMenuPane.setVisible(false);
-        CloseTransition.setOnFinished(event -> {UserMenu.setVisible(false);
-            });
+
+        CloseTransition.setOnFinished(event -> {
+            UserMenuPane.setManaged(false);
+            UserMenuPane.setVisible(false);
+        });
+
+
         MenuBttn.setOnMouseClicked(event -> {OpenUserMenu();});
     }
 

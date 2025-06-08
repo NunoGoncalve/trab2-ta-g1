@@ -60,8 +60,7 @@ public class MainController extends MenuLoader {
     }
 
     public void carregarMoedas(String filtro) {
-        String sql = "SELECT id, Name, Value FROM Coin";
-        String sqlV = "SELECT Value FROM CoinHistory WHERE Coin = ? ORDER BY Date DESC LIMIT 1 OFFSET 1";
+        String sql = "SELECT id, Name, VarianceCalc(id) as variance, (Select Value from CoinHistory Where Coin=id ORDER BY Date DESC LIMIT 1) as value FROM Coin;";
 
         class CoinData {
             int id;
@@ -82,22 +81,14 @@ public class MainController extends MenuLoader {
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet CoinInfo = stmt.executeQuery(sql);
-            PreparedStatement ValueStat = conn.prepareStatement(sqlV);
 
             while (CoinInfo.next()) {
                 int id = CoinInfo.getInt("id");
                 String name = CoinInfo.getString("name");
                 double price = CoinInfo.getDouble("value");
-                double variance = 0.0;
+                double variance = CoinInfo.getDouble("variance");
 
-                ValueStat.setInt(1, id);
-                ResultSet ValueInfo = ValueStat.executeQuery();
-                if (ValueInfo.next()) {
-                    double oldValue = ValueInfo.getDouble("value");
-                    if (oldValue != 0) {
-                        variance = (price - oldValue) / oldValue * 100;
-                    }
-                }
+
 
                 coins.add(new CoinData(id, name, price, variance));
             }
@@ -172,7 +163,7 @@ public class MainController extends MenuLoader {
             }
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro no Banco de Dados", "Erro ao carregar moedas: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Error loading coins: " + e.getMessage());
             e.printStackTrace();
         }
     }

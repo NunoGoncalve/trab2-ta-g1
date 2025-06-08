@@ -28,7 +28,6 @@ public class Wallet {
             return result;
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("Erro ao salvar preferência de moeda: " + e.getMessage());
         }
         return null;
 
