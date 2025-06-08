@@ -4,14 +4,21 @@ import com.example.catcoins.model.Client;
 import com.example.catcoins.model.Role;
 import com.example.catcoins.model.Status;
 import com.example.catcoins.model.Wallet;
+import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
 import java.sql.*;
 
 public class RegisterController {
@@ -308,5 +315,17 @@ public class RegisterController {
         return overlay;
     }
 
+    @FXML
+    public void TermsConditions(){
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().browse(new URI("http://foodsorter.fixstuff.net/CatCoins/Terms&Conditions.pdf"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Desktop is not supported!");
+        }
+    }
 
 }

@@ -25,10 +25,9 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 
-public class RecoverPassword implements Initializable {
+public class RecoverPassword {
 
     private static String storedCode;
-    private static String storedEmail;
     private static long codeTimestamp; // armazena quando o código foi gerado
 
 
@@ -44,12 +43,6 @@ public class RecoverPassword implements Initializable {
     @FXML private Button SendEmail;
     @FXML private StackPane Background;
     @FXML private HBox strengthIndicator; // Referência ao HBox do indicador de força
-
-
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        showSendEmailStep();
-    }
 
     public void ToggleField(TextField Field, Boolean IsVisible) {
         if (IsVisible) {
@@ -114,14 +107,6 @@ public class RecoverPassword implements Initializable {
         Text.setDisable(true);
     }
 
-    // Mostra a etapa de envio de email e esconde as demais
-    private void showSendEmailStep() {
-
-        // Configurar botão (só texto)
-        SendEmail.setText("Enviar");
-        SendEmail.setOnAction(this::SendEmail);
-    }
-
     // Mostra a etapa de verificação e esconde as demais
     private void showVerificationCode() {
 
@@ -129,7 +114,7 @@ public class RecoverPassword implements Initializable {
         BlockEditing(emailField);
 
         // Configurar botão (só texto)
-        SendEmail.setText("Confirmar");
+        SendEmail.setText("Verify");
         SendEmail.setOnAction(this::VerifyCode);
     }
 
@@ -152,15 +137,15 @@ public class RecoverPassword implements Initializable {
         storedCode = generateVerificationCode();
         codeTimestamp = System.currentTimeMillis(); // Registra quando o código foi gerado
 
-        String content = "Olá,\n\n"
-                + "Recebemos uma solicitação para alteração de senha através deste endereço de e-mail.\n"
-                + "Se você não solicitou isso, ignore esta mensagem.\n\n"
-                + "Seu código de verificação é: " + storedCode + "\n\n"
-                + "Atenciosamente,\n"
-                + "Equipe de Suporte CatCoins",
-                subject = "Código de Verificação - CatCoins";
+        String content = "Hello,\n\n"
+                + "We received a request to change your password using this email address.\n"
+                + "If you did not request this, please ignore this message.\n\n"
+                + "Your verification code is: " + storedCode + "\n\n"
+                + "Sincerely,\n"
+                + "CatCoins Support Team",
+                subject = "Verification Code - CatCoins";
 
-        return DatabaseConnection.EmailConfig.SendEmail(recipientEmail, content, subject);
+        return EmailConfig.SendEmail(recipientEmail, content, subject);
     }
 
     //Gera um código de verificação aleatório de 6 dígitos
@@ -190,7 +175,7 @@ public class RecoverPassword implements Initializable {
             ToggleErroLabel(errorLabelEmail, false);
         } else if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
             ToggleErroLabel(errorLabelEmail, true);
-            errorLabelEmail.setText("Email Inválido !");
+            errorLabelEmail.setText("Invalid email !");
         }else {
             ToggleErroLabel(errorLabelEmail, false);
         }
@@ -204,21 +189,20 @@ public class RecoverPassword implements Initializable {
 
         if (email.isEmpty()){
             ToggleErroLabel(errorLabelFields, true);
-            errorLabelFields.setText("Campo obrigatório!");
+            errorLabelFields.setText("Required field!");
             ToggleErroLabel(errorLabelEmail, false);
 
             // Verificar se o email existe no banco de dados
         }else if (email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") && (!CheckIfEmail(email))){
-            showAlert(Alert.AlertType.INFORMATION, "Email não encontrado", "Este email não está registrado.\nVá para o registo", () -> GoToScreen("registo.fxml"));
+            showAlert(Alert.AlertType.INFORMATION, "Email not found", "This email isn't registered.\nRedirecting to register", () -> GoToScreen("registo.fxml"));
         }
 
         // Enviar o código de verificação para o email
         if (sendVerificationCode(email)) {
-            storedEmail = email; // Armazena o email para uso posterior
-            showAlert(Alert.AlertType.ERROR, "Sucesso", "Código de verificação enviado para: \n" + email, this::showVerificationCode);
+            showAlert(Alert.AlertType.ERROR, "Sucess", "Verification code sent to: \n" + email, this::showVerificationCode);
             System.out.println("COD: " + storedCode);
         } else {
-            showAlert(Alert.AlertType.ERROR,  "ERRO", "Tente Novamente");
+            showAlert(Alert.AlertType.ERROR,  "ERROR", "Try again");
         }
     }
 
@@ -234,7 +218,7 @@ public class RecoverPassword implements Initializable {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao verificar o email.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Error checking email.");
             return false;
         }
     }
@@ -252,10 +236,10 @@ public class RecoverPassword implements Initializable {
             ToggleErroLabel(errorLabelEmail, false);
 
         } else if (!verifyCode(email, code)) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Código incorreto!");
+            showAlert(Alert.AlertType.ERROR, "Error", "Code invalid!");
         }
 
-        else showAlert(Alert.AlertType.INFORMATION, "Código Verificado", "O código inserido foi aceito.", this::showNewPassword);
+        else showAlert(Alert.AlertType.INFORMATION, "Code Verified", "Code Verified.", this::showNewPassword);
 
     }
 
@@ -312,12 +296,12 @@ public class RecoverPassword implements Initializable {
         // Validação da senha
         String senhaErro = validatePassword(novaSenha);
         if (senhaErro != null) {
-            showAlert(Alert.AlertType.ERROR, "Erro na senha", senhaErro);
+            showAlert(Alert.AlertType.ERROR, "Password error", senhaErro);
             return;
         }
 
         if (email == null || email.trim().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Email do usuário não está disponível.");
+            showAlert(Alert.AlertType.ERROR, "Erro", "Email not available.");
             return;
         }
 
@@ -337,11 +321,11 @@ public class RecoverPassword implements Initializable {
                 int rowsAffected = stmt.executeUpdate();
 
                 if (rowsAffected > 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Senha alterada com sucesso!", () -> {
+                    showAlert(Alert.AlertType.INFORMATION, "Sucess", "Password changed with sucess!", () -> {
                         GoToScreen("Login.fxml");
                     });
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Verifique as credenciais.");
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Check your credentials.");
                 }
             }
 
@@ -366,25 +350,25 @@ public class RecoverPassword implements Initializable {
         String mensagemErro = "";
 
         if (password.length() < 10) {
-            mensagemErro += "Mínimo de 10 caracteres!\n";
+            mensagemErro += "10 characters minimum!\n";
         } else {
             strength += 0.4;
         }
 
         if (password.equals(password.toLowerCase())) {
-            mensagemErro += "Pelo menos 1 letra maiúscula (A-Z)!\n";
+            mensagemErro += "At least 1 uppercase letter (A-Z)!\n";
         } else {
             strength += 0.2;
         }
 
         if (!password.matches(".*\\d.*")) {
-            mensagemErro += "Pelo menos 1 número (0-9)!\n";
+            mensagemErro += "At least 1 number (0-9)!\n";
         } else {
             strength += 0.2;
         }
 
         if (!password.matches(".*[!@#$%^&*()\\-_=+\\\\|\\[\\]{};:'\",.<>/?].*")) {
-            mensagemErro += "Pelo menos 1 caractere especial (!@#$%^&* etc.)!\n";
+            mensagemErro += "At least 1 special character (!@#$%^&* etc.)!\n";
         } else {
             strength += 0.2;
         }
@@ -402,19 +386,19 @@ public class RecoverPassword implements Initializable {
     //Valida os requisitos da senha
     private String validatePassword(String password) {
         if (password == null || password.isEmpty()) {
-        return "Verifique as credenciais.";
+        return "Check your credencials.";
         }
         if (password.length() < 10) {
-            return "Verifique os requisitos.";
+            return "Check the requisites.";
         }
         if (password.equals(password.toLowerCase())) {
-            return "Verifique os requisitos.";
+            return "Check the requisites.";
         }
         if (!password.matches(".*\\d.*")) {
-            return "Verifique os requisitos.";
+            return "Check the requisites.";
         }
         if (!password.matches(".*[!@#$%^&*()\\-_=+\\\\|\\[\\]{};:'\",.<>/?].*")) {
-            return "Verifique os requisitos.";
+            return "Check the requisites.";
         }
         return null;
     }

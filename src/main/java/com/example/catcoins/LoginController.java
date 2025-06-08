@@ -51,7 +51,7 @@ public class LoginController {
         }
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection()){
-            String sql = "SELECT * FROM User WHERE email = ? AND password = ?";
+            String sql = "SELECT * FROM User WHERE email = ? AND password = ? and Status = 'Active'";
             PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, email);
@@ -59,16 +59,8 @@ public class LoginController {
             ResultSet UserResult = stmt.executeQuery();
 
             if (UserResult.next()) {
-                Role UserRole;
-                Status UserStatus;
-
-                if(UserResult.getString("Status").equals("Active")) {
-                    UserStatus =  Status.Active;
-
-                }else{UserStatus = Status.Disabled;}
 
                 if(UserResult.getString("Role").equals("Client")) {
-                    UserRole =  Role.Client;
                     sql = "SELECT Wallet.* FROM Client inner join Wallet on Client.Wallet = Wallet.ID WHERE Client.ID = ?";
                     stmt = conn.prepareStatement(sql);
                     stmt.setInt(1, UserResult.getInt("ID"));
@@ -79,13 +71,12 @@ public class LoginController {
                                 Walletresult.getInt("ID"),
                                 Walletresult.getDouble("Balance"),
                                 Walletresult.getString("Currency"));
-                        Client LoggedClient = new Client(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, UserRole, UserStatus, ClientWallet);
+                        Client LoggedClient = new Client(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, Role.Client, Status.Active, ClientWallet);
                         return LoggedClient;
                     }
                 }
                 else{
-                    UserRole = Role.Admin;
-                    User LoggedAdmin = new User(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, UserRole, UserStatus);
+                    User LoggedAdmin = new User(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, Role.Admin, Status.Active);
                     return LoggedAdmin;
                 }
 
@@ -107,7 +98,7 @@ public class LoginController {
 
         if (email.isEmpty() || password.isEmpty()) {
             ToggleErroLabel(errorLabelFields, true);
-            errorLabelFields.setText("Todos os campos são obrigatórios!");
+            errorLabelFields.setText("All fields are required!");
             esqueceuSenhaLink.setVisible(false);
             esqueceuSenhaLink.setManaged(false);
             ToggleErroLabel(errorLabelEmail, false);
@@ -115,7 +106,7 @@ public class LoginController {
 
         } else if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
             ToggleErroLabel(errorLabelEmail, true);
-            errorLabelEmail.setText("Email Inválido !");
+            errorLabelEmail.setText("Invalid email!");
 
         }else {
             ToggleErroLabel(errorLabelEmail, false);
@@ -145,7 +136,7 @@ public class LoginController {
             ToggleErroLabel(errorLabelEmail, false);
         } else if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
             ToggleErroLabel(errorLabelEmail, true);
-            errorLabelEmail.setText("Email Inválido !");
+            errorLabelEmail.setText("Invalid email!");
             esqueceuSenhaLink.setVisible(false);
             esqueceuSenhaLink.setManaged(false);
         } else {
@@ -159,7 +150,7 @@ public class LoginController {
             Main.setRoot("RecoverPassword.fxml", null);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de recuperação de senha.");
+            showAlert(Alert.AlertType.ERROR, "Erro", "It wasn't possible to load the password recovery page.");
         }
     }
 
@@ -190,7 +181,7 @@ public class LoginController {
             trocarCena("registo.fxml", null);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela de registro.");
+            showAlert(Alert.AlertType.ERROR, "Erro", "It wasn't possible to load the register page.");
         }
     }
 

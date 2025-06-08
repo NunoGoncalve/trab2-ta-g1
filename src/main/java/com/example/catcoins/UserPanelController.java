@@ -61,15 +61,14 @@ public class UserPanelController extends MenuLoader {
     public void carregarMoedas(String filtro) {
         Client Logclient = (Client) super.getLoggedUser();
 
-        String sql = "SELECT WalletID, CoinID, Amount, Value, Name FROM Portfolio INNER join Coin on CoinID = Coin.ID where WalletID = ?";
-        String sqlV = "SELECT Value FROM CoinHistory WHERE Coin = ? ORDER BY Date DESC LIMIT 1 OFFSET 1";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+        String sql = "SELECT CoinID, Amount, VarianceCalc(CoinID) as variance, (Select Value from CoinHistory Where Coin=id ORDER BY Date DESC LIMIT 1) as value, Name FROM Portfolio INNER join Coin on CoinID = Coin.ID where WalletID = ?";
+       /* try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, Logclient.getWallet().getID());
             stmt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
 
         class CoinData {
             int id;
@@ -93,24 +92,15 @@ public class UserPanelController extends MenuLoader {
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, Logclient.getWallet().getID());
             ResultSet CoinInfo = stmt.executeQuery();
-            PreparedStatement ValueStat = conn.prepareStatement(sqlV);
 
             while (CoinInfo.next()) {
                 int id = CoinInfo.getInt("CoinID");
                 String name = CoinInfo.getString("name");
                 double price = CoinInfo.getDouble("value");
                 int amount = CoinInfo.getInt("Amount");
+                double variance = CoinInfo.getDouble("variance");
 
-                double variance = 0.0;
 
-                ValueStat.setInt(1, id);
-                ResultSet ValueInfo = ValueStat.executeQuery();
-                if (ValueInfo.next()) {
-                    double oldValue = ValueInfo.getDouble("value");
-                    if (oldValue != 0) {
-                        variance = (price - oldValue) / oldValue * 100;
-                    }
-                }
 
                 coins.add(new CoinData(id, name, price, variance,amount));
             }
@@ -188,7 +178,6 @@ public class UserPanelController extends MenuLoader {
                 Label AmountLabel = new Label(String.valueOf(coin.amount) );
                 taxLabel.setPrefSize(87, 25);
                 taxLabel.getStyleClass().add("coin-amount");
-                taxLabel.setStyle(coin.amount >= 0 ? "-fx-text-fill: #4caf50" : "-fx-text-fill: red");
                 grid.add(AmountLabel, 4, 0);
 
                 VBox.setMargin(grid, new Insets(0, 0, 0, 0));
@@ -205,8 +194,6 @@ public class UserPanelController extends MenuLoader {
             e.printStackTrace();
         }
     }
-
-
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
@@ -228,42 +215,3 @@ public class UserPanelController extends MenuLoader {
     }
 
 }
-
-
-    /*public void setUser(User LoggedUser) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu.fxml"));
-        Parent menu = null;
-        try {
-            menu = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        MenuController controller = loader.getController();
-        controller.setUser(LoggedUser);
-        MainPanel.setLeft(menu);
-
-        loader = new FXMLLoader(getClass().getResource("UserMenu.fxml"));
-        Parent usermenu = null;
-        try {
-            usermenu = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        UserMenuController controller2 = loader.getController();
-        controller2.setUser(LoggedUser);
-        MainPanel.setRight(usermenu);
-
-        loader = new FXMLLoader(getClass().getResource("ViewBalance.fxml"));
-        Parent Balance = null;
-        try {
-            Balance = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        ViewBalanceController controller3 = loader.getController();
-        controller3.setUser(LoggedUser);
-        controller3.setUserMenu((HBox)usermenu.lookup("#UserMenu"), (StackPane)usermenu.lookup("#UserMenuPane"));
-        Stack.getChildren().add(0, Balance);
-
-
-    }*/

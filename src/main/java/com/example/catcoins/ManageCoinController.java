@@ -63,7 +63,7 @@ public class ManageCoinController extends MenuLoader {
 
 
     public void carregarMoedas() {
-        String sql = "SELECT id, Name, Value FROM Coin";
+        String sql = "SELECT id, Name, (Select Value from CoinHistory Where Coin=id ORDER BY Date DESC LIMIT 1) as value FROM Coin";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              Statement stmt = conn.createStatement();
@@ -166,7 +166,7 @@ public class ManageCoinController extends MenuLoader {
         String precoText = coinPriceField.getText().trim();
 
         if (nome.isEmpty() || precoText.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Dados Incompletos", "Por favor, preencha todos os campos.");
+            showAlert(Alert.AlertType.WARNING, "Incomplete fields", "Please, fill all the fields!");
             return;
         }
 
@@ -174,12 +174,12 @@ public class ManageCoinController extends MenuLoader {
         try {
             preco = Double.parseDouble(precoText.replace(",", "."));
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.WARNING, "Formato Inválido", "O preço deve ser um número válido.");
+            showAlert(Alert.AlertType.WARNING, "Invalid format", "The value must be a valid number!");
             return;
         }
 
         if (localFilePath == null || localFilePath.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Imagem Não Selecionada", "Por favor, selecione uma imagem PNG.");
+            showAlert(Alert.AlertType.WARNING, "Image not selected", "Please, add a .png file!");
             return;
         }
 
@@ -192,7 +192,7 @@ public class ManageCoinController extends MenuLoader {
                 checkStmt.setString(1, nome);
                 ResultSet rs = checkStmt.executeQuery();
                 if (rs.next() && rs.getInt(1) > 0) {
-                    showAlert(Alert.AlertType.WARNING, "Moeda Já Existe", "Já existe uma moeda com esse nome.");
+                    showAlert(Alert.AlertType.WARNING, "Coin already registered ", "There is a coin with that name, please choose another one!");
                     return;
                 }
             }
@@ -208,7 +208,7 @@ public class ManageCoinController extends MenuLoader {
                     if (generatedKeys.next()) {
                         coinId = generatedKeys.getInt(1);
                     } else {
-                        throw new SQLException("Erro ao obter o ID da nova moeda.");
+                        throw new SQLException("Error getting coin ID.");
                     }
                 }
             }
@@ -221,27 +221,7 @@ public class ManageCoinController extends MenuLoader {
             Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
 
             // Enviar para o FTP
-            FTPClient ftpClient = new FTPClient();
-            try {
-                ftpClient.connect("80.172.221.36", 21);
-                ftpClient.login("fixstuff.net_b8l1v8j37ew", "^7Vp39uh8");
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-                    String remoteFilePath = "/foodsorter.fixstuff.net/CatCoins/img/" + coinId + ".png";
-                try (InputStream input = new FileInputStream("imgs/logo/"+coinId+".png")) {
-                    boolean done = ftpClient.storeFile(remoteFilePath, input);
-                    if (!done) {
-                        showAlert(Alert.AlertType.ERROR, "Erro de FTP", "Não foi possível enviar a imagem.");
-                        return;
-                    }
-                }
-
-            } catch (IOException e) {
-                showAlert(Alert.AlertType.ERROR, "Erro de FTP", "Erro ao conectar ou enviar imagem: " + e.getMessage());
-                e.printStackTrace();
-                return;
-            }
+            FTPConfig.UploadFile(coinId);
 
             // Deleta imagem local após upload
             try {

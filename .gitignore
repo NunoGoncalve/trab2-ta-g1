@@ -4,6 +4,7 @@ target/
 !**/src/test/**/target/
 
 EmailConfig.java
+FTPConfig.java
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
