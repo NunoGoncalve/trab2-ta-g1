@@ -49,7 +49,7 @@
 
         <!-- "Esqueceu a senha?" -->
         <HBox alignment="CENTER_LEFT" spacing="5" />
-        <Hyperlink fx:id="esqueceuSenhaLink" managed="false" onAction="#handleEsqueceuSenha" text="Esqueceu sua senha?" visible="false">
+        <Hyperlink fx:id="esqueceuSenhaLink" managed="false" onAction="#handleEsqueceuSenha" text="Forgot your password?" visible="false">
          <VBox.margin>
             <Insets left="-135.0" top="-20.0" />
          </VBox.margin></Hyperlink>

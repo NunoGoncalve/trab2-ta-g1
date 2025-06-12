@@ -72,6 +72,12 @@
     -fx-text-fill: #4caf50;
 }
 
+.order-label {
+    -fx-font-size: 5px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e6f0;
+}
+
 /* Separador */
 .separator {
     -fx-background-color: #2a3950;
