@@ -62,7 +62,7 @@ public class ViewBalanceController {
             String dbCurrency = LoggedClient.getWallet().getCurrency();
             if (dbCurrency != null && !dbCurrency.isEmpty()) {
                 // Atualiza a moeda e converte o saldo se necessário
-                updateCurrency(dbCurrency);
+               // updateCurrency(dbCurrency);
             }
 
             usernameLabel.setText(LoggedClient.getName());
@@ -115,7 +115,7 @@ public class ViewBalanceController {
         this.UserMenuPane.setManaged(false);
     }
 
-    private void updateCurrencyLabel() { // Vai alterar o texto em cima
+    /*private void updateCurrencyLabel() { // Vai alterar o texto em cima
         // Se o label de moeda existir, atualiza seu texto
         if (currencyLabel != null) {
             if (currentCurrency.equals("USD")) {
@@ -169,7 +169,7 @@ public class ViewBalanceController {
      }
 
 
-     //Atualiza a moeda usada para exibição do saldo com conversão de valores
+   //Atualiza a moeda usada para exibição do saldo com conversão de valores
     public void updateCurrencyWithConversion(String toCurrency, String fromCurrency, UserConfigController controller) {
         // Atualiza a moeda atual
         this.currentCurrency = toCurrency;
@@ -200,6 +200,6 @@ public class ViewBalanceController {
 
         // Atualiza a exibição do saldo e o label de moeda
         updateCurrencyLabel();
-    }
+    }*/
 
 }

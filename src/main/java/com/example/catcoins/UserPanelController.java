@@ -1,16 +1,16 @@
 package com.example.catcoins;
 
 import com.example.catcoins.model.Client;
+import com.example.catcoins.model.Transaction;
 import com.example.catcoins.model.User;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -50,12 +50,17 @@ public class UserPanelController extends MenuLoader {
     @FXML private Label sortVarianceLabel;
     @FXML private Label sortNameLabel;
     @FXML private Label SumLabel;
+    @FXML private Label numOrdersBuy;
+    @FXML private Label numOrdersSell;
+    @FXML private StackPane Background;
 
     @Override
     public void setLoggedUser(User user) {
         super.setLoggedUser(user);
         super.LoadMenus(Stack, MainPanel);
         carregarMoedas(null);
+        atualizarContagemOrdensBuy();
+        atualizarContagemOrdensSell();
     }
 
     public void carregarMoedas(String filtro) {
@@ -190,18 +195,11 @@ public class UserPanelController extends MenuLoader {
             }
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro no Banco de Dados", "Erro ao carregar moedas: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Error loading coins:\n" + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 
     public void ViewDetails(MouseEvent mouseEvent) {
         Node ClickedNode = (Node) mouseEvent.getTarget();
@@ -212,6 +210,89 @@ public class UserPanelController extends MenuLoader {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void atualizarContagemOrdensBuy() {
+        Client loggedClient = (Client) super.getLoggedUser();
+
+        String sql = "SELECT COUNT(ID) AS total_orders FROM `Order` WHERE Wallet = ? AND Type = 'Buy'";
+
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, loggedClient.getWallet().getID());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int totalOrders = rs.getInt("total_orders");
+                numOrdersBuy.setText(String.valueOf(totalOrders));
+            } else {
+                numOrdersBuy.setText("0");
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error",
+                    "Error loading order count:\n" + e.getMessage());
+            e.printStackTrace();
+            numOrdersBuy.setText("0");
+        }
+    }
+
+    private void atualizarContagemOrdensSell() {
+        Client loggedClient = (Client) super.getLoggedUser();
+
+        String sql = "SELECT COUNT(ID) AS total_orders FROM `Order` WHERE Wallet = ? AND Type = 'Sell'";
+
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, loggedClient.getWallet().getID());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int totalOrders = rs.getInt("total_orders");
+                numOrdersSell.setText(String.valueOf(totalOrders));
+            } else {
+                numOrdersSell.setText("0");
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error",
+                    "Error loading order count:\n" + e.getMessage());
+            e.printStackTrace();
+            numOrdersSell.setText("0");
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+
+        // Cria o conteúdo do diálogo
+        VBox dialog = new VBox(3);
+        dialog.setSpacing(25);
+        dialog.setAlignment(Pos.CENTER);
+        dialog.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: white;");
+        dialog.setMaxWidth(320);
+        dialog.setMaxHeight(170);
+
+        Label messageLabel = new Label(message);
+        messageLabel.setStyle("-fx-text-fill: white");
+
+        Button okButton = new Button("OK");
+        okButton.setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
+
+        dialog.getChildren().addAll(messageLabel, okButton);
+
+        // Cria um overlay semi-transparente
+        StackPane overlay = new StackPane();
+        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.2 = 20% de opacidade
+
+        // Adiciona o diálogo ao overlay e centraliza
+        overlay.getChildren().add(dialog);
+        overlay.setAlignment(Pos.CENTER);
+
+        // Adiciona o overlay ao StackPane raiz
+        Background.getChildren().add(overlay);
+
+        // Remove o overlay quando OK é clicado
+        okButton.setOnAction(e -> Background.getChildren().remove(overlay));
     }
 
 }

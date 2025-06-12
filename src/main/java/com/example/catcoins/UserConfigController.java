@@ -192,7 +192,7 @@ public class UserConfigController extends MenuLoader {
                     ViewBalanceController balanceController = loader.getController();
 
                     // Atualiza a moeda no controlador de saldo com conversão
-                    balanceController.updateCurrencyWithConversion(toCurrency, fromCurrency, this);
+                  //  balanceController.updateCurrencyWithConversion(toCurrency, fromCurrency, this);
                 } catch (IOException e) {
                     // Ignora se não conseguir carregar o controlador
                     System.out.println("Não foi possível atualizar o ViewBalanceController");
