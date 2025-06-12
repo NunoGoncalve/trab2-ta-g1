@@ -137,7 +137,9 @@ public class TransactionHistoryController extends MenuLoader {
 
     private void loadTransactions() {
 
-        String sql = " SELECT * FROM Transaction WHERE Wallet = ? ";
+        String sql = " SELECT O.ID,O.Type, O.Value,O.Date, O.Coin ,Sum(Transaction.Amount) as Amount " +
+                    "FROM Transaction inner join `Order` O on Transaction.OrderID=O.ID " +
+                    "Where Wallet = ? group by OrderID Order by Date DESC";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
