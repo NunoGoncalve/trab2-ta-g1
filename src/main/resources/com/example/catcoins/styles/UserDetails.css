@@ -137,3 +137,10 @@
     -fx-font-size: 14px;
     -fx-font-family: 'Segoe UI';
 }
+
+.return-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-font-size: 25;
+}

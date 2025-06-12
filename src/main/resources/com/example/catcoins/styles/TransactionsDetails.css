@@ -1,0 +1,85 @@
+/* Estilo geral da tabela */
+.table-view {
+    -fx-background-color: #232c36; /* fundo escuro */
+    -fx-border-color: #ffffff;     /* borda branca */
+    -fx-border-radius: 16;
+    -fx-padding: 5;
+    -fx-table-cell-border-color: transparent;
+    -fx-alignment: CENTER;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill:  #ff9800; /* ou qualquer cor desejada */
+    -fx-font-weight: bold;
+}
+
+/* Cabeçalhos da tabela */
+.table-view .column-header-background,
+.table-view .column-header {
+    -fx-background-color: transparent; /* mantém fundo transparente */
+    -fx-text-fill: #ffffff;             /* texto branco */
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-border-color: transparent;
+}
+
+/* Células da tabela */
+.table-view .cell {
+    -fx-text-fill: #ffffff;             /* texto branco */
+    -fx-background-color: transparent; /* fundo transparente para células */
+    -fx-border-color: transparent;
+    -fx-padding: 5px 10px;
+    -fx-font-size: 16px;
+}
+
+/* Linhas ímpares com fundo diferenciado */
+.table-view .table-row-cell:odd {
+    -fx-background-color: #2a2f3e;
+}
+
+/* Linha selecionada */
+.table-view .table-row-cell:selected {
+    -fx-background-color: #4f8dff;
+    -fx-text-fill: #ffffff;
+}
+
+/* Alinhamento específico para colunas */
+#idColumn {
+    -fx-alignment: CENTER;
+}
+
+#valueColumn, #amountColumn {
+    -fx-alignment: CENTER-RIGHT;
+}
+
+/* Scrollbar vertical personalizada */
+.table-view .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #4f8dff;
+}
+
+/* Estilos para status e valores específicos */
+.success-status, .positive-value {
+    -fx-text-fill: #40c463;
+    -fx-font-weight: bold;
+}
+
+.failed-status, .negative-value {
+    -fx-text-fill: #ff4444;
+    -fx-font-weight: bold;
+}
+
+.cancelled-status {
+    -fx-text-fill: #b0b0b0;
+    -fx-font-weight: bold;
+}
+
+/* Estilo para títulos (exemplo para Labels) */
+.order-history-title {
+    -fx-text-fill: #ff9800;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}

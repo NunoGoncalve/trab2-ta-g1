@@ -11,9 +11,9 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.layout.StackPane?>
 <BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1792.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.TransactionHistoryController">
     <stylesheets>
         <URL value="@styles/styles.css" />
@@ -27,7 +27,7 @@
             </BorderPane.margin>
             <children>
                 <VBox alignment="CENTER" prefHeight="780.0" prefWidth="1760.0" spacing="20.0" style="-fx-padding: 20;" styleClass="main-container">
-                     <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="77.0" prefWidth="1652.0" style="-fx-font-size: 50px; -fx-font-weight: bold;" text="Transaction History" textAlignment="CENTER">
+                     <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="77.0" prefWidth="1652.0" style="-fx-font-size: 50px; -fx-font-weight: bold;" text="Orders History" textAlignment="CENTER">
                   <VBox.margin>
                      <Insets top="-100.0" />
                   </VBox.margin></Label>
@@ -68,6 +68,9 @@
                </VBox.margin>
                 </VBox>
             </children>
+            <StackPane.margin>
+               <Insets right="40.0" />
+            </StackPane.margin>
         </VBox>
         </StackPane>
     </center>
