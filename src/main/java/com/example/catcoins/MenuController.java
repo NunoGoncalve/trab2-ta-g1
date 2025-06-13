@@ -1,10 +1,12 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Client;
 import com.example.catcoins.model.User;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -23,6 +25,8 @@ public class MenuController {
     @FXML
     private HBox ExtendedMenu;
 
+    @FXML private ImageView Wallet;
+
     @FXML
     void Open() {
         CloseAnimation(Menu);
@@ -37,6 +41,9 @@ public class MenuController {
 
     public void setUser(User user) {
         this.LoggedInUser = user;
+        if (user instanceof Client) {
+            Wallet.setVisible(true);
+        }
     }
 
     public User getUser() {

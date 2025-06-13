@@ -6,16 +6,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class Wallet {
     private int ID;
     private Double Balance;
+    private Double PendingBalance;
     private String Currency;
-    public Wallet(int ID, Double balance, String currency) {
+    public Wallet(int ID, Double balance, Double PendingBalance,String currency) {
         this.ID = ID;
         this.Balance = balance;
         this.Currency = currency;
+        this.PendingBalance = PendingBalance;
     }
 
     private ResultSet GetPortfolio(){
@@ -51,10 +52,6 @@ public class Wallet {
 
     }
 
-    public void SetBalance(Double balance) {
-        this.Balance = balance;
-    }
-
     public void SetCurrency(String currency) {
         this.Currency = currency;
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
@@ -72,7 +69,7 @@ public class Wallet {
         }
     }
 
-    public void UpdateBalance() {
+    public void GetUpdatedBalance() {
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
 
             // Atualiza a moeda na tabela Wallet
@@ -84,7 +81,64 @@ public class Wallet {
             this.Balance = rs.getDouble("Balance");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("Erro ao salvar preferência de moeda: " + e.getMessage());
+        }
+    }
+
+    public void GetUpdatedPendingBalance() {
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+
+            // Atualiza a moeda na tabela Wallet
+            String updateCurrencySql = "Select PendingBalance From Wallet WHERE ID = ?";
+            PreparedStatement Stmt = conn.prepareStatement(updateCurrencySql);
+            Stmt.setInt(1, this.ID);
+            ResultSet rs = Stmt.executeQuery();
+            rs.next();
+            this.PendingBalance = rs.getDouble("PendingBalance");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Boolean SetBalance(Double balance) {
+        this.Balance = balance;
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+            String updateCurrencySql = "Update Wallet Set Balance = ? WHERE ID = ?";
+            PreparedStatement Stmt = conn.prepareStatement(updateCurrencySql);
+            Stmt.setDouble(1, balance);
+            Stmt.setInt(2, this.ID);
+            Stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Boolean SetPendingBalance(Double PendingBalance) {
+        this.PendingBalance = PendingBalance;
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+            String updateCurrencySql = "Update Wallet Set PendingBalance = ? WHERE ID = ?";
+            PreparedStatement Stmt = conn.prepareStatement(updateCurrencySql);
+            Stmt.setDouble(1, PendingBalance);
+            Stmt.setInt(2, this.ID);
+            Stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void UpdatePortfolio(int Amount, int CoinID) {
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+            String updateCurrencySql = "Update Portfolio Set Amount = ? WHERE WalletID = ? and CoinID = ?";
+            PreparedStatement Stmt = conn.prepareStatement(updateCurrencySql);
+            Stmt.setInt(1, Amount);
+            Stmt.setInt(2, this.ID);
+            Stmt.setInt(3, CoinID);
+            Stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -98,5 +152,9 @@ public class Wallet {
 
     public Double getBalance() {
         return Balance;
+    }
+
+    public Double getPendingBalance() {
+        return PendingBalance;
     }
 }

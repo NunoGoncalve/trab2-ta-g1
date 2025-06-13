@@ -86,7 +86,7 @@ public class RegisterController {
         } else if (CheckIfEmail(email)) {
             if (CheckIfEmail(email)) {
                 //showAlert(Alert.AlertType.INFORMATION, "Email já registrado", "Este email já está registrado.\nVá para o Login", () -> GoLogin());  // redireciona só depois do OK
-                AlertUtils.showAlert(Background,"Este email já está registrado.\nVá para o Login", () -> GoLogin());
+                AlertUtils.showAlert(Background,"This email is already linked to an account", () -> GoLogin());
             }
 
         }else if (passwordStrengthBar.getProgress() == 1 && !errorLabelEmail.isVisible()) {
@@ -233,7 +233,7 @@ public class RegisterController {
     }
 
     protected void Registered(int WalletID, int UserID, String Username, String Email) throws IOException {
-        Wallet ClientWallet = new Wallet(WalletID,0.00, "USD $");
+        Wallet ClientWallet = new Wallet(WalletID,0.00, 0.00,"USD $");
         Client ClientRegistred = new Client(UserID, Username, Email, Role.Client, Status.Active, ClientWallet);
         Main.setRoot("Main.fxml", ClientRegistred);
     }

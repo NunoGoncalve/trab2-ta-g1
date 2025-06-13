@@ -57,6 +57,21 @@ public class User {
         }
     }
 
+    public String getUserEmail(int WalletID) {
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+            String sql = "Select Email From UserClientWallet WHERE WalletID = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, WalletID);
+            ResultSet ResultID = stmt.executeQuery();
+            ResultID.next();
+            return ResultID.getString("Email");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+
+    }
+
     public void setEmail(String email) { this.Email = email; }
 
     public void setRole(Role role) { this.Role = role; }

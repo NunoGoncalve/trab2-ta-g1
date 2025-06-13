@@ -11,6 +11,7 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -110,22 +111,23 @@
                               <Insets left="40.0" right="60.0" />
                            </VBox.margin>
                         </ScrollPane>
-                        <HBox alignment="CENTER_RIGHT" maxHeight="40.0" prefHeight="40.0" prefWidth="1692.0">
+                        <HBox alignment="CENTER_RIGHT" maxHeight="40.0">
                            <children>
                               <Button alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" mnemonicParsing="false" onAction="#goBack" prefHeight="52.0" prefWidth="41.0" rotate="270.0" styleClass="return-button" text="⤴">
                         </Button>
-                            <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#exportLineChartToCSV" prefHeight="35.0" prefWidth="157.0" styleClass="sidebar-button" text="Export CVS" />
+                            <Button alignment="CENTER_RIGHT" minWidth="150.0" mnemonicParsing="false" onAction="#exportLineChartToCSV" prefHeight="35.0" prefWidth="157.0" styleClass="sidebar-button" text="Export CSV" />
                               <ImageView fitHeight="25.0" fitWidth="25.0" onMouseClicked="#exportLineChartToCSV" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@imgs/transfer.png" />
                                  </image>
                               </ImageView>
-                              <Button fx:id="BuyBttn" mnemonicParsing="false" onAction="#OrderCoin" prefHeight="33.0" prefWidth="120.0" styleClass="market-button" text="Buy" visible="false">
+                              <Separator prefHeight="3.0" prefWidth="1164.0" visible="false" />
+                              <Button fx:id="BuyBttn" minWidth="120.0" mnemonicParsing="false" onAction="#OrderCoin" prefHeight="33.0" prefWidth="120.0" styleClass="market-button" text="Buy" visible="false">
                                  <HBox.margin>
-                                    <Insets left="1170.0" />
+                                    <Insets />
                                  </HBox.margin>
                               </Button>
-                              <Button fx:id="SellBttn" mnemonicParsing="false" onAction="#OrderCoin" prefHeight="33.0" prefWidth="120.0" styleClass="market-button" text="Sell" visible="false">
+                              <Button fx:id="SellBttn" minWidth="120.0" mnemonicParsing="false" onAction="#OrderCoin" prefHeight="33.0" prefWidth="120.0" styleClass="market-button" text="Sell" visible="false">
                                  <HBox.margin>
                                     <Insets left="10.0" />
                                  </HBox.margin>

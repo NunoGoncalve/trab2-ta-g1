@@ -71,6 +71,7 @@ public class LoginController {
                         Wallet ClientWallet = new Wallet(
                                 Walletresult.getInt("ID"),
                                 Walletresult.getDouble("Balance"),
+                                Walletresult.getDouble("PendingBalance"),
                                 Walletresult.getString("Currency"));
                         Client LoggedClient = new Client(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, Role.Client, Status.Active, ClientWallet);
                         return LoggedClient;

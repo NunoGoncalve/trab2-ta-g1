@@ -29,32 +29,24 @@ public class Coin {
         this.name = name;
     }
 
-    public double getValue() {
-        return value;
-    }
 
-    public void setValue(double value) {
-        this.value = value;
-    }
-
-    public Coin(int ID, String name, double value) {
+    public Coin(int ID, String name) {
         this.ID = ID;
         this.name = name;
-        this.value = value;
     }
 
     public Coin(int ID) {
         try (Connection conn = DatabaseConnection.getInstance().getConnection()){
-            String sql = "SELECT * FROM Coin WHERE ID = ? ";
+            String sql = "SELECT *, (Select Value from CoinHistory Where Coin= ? Order By Date Desc limit 1) as Value FROM Coin WHERE ID = ? ";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, ID);
+            stmt.setInt(2, ID);
             stmt.executeQuery();
             ResultSet CoinResult = stmt.getResultSet();
             if (CoinResult.next()) {
                 this.ID = CoinResult.getInt("ID");
                 this.name = CoinResult.getString("Name");
-                this.value = CoinResult.getDouble("value");
-
+                this.value = CoinResult.getDouble("Value");
             }
 
         } catch (SQLException e) {
@@ -63,4 +55,7 @@ public class Coin {
 
     }
 
+    public double getValue() {
+        return value;
+    }
 }

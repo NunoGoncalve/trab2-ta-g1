@@ -15,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -140,30 +141,18 @@ public class UserMenuController {
     // Método para atualizar o saldo na tabela Wallet
     private boolean updateWalletBalance(double amount, ActionEvent event) {
         Client client = (Client) LoggedUser;
-        // Atualiza o saldo na tabela Wallet para o ID especificado
-        String sql = "UPDATE Wallet SET balance = balance + ? WHERE ID = ?"; // Adiciona o ID como parâmetro
+        Boolean Success = client.getWallet().SetBalance(client.getWallet().getBalance() + amount);
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        scene = ((Node) event.getSource()).getScene();
+        root = scene.getRoot();
+        Node node = root.lookup("#balanceLabel");
 
-            stmt.setDouble(1, amount); // Define o valor a ser adicionado ao saldo
-            stmt.setInt(2, ((Client) LoggedUser).getWallet().getID()); // Substitua 1 pelo ID correto se necessário
-            client.getWallet().SetBalance(client.getWallet().getBalance() + amount);
-
-            int rowsAffected = stmt.executeUpdate(); // Executa a atualização
-            scene = ((Node) event.getSource()).getScene();
-            root = scene.getRoot();
-            Node node = root.lookup("#balanceLabel");
-            if (node instanceof Label) {
-                Label label = (Label) node;
-                label.setText(String.format("%.2f", client.getWallet().getBalance()));
-            }
-            return rowsAffected > 0; // Retorna verdadeiro se a atualização foi bem-sucedida
-
-        } catch (SQLException e) {
-            e.printStackTrace(); // Imprime o erro para depuração
-            return false; // Retorna falso em caso de erro
+        if (node instanceof Label) {
+            Label label = (Label) node;
+            label.setText(String.format("%.2f", client.getWallet().getBalance()));
         }
+        return Success; // Retorna verdadeiro se a atualização foi bem-sucedida
+
     }
 
     // Método para mostrar alerta personalizado (substituindo os alertas padrão do JavaFX)
@@ -236,7 +225,6 @@ public class UserMenuController {
         // Remove o overlay quando OK é clicado
         StackPane finalContainer = container;
         okButton.setOnAction(e -> finalContainer.getChildren().remove(overlay));
-        amountField.clear();
     }
 
 
