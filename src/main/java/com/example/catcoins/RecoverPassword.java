@@ -194,15 +194,15 @@ public class RecoverPassword {
 
             // Verificar se o email existe no banco de dados
         }else if (email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") && (!CheckIfEmail(email))){
-            showAlert(Alert.AlertType.INFORMATION, "Email not found", "This email isn't registered.\nRedirecting to register", () -> GoToScreen("registo.fxml"));
+            AlertUtils.showAlert(Background, "This email isn't registered.\nRedirecting to register", () -> GoToScreen("registo.fxml"));
         }
 
         // Enviar o código de verificação para o email
         if (sendVerificationCode(email)) {
-            showAlert(Alert.AlertType.ERROR, "Sucess", "Verification code sent to: \n" + email, this::showVerificationCode);
+            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Sucess", "Verification code sent to: \n" + email);
             System.out.println("COD: " + storedCode);
         } else {
-            showAlert(Alert.AlertType.ERROR,  "ERROR", "Try again");
+            AlertUtils.showAlert(Background,Alert.AlertType.ERROR,  "ERROR", "Try again");
         }
     }
 
@@ -218,7 +218,7 @@ public class RecoverPassword {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error", "Error checking email.");
+            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Error", "Error checking email.");
             return false;
         }
     }
@@ -236,10 +236,10 @@ public class RecoverPassword {
             ToggleErroLabel(errorLabelEmail, false);
 
         } else if (!verifyCode(email, code)) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Code invalid!");
+            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Error", "Code invalid!");
         }
 
-        else AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Code Verified", "Code Verified.", this::showNewPassword);
+        else AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Code Verified", "Code Verified.");
 
     }
 
@@ -250,7 +250,7 @@ public class RecoverPassword {
             Main.setRoot(fxmlPath, null);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Unable to load screen: \n" + fxmlPath);
+            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Erro", "Unable to load screen: \n" + fxmlPath);
         }
     }
 
@@ -296,12 +296,12 @@ public class RecoverPassword {
         // Validação da senha
         String senhaErro = validatePassword(novaSenha);
         if (senhaErro != null) {
-            showAlert(Alert.AlertType.ERROR, "Password error", senhaErro);
+            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Password error", senhaErro);
             return;
         }
 
         if (email == null || email.trim().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Email not available.");
+            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Erro", "Email not available.");
             return;
         }
 
@@ -324,7 +324,7 @@ public class RecoverPassword {
                     AlertUtils.showAlert(Background,"Password changed with sucess!", () -> GoToScreen("Login.fxml"));
 
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Check your credentials.");
+                    AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Erro", "Check your credentials.");
                 }
             }
 
@@ -402,9 +402,6 @@ public class RecoverPassword {
         return null;
     }
 
-    private void showAlert(Alert.AlertType type, String title, String Message) {
-        showAlert(type, title, Message, null); // Chama a versão com callback, mas sem ação
-    }
 
 
 }

@@ -16,6 +16,9 @@ public class ViewBalanceController {
     private Label balanceLabel;
 
     @FXML
+    private Label PendingbalanceLabel;
+
+    @FXML
     private Label usernameLabel;
 
     @FXML
@@ -55,8 +58,9 @@ public class ViewBalanceController {
     public void setUser(User LoggedUser) {
         if (LoggedUser instanceof Client) {
             Client LoggedClient = (Client) LoggedUser;
-
+            LoggedClient.getWallet().GetUpdatedPendingBalance();
             double Balance = LoggedClient.getWallet().getBalance();
+            double PendingBalance = LoggedClient.getWallet().getPendingBalance();
             currentDisplayBalance = currentBalanceInDol;
 
             String dbCurrency = LoggedClient.getWallet().getCurrency();
@@ -74,6 +78,7 @@ public class ViewBalanceController {
             } else {
                 balanceLabel.setText(String.format("%.2f", Balance));
             }
+            PendingbalanceLabel.setText(String.format("%.2f", PendingBalance));
 
         }else{
             usernameLabel.setText(LoggedUser.getName());

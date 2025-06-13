@@ -74,7 +74,7 @@
                         <Insets bottom="60.0" />
                      </VBox.margin>
                   </ImageView>
-                        <ImageView fx:id="menu" fitHeight="23.0" fitWidth="23.0" onMouseClicked="#GoWallet" pickOnBounds="true" styleClass="sidebar-icon">
+                        <ImageView fx:id="Wallet" fitHeight="23.0" fitWidth="23.0" onMouseClicked="#GoWallet" pickOnBounds="true" styleClass="sidebar-icon" visible="false">
                             <image>
                                 <Image url="@imgs/Wallet.png" />
                             </image>

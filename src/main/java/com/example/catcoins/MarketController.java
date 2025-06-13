@@ -3,10 +3,8 @@ package com.example.catcoins;
 import com.example.catcoins.model.Client;
 import com.example.catcoins.model.Coin;
 import com.example.catcoins.model.User;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -18,14 +16,14 @@ import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.scene.control.Tooltip;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Optional;
 
 
@@ -90,7 +88,9 @@ public class MarketController extends MenuLoader {
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection()){
 
-            String sql = "SELECT Type, Value, Amount FROM Transaction WHERE Coin = ?";
+            String sql = "SELECT `Order`.ID,`Order`.Type, `Order`.Value,`Order`.Date ,Sum(Transaction.Amount) as Amount " +
+                    "FROM `Transaction` inner join `Order` on Transaction.OrderID=`Order`.ID " +
+                    "Where Coin = ? group by OrderID Order by Date DESC";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, CryptoCoin.getID());
             ResultSet TransactResult = stmt.executeQuery();
@@ -139,40 +139,34 @@ public class MarketController extends MenuLoader {
     @FXML
     private void FilterGraph(ActionEvent event) {
         MenuItem clickedItem = (MenuItem) event.getSource();
-        String id = clickedItem.getId();
-        lineChart.getData().clear();
-        LoadGraph(id);
+        LoadGraph(clickedItem.getId());
     }
 
     private void LoadGraph(String filter){
-
+        lineChart.getData().clear();
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime last24h = now.minusHours(24);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String nowStr = now.format(formatter);
-        String last24hStr = last24h.format(formatter);
-
-        String sql = "SELECT * FROM CoinHistory WHERE Coin = ? AND Date >= '" + last24hStr + "' AND Date <= '" + nowStr + "'";
-        if(filter.equals("Week")){
-            sql = "SELECT * FROM CoinHistory WHERE Coin = ? AND Date >= NOW() - INTERVAL 7 DAY";
-        }else if(filter.equals("Month")){
-            sql = "SELECT * FROM CoinHistory WHERE Coin = ? AND Date >= NOW() - INTERVAL 31 DAY";
-        }
-
         try (Connection conn = DatabaseConnection.getInstance().getConnection()){
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+            String sql = "SELECT XValue, Value FROM ( SELECT DATE_FORMAT(Date, '%H:%i') AS XValue, Value, Date FROM CoinHistory WHERE Date >= NOW() - INTERVAL 23 HOUR AND Coin = ? ORDER BY Date DESC LIMIT 24 ) sub ORDER BY Date ASC";
+            PreparedStatement stmt=conn.prepareStatement(sql);
             stmt.setInt(1, CryptoCoin.getID());
-            ResultSet CoinResult = stmt.executeQuery();
-            if(!filter.equals("Day")) {
-                formatter = DateTimeFormatter.ofPattern("dd");
+
+            if(filter.equals("Week")){
+                sql = "SELECT DAY(Date) AS XValue, AVG(Value) AS Value FROM CoinHistory WHERE Date >= CURDATE() - INTERVAL 7 DAY AND Date <= CURDATE() AND Coin=? GROUP BY Coin, XValue ORDER BY Coin, XValue";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, CryptoCoin.getID());
+            }else if(filter.equals("Month")){
+                sql = "SELECT DAY(Date) AS XValue, AVG(Value) AS Value FROM CoinHistory WHERE MONTH(Date) = ? AND YEAR(Date) = ? AND Coin=? GROUP BY Coin, XValue ORDER BY Coin, XValue";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, LocalDate.now().getMonthValue());
+                stmt.setInt(2, LocalDate.now().getYear());
+                stmt.setInt(3, CryptoCoin.getID());
             }
+            ResultSet CoinResult = stmt.executeQuery();
 
             while (CoinResult.next()) {
-                series.getData().add(new XYChart.Data<>(CoinResult.getTimestamp("Date").toLocalDateTime().format(formatter), CoinResult.getDouble("Value")));
+                series.getData().add(new XYChart.Data<>(CoinResult.getString("XValue"), CoinResult.getDouble("Value")));
             }
 
             lineChart.getData().add(series);
@@ -182,6 +176,25 @@ public class MarketController extends MenuLoader {
 
     }
 
+    private void CheckExpired(){
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
+            String sql="Select Wallet, ID from `Order` WHERE Status NOT IN('Expired','Filled') AND Date <= NOW() - INTERVAL 24 HOUR";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                sql="Select ID, Email from UserClientWallet WHERE Wallet = ?";
+                PreparedStatement stmts = conn.prepareStatement(sql);
+                stmts.setInt(1, stmt.getResultSet().getInt("Wallet"));
+                ResultSet result = stmts.executeQuery(sql);
+                result.next();
+                EmailConfig.SendEmail(result.getString("Email"),"Your order with ID "+rs.getInt("ID")+"has expired", "Order expired");
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void OrderCoin(ActionEvent event){
         double Value=0.0;
@@ -189,30 +202,35 @@ public class MarketController extends MenuLoader {
         Boolean flag=false;
         Button clickedBttn = (Button) event.getSource();
         String OrderType = clickedBttn.getId().replace("Bttn", "");
-
-
+        //CheckExpired();
         if(OrderType.equals("Buy")){
             Value = Double.parseDouble(InputWindow("Value"));
-            if(Value> client.getWallet().getBalance() ) {
+            Amount = Integer.parseInt(InputWindow("Amount"));
+
+            if(Value*Amount > client.getWallet().getBalance()) {
                 Error();
                 flag=true;
             }else{
-                Amount = Integer.parseInt(InputWindow("Amount"));
+                client.getWallet().SetBalance(client.getWallet().getBalance()-Amount*Value);
+                client.getWallet().SetPendingBalance(client.getWallet().getPendingBalance()+Amount*Value);
             }
         }else{
             Amount = Integer.parseInt(InputWindow("Amount"));
             if(Amount> client.getWallet().GetCoinAmount(CryptoCoin.getID()) ){
-                // Create the dialog content (not fullscreen)
                 Error();
                 flag=true;
             }else{
                 Value = Double.parseDouble(InputWindow("Value"));
+                client.getWallet().UpdatePortfolio(client.getWallet().GetCoinAmount(CryptoCoin.getID())-Amount, CryptoCoin.getID());
             }
+        }
+
+        if(Value== CryptoCoin.getValue()){
+            Value=0.00;
         }
 
         if(!flag){
             String NewOrder = "INSERT INTO `Order` (Type, Wallet, Coin, Amount, Value) Values (?, ?, ?, ?, ?)"; // `Order` -> to escape word Order
-            String NewTransaction = "INSERT INTO Transaction (Type, Wallet, Coin, Amount, Value) Values (?, ?, ?, ?, ?)";
 
             try (Connection conn = DatabaseConnection.getInstance().getConnection()){
                 PreparedStatement stmt = conn.prepareStatement(NewOrder, Statement.RETURN_GENERATED_KEYS);
@@ -225,36 +243,53 @@ public class MarketController extends MenuLoader {
                 ResultSet result = stmt.getGeneratedKeys();
                 result.next();
                 int OrderID = result.getInt(1);
+                scene = ((Node) event.getSource()).getScene();
+                root = scene.getRoot();
+                Node node = root.lookup("#OrderbalanceLabel");
+                if (node instanceof Label) {
+                    Label label = (Label) node;
+                    label.setText(String.format("%.2f", client.getWallet().getPendingBalance()));
+                }
 
-                stmt = conn.prepareStatement(NewTransaction);
-                stmt.setString(1, OrderType);
-                stmt.setInt(2, client.getWallet().getID());
-                stmt.setInt(3, CryptoCoin.getID());
-                stmt.setInt(4, Amount);
-                stmt.setDouble(5, Value);
-                stmt.executeUpdate();
+                String SearchOrder = "Call SaleSearch(?, ?, ?, ?, ?, ?,?, ?, ?, ?)";
+                CallableStatement stmts = conn.prepareCall(SearchOrder);
+                stmts.setString(1, OrderType);
+                stmts.setInt(2, OrderID);
+                stmts.setInt(3, client.getWallet().getID());
+                stmts.setInt(4, CryptoCoin.getID());
+                stmts.setInt(5, Amount);
+                stmts.setDouble(6, Value);
+                stmts.registerOutParameter(7, Types.BOOLEAN);
+                stmts.registerOutParameter(8, Types.BOOLEAN);
+                stmts.registerOutParameter(9, Types.INTEGER);
+                stmts.registerOutParameter(10, Types.INTEGER);
+                stmts.execute();
+                Boolean Orderdone= stmts.getBoolean(7), Matchdone=stmts.getBoolean(8);
+                int MatchID = stmts.getInt(10), MatchWalletID = stmts.getInt(9);
+                if(Orderdone){
+                    EmailConfig.SendEmail(client.getEmail(), "The Order with ID: "+OrderID+" has been completed","Order complete");
+                }
+                if(Matchdone){
 
-                String SearchOrder = "Call SaleSearch(?, ?, ?, ?, ?, ?)";
-                stmt = conn.prepareStatement(SearchOrder);
-                stmt.setString(1, OrderType);
-                stmt.setInt(2, OrderID);
-                stmt.setInt(3, client.getWallet().getID());
-                stmt.setInt(4, CryptoCoin.getID());
-                stmt.setInt(5, Amount);
-                stmt.setDouble(6, Value);
-                stmt.executeQuery();
+                    EmailConfig.SendEmail(client.getUserEmail(MatchWalletID), "The Order with ID: "+MatchID+" has been completed","Order complete");
+                }
 
 
             }catch (SQLException e){
                 e.printStackTrace();
             }
-            client.getWallet().UpdateBalance();
+            client.getWallet().GetUpdatedBalance();
             scene = ((Node) event.getSource()).getScene();
             root = scene.getRoot();
             Node node = root.lookup("#balanceLabel");
             if (node instanceof Label) {
                 Label label = (Label) node;
                 label.setText(String.format("%.2f", client.getWallet().getBalance()));
+            }
+            node = root.lookup("#PendingbalanceLabel");
+            if (node instanceof Label) {
+                Label label = (Label) node;
+                label.setText(String.format("%.2f", client.getWallet().getPendingBalance()));
             }
             LoadData();
         }
@@ -265,26 +300,36 @@ public class MarketController extends MenuLoader {
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle(type);
 
-        // Set the button types
-        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        ButtonType CancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, CancelButtonType);
-
-        // Create the text field
         TextField inputField = new TextField();
         inputField.setStyle("-fx-background-color: #28323E; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 10px");
 
         Label inputLabel = new Label("Enter "+type);
         inputLabel.setStyle("-fx-text-fill: white;");
+
         Label Amount = new Label("Owned: "+ client.getWallet().GetCoinAmount(CryptoCoin.getID()));
         Amount.setStyle("-fx-text-fill: white;");
+
+        // Set the button types
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        ButtonType CancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        Button MarketButton = new Button("Market value");
+        MarketButton.setStyle("-fx-background-color: #FFA630; -fx-border-radius: 10;");
+        MarketButton.setOnAction(event -> {
+            inputField.setText(String.format(Locale.US,"%.2f", CryptoCoin.getValue()));
+        });
+
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, CancelButtonType);
+
         // Layout for the dialog content
+        HBox hBox = new HBox(inputLabel, MarketButton);
+        hBox.setSpacing(20);
+
         VBox content;
         if(type.equals("Amount")){
-
             content = new VBox(10, inputLabel, Amount, inputField);
         }else{
-            content = new VBox(10, inputLabel, inputField);
+            content = new VBox(10, hBox, inputField);
         }
 
         dialog.getDialogPane().setContent(content);
