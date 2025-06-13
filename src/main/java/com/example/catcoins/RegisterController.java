@@ -64,7 +64,7 @@ public class RegisterController {
             ToggleErroLabel(errorLabelEmail, false);
         } else if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
             ToggleErroLabel(errorLabelEmail, true);
-            errorLabelEmail.setText("Email Inválido !");
+            errorLabelEmail.setText("Invalid Email!");
         }else {
             ToggleErroLabel(errorLabelEmail, false);
         }
@@ -78,14 +78,15 @@ public class RegisterController {
 
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             ToggleErroLabel(errorLabelFields, true);
-            errorLabelFields.setText("Todos os campos são obrigatórios!");
+            errorLabelFields.setText("All fields are required!");
         } else if (!acceptedTerms) {
             ToggleErroLabel(errorLabelTerms, true);
-            errorLabelTerms.setText("Deve aceitar os termos e condições!");
+            errorLabelTerms.setText("You must accept the terms and conditions!");
             // Verifica se o e-mail já está registrado
         } else if (CheckIfEmail(email)) {
             if (CheckIfEmail(email)) {
-                showAlert(Alert.AlertType.INFORMATION, "Email já registrado", "Este email já está registrado.\nVá para o Login", () -> GoLogin());  // redireciona só depois do OK
+                //showAlert(Alert.AlertType.INFORMATION, "Email já registrado", "Este email já está registrado.\nVá para o Login", () -> GoLogin());  // redireciona só depois do OK
+                AlertUtils.showAlert(Background,"Este email já está registrado.\nVá para o Login", () -> GoLogin());
             }
 
         }else if (passwordStrengthBar.getProgress() == 1 && !errorLabelEmail.isVisible()) {
@@ -105,7 +106,7 @@ public class RegisterController {
             int WalletID = Integer.parseInt(partes[1]);
 
             if (UserID!=0) {
-                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Registo guardado com sucesso!");
+                AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Success", "Record saved successfully!");
                 limparCampos();
 
                 try {
@@ -114,13 +115,18 @@ public class RegisterController {
                     e.printStackTrace();
                 }
             }else {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Falha ao guardar os dados.");
+                AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Failed to save data");
             }
         }else{
             ToggleErroLabel(errorLabelEmail, false);
             ToggleErroLabel(errorLabelFields, false);
             ToggleErroLabel(errorLabelTerms, false);
         }
+
+    }
+
+    private void showAlert() {
+        AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Verify the credentials entered");
 
     }
 
@@ -136,7 +142,7 @@ public class RegisterController {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao verificar o email.");
+            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Error verifying email.");
             return false;
         }
     }
@@ -156,25 +162,25 @@ public class RegisterController {
 
         if (password.length() < 10) {
             //strength += 0.0;
-            mensagemErro += "Mínimo de 10 caracteres!\n";
+            mensagemErro += "Minimum 10 characters!\n";
         } else {
             strength += 0.4;
         }
 
         if (password.equals(password.toLowerCase())) {
-            mensagemErro += "Pelo menos 1 letra maiúscula (A-Z)!\n";
+            mensagemErro += "At least 1 capital letter (A-Z)!\n";
         } else {
             strength += 0.2;
         }
 
         if (!password.matches(".*\\d.*")) {
-            mensagemErro += "Pelo menos 1 número (0-9)!\n";
+            mensagemErro += "At least 1 number (0-9)!\n";
         } else {
             strength += 0.2;
         }
 
         if (!password.matches(".*[!@#$%^&*()\\-_=+\\\\|\\[\\]{};:'\",.<>/?].*")) {
-            mensagemErro += "Pelo menos 1 caractere especial (!@#$%^&* etc.)!\n";
+            mensagemErro += "At least 1 special character (!@#$%^&* etc.)!\n";
         } else {
             strength += 0.2;
         }
@@ -252,7 +258,7 @@ public class RegisterController {
             Main.setRoot(fxmlPath, null);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela: \n" + fxmlPath);
+            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Unable to load screen: \n" + fxmlPath);
         }
     }
 
@@ -271,48 +277,6 @@ public class RegisterController {
             passwordField.setVisible(true);
             passwordField.setManaged(true);
         }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String Message) {
-        showAlert(type, title, Message, null); // Chama a versão com callback, mas sem ação
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String Message, Runnable onClose) {
-        StackPane overlay = createDialogBox(Message, onClose);
-        Background.getChildren().add(overlay); // Adiciona o overlay ao StackPane principal
-    }
-
-    private StackPane createDialogBox(String Message, Runnable onClose) {
-
-        // Create the dialog content (not fullscreen)
-        VBox dialog = new VBox(3);
-        dialog.setSpacing(25);
-        dialog.setAlignment(Pos.CENTER);
-        dialog.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: white;");
-        dialog.setMaxWidth(320);
-        dialog.setMaxHeight(170);
-        Label message = new Label(Message);
-        message.setStyle("-fx-text-fill: white");
-        Button okButton = new Button("OK");
-        okButton.setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
-        dialog.getChildren().addAll(message, okButton);
-
-        // Optional: create a semi-transparent background overlay
-        StackPane overlay = new StackPane();
-        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.4 = 40% opacity
-        // Add the dialog to the overlay and center it
-        overlay.getChildren().add(dialog);
-        overlay.setAlignment(Pos.CENTER);
-        // Add overlay to the root StackPane
-        Background.getChildren().add(overlay);
-
-        okButton.setOnAction(e -> {
-            Background.getChildren().remove(overlay);
-            if (onClose != null) {
-                onClose.run();
-            }
-        });
-        return overlay;
     }
 
     @FXML

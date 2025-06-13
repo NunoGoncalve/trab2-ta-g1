@@ -232,14 +232,14 @@ public class RecoverPassword {
 
         if (code == null || code.trim().isEmpty()) {
             ToggleErroLabel(errorLabelFields, true);
-            errorLabelFields.setText("Campo obrigatório!");
+            errorLabelFields.setText("Mandatory field!");
             ToggleErroLabel(errorLabelEmail, false);
 
         } else if (!verifyCode(email, code)) {
             showAlert(Alert.AlertType.ERROR, "Error", "Code invalid!");
         }
 
-        else showAlert(Alert.AlertType.INFORMATION, "Code Verified", "Code Verified.", this::showNewPassword);
+        else AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Code Verified", "Code Verified.", this::showNewPassword);
 
     }
 
@@ -250,7 +250,7 @@ public class RecoverPassword {
             Main.setRoot(fxmlPath, null);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar a tela: \n" + fxmlPath);
+            showAlert(Alert.AlertType.ERROR, "Erro", "Unable to load screen: \n" + fxmlPath);
         }
     }
 
@@ -321,9 +321,8 @@ public class RecoverPassword {
                 int rowsAffected = stmt.executeUpdate();
 
                 if (rowsAffected > 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Sucess", "Password changed with sucess!", () -> {
-                        GoToScreen("Login.fxml");
-                    });
+                    AlertUtils.showAlert(Background,"Password changed with sucess!", () -> GoToScreen("Login.fxml"));
+
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Check your credentials.");
                 }
@@ -407,40 +406,5 @@ public class RecoverPassword {
         showAlert(type, title, Message, null); // Chama a versão com callback, mas sem ação
     }
 
-    private void showAlert(Alert.AlertType type, String title, String Message, Runnable onClose) {
-        StackPane overlay = createDialogBox(Message, onClose);
-        Background.getChildren().add(overlay); // Adiciona o overlay ao StackPane principal
-    }
 
-    private StackPane createDialogBox(String Message, Runnable onClose) {
-        // Create the dialog content (not fullscreen)
-        VBox dialog = new VBox(3);
-        dialog.setSpacing(25);
-        dialog.setAlignment(Pos.CENTER);
-        dialog.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: white;");
-        dialog.setMaxWidth(320);
-        dialog.setMaxHeight(170);
-        Label message = new Label(Message);
-        message.setStyle("-fx-text-fill: white");
-        Button okButton = new Button("OK");
-        okButton.setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
-        dialog.getChildren().addAll(message, okButton);
-
-        // Optional: create a semi-transparent background overlay
-        StackPane overlay = new StackPane();
-        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.4 = 40% opacity
-        // Add the dialog to the overlay and center it
-        overlay.getChildren().add(dialog);
-        overlay.setAlignment(Pos.CENTER);
-        // Add overlay to the root StackPane
-        Background.getChildren().add(overlay);
-
-        okButton.setOnAction(e -> {
-            Background.getChildren().remove(overlay);
-            if (onClose != null) {
-                onClose.run();
-            }
-        });
-        return overlay;
-    }
 }
