@@ -50,7 +50,8 @@ public class LoginController {
             throw new RuntimeException(e);
         }
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
+        try{
+            Connection conn = DatabaseConnection.getInstance().getConnection();
             String sql = "SELECT * FROM User WHERE email = ? AND password = ? and Status = 'Active'";
             PreparedStatement stmt = conn.prepareStatement(sql);
 
@@ -122,7 +123,7 @@ public class LoginController {
                 }
             }
             else{
-                showAlert(Alert.AlertType.ERROR, "Erro", "Verifique as credenciais inseridas");
+                AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Verify the credentials entered");
                 esqueceuSenhaLink.setVisible(true);
                esqueceuSenhaLink.setManaged(true);
             }
@@ -150,7 +151,7 @@ public class LoginController {
             Main.setRoot("RecoverPassword.fxml", null);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "It wasn't possible to load the password recovery page.");
+            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "It wasn't possible to load the password recovery page.");
         }
     }
 
@@ -181,7 +182,7 @@ public class LoginController {
             trocarCena("registo.fxml", null);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "It wasn't possible to load the register page.");
+            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "It wasn't possible to load the register page.");
         }
     }
 
@@ -208,33 +209,5 @@ public class LoginController {
             errorLabel.setManaged(false);
             errorLabel.setText(null);
         }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String Message) {
-
-        // Create the dialog content (not fullscreen)
-        VBox dialog = new VBox(3);
-        dialog.setSpacing(25);
-        dialog.setAlignment(Pos.CENTER);
-        dialog.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: white;");
-        dialog.setMaxWidth(320);
-        dialog.setMaxHeight(170);
-        Label message = new Label(Message);
-        message.setStyle("-fx-text-fill: white");
-        Button okButton = new Button("OK");
-        okButton.setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
-        dialog.getChildren().addAll(message, okButton);
-
-        // Optional: create a semi-transparent background overlay
-        StackPane overlay = new StackPane();
-        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.4 = 40% opacity
-        // Add the dialog to the overlay and center it
-        overlay.getChildren().add(dialog);
-        overlay.setAlignment(Pos.CENTER);
-        // Add overlay to the root StackPane
-        Background.getChildren().add(overlay);
-        // Remove overlay when OK is clicked
-        okButton.setOnAction(e -> Background.getChildren().remove(overlay));
-
     }
 }
