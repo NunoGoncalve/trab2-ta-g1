@@ -36,6 +36,7 @@ public class UserMenuController {
     @FXML private HBox UserMenu;
     @FXML private Button ManageCoinBttn;
     @FXML private Button ManageUserBttn;
+    @FXML private Button ActiveOrdersBttn;
     @FXML private Button TransactionHistoryBttn;
     @FXML private StackPane UserMenuPane; // Usando o ID correto do StackPane no FXML
     @FXML private TextField amountField;
@@ -259,6 +260,10 @@ public class UserMenuController {
     @FXML
     void ManageUser() {
         GoTo("ManageUser.fxml");
+    }
+    @FXML
+    void ActiveOrders() {
+        GoTo("ActiveOrders.fxml");
     }
 
     private void GoTo(String View) {
