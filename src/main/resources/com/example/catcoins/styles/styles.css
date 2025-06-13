@@ -15,7 +15,12 @@
     -fx-text-fill: #FFA630;
     -fx-font-weight: bold;
 }
-
+.return-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-font-size: 25;
+}
 .sidebar-button,
 .sidebar-button-logout {
     -fx-background-color: transparent;
@@ -72,7 +77,6 @@
     -fx-spacing: 15px;
     -fx-border-radius: 30px;
     -fx-background-radius: 25px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
     -fx-min-width: 400px;
     -fx-max-width: 1200px;
     -fx-max-height: 900px;
@@ -108,16 +112,19 @@
     /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 2);*/
 }
 
-.edit-btn, .delete-btn {
-    -fx-background-color: transparent;
-    -fx-border-color: #fff;
-    -fx-border-width: 2px;
-    -fx-text-fill: #fff;
+/* Botão de Deletar */
+.delete-btn {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-min-height: 30px;
+    -fx-min-width: 30px;
     -fx-font-size: 14px;
 }
 
-.edit-btn:hover, .delete-btn:hover {
-    -fx-background-color: #16a085;
+.delete-btn:hover {
+    -fx-background-color: #ff5252;
+    -fx-effect: dropshadow(gaussian, rgba(255, 82, 82, 0.4), 4, 0, 0, 1);
 }
 
 /* Estilo das Entradas de Moedas */
@@ -214,7 +221,7 @@
 }
 
 .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #4f8dff;
+    -fx-background-color: #FFA630;
 }
 
 .export-csv-btn {

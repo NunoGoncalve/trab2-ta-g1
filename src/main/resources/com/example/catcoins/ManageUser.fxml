@@ -8,6 +8,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -222,6 +224,17 @@
                             <Button onAction="#CreateUser" styleClass="submit-btn" text="Adicionar Utilizador" />
                         </HBox>
                     </VBox>
+               <HBox alignment="CENTER_LEFT" maxHeight="40.0" prefHeight="40.0" prefWidth="1692.0">
+                  <children>
+                     <Button alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" mnemonicParsing="false" onAction="#goBack" prefHeight="52.0" prefWidth="41.0" rotate="270.0" styleClass="return-button" text="⤴" />
+                     <Button onAction="#exportAllUsersToCSV" alignment="CENTER_RIGHT" mnemonicParsing="false" prefHeight="35.0" prefWidth="157.0" styleClass="sidebar-button" text="Export CSV" />
+                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                           <Image url="@imgs/transfer.png" />
+                        </image>
+                     </ImageView>
+                  </children>
+               </HBox>
                 </VBox>
             </content>
         </ScrollPane>

@@ -57,6 +57,14 @@
     -fx-alignment: CENTER;
 }
 
+/* Estilo da Tabela de Transações */
+#OrdersTable {
+    -fx-background-color: transparent;
+    -fx-border-radius: 16;
+    -fx-padding: 5;
+    -fx-table-cell-border-color: transparent;
+    -fx-alignment: CENTER;
+}
 .table-view .column-header-background {
     -fx-background-color: transparent;
 }

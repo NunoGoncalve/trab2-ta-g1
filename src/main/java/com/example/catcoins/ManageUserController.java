@@ -1,13 +1,15 @@
 package com.example.catcoins;
-
 import com.example.catcoins.model.User;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 
 public class ManageUserController extends MenuLoader {
@@ -79,6 +81,7 @@ public class ManageUserController extends MenuLoader {
     }
 
     public void LoadUsersPage(int pagina) {
+
         int offset = pagina * usersPerPage;
         String sql = "SELECT ID, Name, Email, Password, Role, Status FROM User ORDER BY Status ASC LIMIT ? OFFSET ?";
 
@@ -463,5 +466,63 @@ public class ManageUserController extends MenuLoader {
         alert.getButtonTypes().setAll(botaoSim, botaoNao);
 
         return alert.showAndWait().filter(resposta -> resposta == botaoSim).isPresent();
+    }
+
+    @FXML
+    private void exportAllUsersToCSV() throws IOException {
+        // Garante que o diretório existe
+        Path dirPath = Paths.get("src/main/resources/CSV");
+        if (!Files.exists(dirPath)) {
+            Files.createDirectories(dirPath);
+        }
+
+        // Caminho do ficheiro
+        String filePath = "src/main/resources/CSV/users.csv";
+
+        try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write("Name;Email;Role;Status\n");
+
+            String sql = "SELECT Name, Email, Role, Status FROM User ORDER BY Status";
+
+            try (Connection conn = DatabaseConnection.getInstance().getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    String name = rs.getString("Name");
+                    String email = rs.getString("Email");
+                    String role = rs.getString("Role");
+                    String status = rs.getString("Status");
+
+                    String line = String.format("\"%s\";\"%s\";\"%s\";\"%s\"\n", name, email, role, status);
+                    writer.write(line);
+                }
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erro de base de dados", "Não foi possível exportar os utilizadores: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Enviar o e-mail com o CSV
+        String subject = "Utilizadores CatCoins";
+        String content = "Este e-mail foi gerado automaticamente pelo sistema CatCoins.";
+        showAlert(Alert.AlertType.INFORMATION, "Exportação concluída", "O ficheiro completo foi enviado para seu e-mail!");
+        EmailConfig.SendEmailAttach(super.getLoggedUser().getEmail(), content, subject, filePath);
+
+        // Limpa o ficheiro temporário
+        try {
+            Files.delete(Paths.get(filePath));
+        } catch (IOException e) {
+            System.out.println("Erro ao remover ficheiro: " + e.getMessage());
+        }
+    }
+    @FXML
+    public void goBack(){
+        try {
+            Main.setRoot("Main.fxml", super.getLoggedUser());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
