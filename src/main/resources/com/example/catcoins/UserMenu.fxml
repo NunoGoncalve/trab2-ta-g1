@@ -41,7 +41,7 @@
                             </VBox.margin>
                         </Button>
                         <!--TransactionHistoryButton-->
-                        <Button fx:id="ActiveOrders" onAction="#ActiveOrders" prefHeight="29.0" prefWidth="132.0" styleClass="sidebar-button" text="Active Orders" visible="true">
+                        <Button fx:id="ActiveOrdersBttn" onAction="#ActiveOrders" prefHeight="29.0" prefWidth="132.0" styleClass="sidebar-button" text="Active Orders" visible="true">
                             <VBox.margin>
                                 <Insets bottom="30.0" />
                             </VBox.margin>

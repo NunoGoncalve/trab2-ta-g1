@@ -53,6 +53,8 @@ public class UserMenuController {
             BalanceButton.setManaged(false);
             TransactionHistoryBttn.setVisible(false);
             TransactionHistoryBttn.setManaged(false);
+            ActiveOrdersBttn.setVisible(false);
+            ActiveOrdersBttn.setManaged(false);
         }
     }
 
