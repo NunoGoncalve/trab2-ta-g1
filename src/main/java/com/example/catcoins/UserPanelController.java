@@ -10,6 +10,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,6 +20,7 @@ import javafx.scene.layout.*;
 
 import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -52,7 +55,10 @@ public class UserPanelController extends MenuLoader {
     @FXML private Label SumLabel;
     @FXML private Label numOrdersBuy;
     @FXML private Label numOrdersSell;
+    @FXML private Label TotalCoins;
+
     @FXML private StackPane Background;
+    @FXML private PieChart portfolioPieChart;
 
     @Override
     public void setLoggedUser(User user) {
@@ -61,6 +67,7 @@ public class UserPanelController extends MenuLoader {
         carregarMoedas(null);
         atualizarContagemOrdensBuy();
         atualizarContagemOrdensSell();
+        LoadGraph();
     }
 
     public void carregarMoedas(String filtro) {
@@ -257,6 +264,34 @@ public class UserPanelController extends MenuLoader {
             AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Error loading order count:\n" + "\nYou have an error in your SQL syntax");
             e.printStackTrace();
             numOrdersSell.setText("0");
+        }
+    }
+
+    private void LoadGraph(){
+        // Limpa os dados existentes do PieChart
+        portfolioPieChart.getData().clear();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
+            String sql = "SELECT c.Name as Coin, p.Amount,(SELECT Sum(Amount) from Portfolio where WalletID = ?) as TotalCoins FROM Portfolio p inner join Coin c on c.ID=CoinID WHERE p.WalletID = ?; ";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            Client LoggedClient = (Client) super.getLoggedUser();
+            stmt.setInt(1,   LoggedClient.getWallet().getID());
+            stmt.setInt(2,   LoggedClient.getWallet().getID());
+
+
+            ResultSet coinResult = stmt.executeQuery();
+
+            while (coinResult.next()) {
+                String coinID = coinResult.getString("Coin");
+                int amount = coinResult.getInt("Amount");
+                int totalCoins = coinResult.getInt("TotalCoins");
+                // Para PieChart, cada fatia é um PieChart.Data
+                PieChart.Data slice = new PieChart.Data(coinID+ " - " + amount, amount);
+                portfolioPieChart.getData().add(slice);
+                TotalCoins.setText(String.valueOf("Total Coins: "+ totalCoins));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

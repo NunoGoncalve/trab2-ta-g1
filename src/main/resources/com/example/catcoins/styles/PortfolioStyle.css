@@ -2,7 +2,10 @@
     -fx-background-color: #252D36;
     -fx-text-fill: white;
 }
-
+* {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
 .sidebar {
     -fx-background-color: #28323E;
     -fx-padding: 20;
@@ -238,3 +241,36 @@
     -fx-underline: true;
 }
 
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent; /* fundo da barra dos separadores */
+}
+
+.tab-pane .tab {
+    -fx-background-color: #252D36;
+    -fx-padding: 8 15 8 15;
+    -fx-background-insets: 0;
+    -fx-background-radius: 5 5 0 0;
+}
+
+.tab-pane .tab .tab-label {
+    -fx-text-fill: white;
+}
+.tab-pane .tab .tab-label {
+    -fx-text-fill: white;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #ffa630; /* separador ativo */
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: white;
+}
+.tab-pane .tab-label{
+    -fx-text-fill: white;
+}
+
+.chart-pie-label{
+        -fx-font-size: 15px;
+        -fx-fill: white;
+    }

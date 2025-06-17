@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1792.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.OrdersController">
+<BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1792.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.OrdersController">
     <stylesheets>
         <URL value="@styles/styles.css" />
         <URL value="@styles/UserDetails.css" />
@@ -51,6 +46,9 @@
                  </VBox.margin>
                   </VBox>
               </children>
+            <StackPane.margin>
+               <Insets right="40.0" />
+            </StackPane.margin>
           </VBox>
           </StackPane>
       </center>
