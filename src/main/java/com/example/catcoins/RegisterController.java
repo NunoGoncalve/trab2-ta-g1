@@ -110,7 +110,7 @@ public class RegisterController {
                 limparCampos();
 
                 try {
-                    Registered(UserID ,WalletID, username, email);
+                    Registered(WalletID,UserID , username, email);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -233,7 +233,7 @@ public class RegisterController {
     }
 
     protected void Registered(int WalletID, int UserID, String Username, String Email) throws IOException {
-        Wallet ClientWallet = new Wallet(WalletID,0.00, 0.00,"USD $");
+        Wallet ClientWallet = new Wallet(WalletID,0.00, 0.00,"EUR €");
         Client ClientRegistred = new Client(UserID, Username, Email, Role.Client, Status.Active, ClientWallet);
         Main.setRoot("Main.fxml", ClientRegistred);
     }

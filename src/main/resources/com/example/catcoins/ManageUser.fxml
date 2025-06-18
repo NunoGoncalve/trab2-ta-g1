@@ -168,14 +168,14 @@
             
                                         <VBox spacing="5" HBox.hgrow="ALWAYS">
                                       <Label style="-fx-text-fill: #8d99ad;" text="Role" />
-                                      <ComboBox fx:id="userRoleField" maxWidth="Infinity" promptText="Selecione o Role" />
+                                      <ComboBox fx:id="userRoleField" disable="true" maxWidth="Infinity" promptText="Selecione o Role" />
                                   </VBox>
                               </HBox>
             
                                     <HBox spacing="15">
                                   <VBox spacing="5" HBox.hgrow="ALWAYS">
                                       <Label style="-fx-text-fill: #8d99ad;" text="Status" />
-                                      <ComboBox fx:id="userStatusField" maxWidth="Infinity" promptText="Selecione o Status" />
+                                      <ComboBox fx:id="userStatusField" disable="true" maxWidth="Infinity" promptText="Selecione o Status" />
                                   </VBox>
                                   <VBox spacing="5" HBox.hgrow="ALWAYS">
                                 <!-- Espaço vazio para alinhamento -->

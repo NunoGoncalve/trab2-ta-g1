@@ -406,7 +406,7 @@ public class MarketController extends MenuLoader {
             System.out.println("Failed to delete the file: " + e.getMessage());
         }
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Enviado");
+        alert.setTitle("Sent");
         alert.setContentText("The requested information has been sent to your email.");
         alert.initOwner(stage);
         alert.showAndWait();

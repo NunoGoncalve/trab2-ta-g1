@@ -453,7 +453,14 @@ public class ManageUserController extends MenuLoader {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10");
+
+        Label Label = new Label(message);
+        Label.setStyle("-fx-text-fill: white;");
+
+        VBox content = new VBox(10, Label);
+        dialogPane.setContent(content);
         alert.showAndWait();
     }
 
@@ -503,14 +510,14 @@ public class ManageUserController extends MenuLoader {
             }
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de base de dados", "Não foi possível exportar os utilizadores: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "It wasn't possible to export the data: " + e.getMessage());
             e.printStackTrace();
         }
 
         // Enviar o e-mail com o CSV
-        String subject = "Utilizadores CatCoins";
-        String content = "Este e-mail foi gerado automaticamente pelo sistema CatCoins.";
-        showAlert(Alert.AlertType.INFORMATION, "Exportação concluída", "O ficheiro completo foi enviado para seu e-mail!");
+        String subject = "CatCoins Users";
+        String content = "Data related to system users";
+        showAlert(Alert.AlertType.INFORMATION, "Export complete", "The information has been sent to your email");
         EmailConfig.SendEmailAttach(super.getLoggedUser().getEmail(), content, subject, filePath);
 
         // Limpa o ficheiro temporário

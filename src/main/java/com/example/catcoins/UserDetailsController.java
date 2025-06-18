@@ -224,13 +224,13 @@ public class UserDetailsController extends MenuLoader {
 
         // Configuração da janela
         Stage stage = new Stage();
-        Scene scene = new Scene(root, 460, 400);
+        Scene scene = new Scene(root, 660, 400);
 
         // Adiciona o arquivo CSS à cena
         scene.getStylesheets().add(getClass().getResource("/com/example/catcoins/styles/TransactionsDetails.css").toExternalForm());
 
         stage.setScene(scene);
-        stage.setTitle("Transações da Ordem " + orderId);
+        stage.setTitle("Order Details " + orderId);
 
         // Impede que o usuário redimensione a janela
         stage.setResizable(false);
@@ -344,11 +344,20 @@ public class UserDetailsController extends MenuLoader {
 
             transactionList.clear();
             while (rs.next()) {
+                double value = rs.getDouble("Value");
+                if(value == 0.00){
+                    sql="Select Value from CoinHistory Where Coin= ? Order By Date Desc limit 1";
+                    PreparedStatement Newstmt = conn.prepareStatement(sql);
+                    Newstmt.setInt(1, rs.getInt("t.Coin"));
+                    ResultSet RS = Newstmt.executeQuery();
+                    RS.next();
+                    value= RS.getDouble("Value");
+                }
                 Transaction t = new Transaction(
                         rs.getInt("ID"),
                         rs.getString("Type"),
                         rs.getString("Coin"),
-                        rs.getDouble("Value"),
+                        value,
                         rs.getDouble("Amount"),
                         rs.getTimestamp("Date").toString()  // Alterado para getTimestamp
                 );
