@@ -60,7 +60,7 @@ public class MainController extends MenuLoader {
     }
 
     public void carregarMoedas(String filtro) {
-        String sql = "SELECT id, Name, VarianceCalc(id) as variance, (Select Value from CoinHistory Where Coin=id ORDER BY Date DESC LIMIT 1) as value FROM Coin;";
+        String sql = "SELECT id, Name, VarianceCalc(id) as variance, (Select Value from CoinHistory Where Coin=id ORDER BY Date DESC LIMIT 1) as value FROM Coin where Status='Active'";
 
         class CoinData {
             int id;

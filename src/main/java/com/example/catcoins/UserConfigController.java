@@ -42,7 +42,6 @@ public class UserConfigController extends MenuLoader {
     private String selectedCurrency = "USD"; // USD padrão
     // Taxa de conversão conforme especificado: 1 USD = 0.88 EUR
     private final double USD_TO_EUR_RATE = 0.88;
-    private final double EUR_TO_USD_RATE = 1.0 / USD_TO_EUR_RATE;
 
     @Override
     public void setLoggedUser(User user) {
@@ -65,13 +64,13 @@ public class UserConfigController extends MenuLoader {
         controller.setUser(super.getLoggedUser());
         MainPanel.setLeft(menu);
 
-        if(super.getLoggedUser().getRole()== Role.Client){
+       /* if(super.getLoggedUser().getRole()== Role.Client){
             loadCurrencyPreference();  // Carrega a preferência de moeda do usuário
         }else{
             currencyComboBox.setManaged(false);
             currencyComboBox.setVisible(false);
             currencyLabel.setManaged(false);
-        }
+        }*/
 
     }
 
@@ -87,7 +86,7 @@ public class UserConfigController extends MenuLoader {
         }
     }
 
-    @FXML
+    /*@FXML
     public void initialize() {
         // Garante que o valor padrão do ComboBox seja USD $
         if (currencyComboBox != null) {
@@ -145,7 +144,7 @@ public class UserConfigController extends MenuLoader {
     /**
      * Salva a preferência de moeda do usuário no banco de dados.
      * Atualiza o campo Currency na tabela Wallet.
-     */
+
     private void saveCurrencyPreference() {
         // Verifica se o usuário está logado e é um cliente
         if (super.getLoggedUser() != null && super.getLoggedUser() instanceof Client) {
@@ -201,15 +200,24 @@ public class UserConfigController extends MenuLoader {
                 // Ignora exceções gerais ao tentar atualizar outros controladores
             }
         }
-    }
+    }*/
 
     @FXML
     public void goBack(){
-        try {
-            Main.setRoot("Userpanel.fxml", super.getLoggedUser());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(super.getLoggedUser().getRole()== Role.Admin){
+            try {
+                Main.setRoot("Main.fxml", super.getLoggedUser());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            try {
+                Main.setRoot("Userpanel.fxml", super.getLoggedUser());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
+
     }
 
 }

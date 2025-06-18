@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.collections.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -37,16 +35,6 @@
             <Label styleClass="text" text="Email address" />
             <TextField fx:id="Email" editable="false" maxWidth="380.0" prefHeight="35.0" prefWidth="380.0" styleClass="user-field" />
             <Label styleClass="user-label" text="User@gmail.com" />
-
-             <Label fx:id="currencyLabel" styleClass="text" text="Currency Preview" />
-             <ComboBox fx:id="currencyComboBox" onAction="#onCurrencyChanged" prefHeight="25.0" prefWidth="81.0" value="USD $">
-                 <items>
-                     <FXCollections fx:factory="observableArrayList">
-                         <String fx:value="USD $" />
-                         <String fx:value="EUR €" />
-                     </FXCollections>
-                 </items>
-             </ComboBox>
             <Separator prefWidth="400.0" />
             <Button alignment="TOP_LEFT" contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#goBack" prefHeight="78.0" prefWidth="58.0" rotate="270.0" styleClass="return-button" stylesheets="@styles/estilo.css" text="⤴" />
          </children>

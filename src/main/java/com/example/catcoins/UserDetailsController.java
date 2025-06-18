@@ -195,10 +195,19 @@ public class UserDetailsController extends MenuLoader {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
+                double value = rs.getDouble("Value");
+                if(value == 0.00){
+                    sql="Select Value from CoinHistory Where Coin= ? Order By Date Desc limit 1";
+                    PreparedStatement Newstmt = conn.prepareStatement(sql);
+                    Newstmt.setInt(1, rs.getInt("O.Coin"));
+                    ResultSet RS = Newstmt.executeQuery();
+                    RS.next();
+                    value= RS.getDouble("Value");
+                }
                 Map<String, Object> row = new HashMap<>();
                 row.put("ID", rs.getInt("ID"));
                 row.put("OrderID", rs.getInt("OrderID"));
-                row.put("Value", rs.getDouble("Value"));
+                row.put("Value", value);
                 row.put("Date", rs.getTimestamp("Date"));
                 row.put("Amount", rs.getDouble("Amount"));
                 items.add(row);

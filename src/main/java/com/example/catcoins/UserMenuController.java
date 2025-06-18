@@ -38,7 +38,8 @@ public class UserMenuController {
     @FXML private Button ManageCoinBttn;
     @FXML private Button ManageUserBttn;
     @FXML private Button ActiveOrdersBttn;
-    @FXML private Button TransactionHistoryBttn;
+    @FXML private Button OrderHistoryBttn;
+    @FXML private Button BalanceHistoryBttn;
     @FXML private StackPane UserMenuPane; // Usando o ID correto do StackPane no FXML
     @FXML private TextField amountField;
 
@@ -51,10 +52,12 @@ public class UserMenuController {
             ManageUserBttn.setManaged(true);
             BalanceButton.setVisible(false);
             BalanceButton.setManaged(false);
-            TransactionHistoryBttn.setVisible(false);
-            TransactionHistoryBttn.setManaged(false);
+            OrderHistoryBttn.setVisible(false);
+            OrderHistoryBttn.setManaged(false);
             ActiveOrdersBttn.setVisible(false);
             ActiveOrdersBttn.setManaged(false);
+            BalanceHistoryBttn.setVisible(false);
+            BalanceHistoryBttn.setManaged(false);
         }
     }
 
@@ -144,7 +147,7 @@ public class UserMenuController {
     // Método para atualizar o saldo na tabela Wallet
     private boolean updateWalletBalance(double amount, ActionEvent event) {
         Client client = (Client) LoggedUser;
-        Boolean Success = client.getWallet().SetBalance(client.getWallet().getBalance() + amount);
+        Boolean Success = client.getWallet().SetBalance(client.getWallet().getBalance() + amount, client.getWallet().getPendingBalance());
 
         scene = ((Node) event.getSource()).getScene();
         root = scene.getRoot();
@@ -244,6 +247,11 @@ public class UserMenuController {
     @FXML
     void TransactionHistory() {
         GoTo("TransactionHistory.fxml");
+    }
+
+    @FXML
+    void BalanceHistory() {
+        GoTo("BalanceHistory.fxml");
     }
 
     // Função que manda após clicar no botão gerir users manda para a pagina certa

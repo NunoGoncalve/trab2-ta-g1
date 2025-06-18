@@ -19,6 +19,7 @@ import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 
 
+import java.awt.event.ActionEvent;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,7 +61,8 @@ public class OrdersController extends MenuLoader {
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
     private final NumberFormat coinFormat = NumberFormat.getNumberInstance(Locale.getDefault());
 
-
+    private Scene scene;
+    private Parent root;
 
     @Override
     public void setLoggedUser(User user) {
@@ -149,7 +151,7 @@ public class OrdersController extends MenuLoader {
 
     private void loadTransactions() {
 
-        String sql = "SELECT O.ID,O.Type, O.Value,O.Date, O.Status, Coin.Name as Coin, O.Amount as Amount FROM `Order` O inner join Coin on O.coin= Coin.ID Where `Wallet` = ? and O.Status = 'Open' group by O.ID Order by Date DESC;\n";
+        String sql = "SELECT O.ID,O.Type, O.Value,O.Date, O.Status, Coin.Name as Coin, O.Amount as Amount,O.Coin as CoinID FROM `Order` O inner join Coin on O.coin= Coin.ID Where `Wallet` = ? and O.Status = 'Open' group by O.ID Order by Date DESC";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -158,19 +160,31 @@ public class OrdersController extends MenuLoader {
             ResultSet rs = stmt.executeQuery();
 
             transactionList.clear();
+
             while (rs.next()) {
                 int id = rs.getInt("ID");
+                double value = rs.getDouble("Value");
+                if(value == 0.00){
+                    sql="Select Value from CoinHistory Where Coin= ? Order By Date Desc limit 1";
+                    PreparedStatement Newstmt = conn.prepareStatement(sql);
+                    Newstmt.setInt(1, rs.getInt("CoinID"));
+                    ResultSet RS = Newstmt.executeQuery();
+                    RS.next();
+                    value= RS.getDouble("Value");
+                }
                 Transaction t = new Transaction(
                         id,
                         rs.getString("Type"),
                         rs.getString("Coin"),
-                        rs.getDouble("Value"),
+                        value,
                         rs.getDouble("Amount"),
                         rs.getTimestamp("Date").toString()
                 );
 
                 transactionList.add(t);
             }
+
+
 
             transactionsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY) ; // removeu aquele espaço branco
             transactionsTable.setItems(transactionList);
@@ -186,50 +200,6 @@ public class OrdersController extends MenuLoader {
     private void handleDatabaseError(SQLException e) {
         e.printStackTrace();
         System.err.println("Database error: " + e.getMessage());
-    }
-
-    @FXML
-    private void exportLineChartToCSV() throws IOException {
-        // Garante que o diretório existe
-        java.nio.file.Path dirPath = Paths.get("src/main/resources/CSV");
-        if (!Files.exists(dirPath)) {
-            Files.createDirectories(dirPath);
-        }
-
-        // Cria o arquivo CSV com separador ponto e vírgula
-        try (FileWriter writer = new FileWriter("src/main/resources/CSV/transactions.csv")) {
-            writer.write("ID;Type;Coin;Value;Amount;Date\n");
-            for (Transaction transaction : transactionsTable.getItems()) {
-                String line = String.format(
-                        "%d;\"%s\";\"%s\";%.2f;%.4f;\"%s\"\n",
-                        transaction.getId(),
-                        transaction.getType(),
-                        transaction.getCoin(),
-                        transaction.getValue(),
-                        transaction.getAmount(),
-                        transaction.getDate()
-
-                );
-                writer.write(line);
-            }
-        }
-
-        String subject = "Histórico de Transações CatCoins";
-        String content = "Este e-mail foi gerado automaticamente pelo sistema CatCoins.";
-
-        // Envia o e-mail com texto simples e anexo
-        EmailConfig.SendEmailAttach(super.getLoggedUser().getEmail(), content, subject, "src/main/resources/CSV/transactions.csv");
-
-        // Limpa o arquivo temporário
-        java.nio.file.Path path = Paths.get("src/main/resources/CSV/transactions.csv");
-        try {
-            Files.delete(path);
-        } catch (IOException e) {
-            System.out.println("Erro ao remover arquivo: " + e.getMessage());
-        }
-
-        // Substituindo o Alert padrão pelo ShowAlert personalizado
-        showAlert(Alert.AlertType.INFORMATION, "Exportação concluída", "O histórico completo foi enviado para seu e-mail!");
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
@@ -308,18 +278,26 @@ public class OrdersController extends MenuLoader {
         // Remove o overlay quando OK é clicado
         okButton.setOnAction(e -> Background.getChildren().remove(overlay));
     }
-    private boolean confirmarAcao(String titulo, String mensagem) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    private boolean confirmarAcao(String titulo, String message) {
+        Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
-        alert.setContentText(mensagem);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10");
 
-        ButtonType botaoSim = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-        ButtonType botaoNao = new ButtonType("No", ButtonBar.ButtonData.NO);
+        Label Label = new Label(message);
+        Label.setStyle("-fx-text-fill: white;");
 
-        alert.getButtonTypes().setAll(botaoSim, botaoNao);
+        VBox content = new VBox(10, Label);
+        dialogPane.setContent(content);
 
-        return alert.showAndWait().filter(resposta -> resposta == botaoSim).isPresent();
+        ButtonType okButtonType = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+        ButtonType CancelButtonType = new ButtonType("No", ButtonBar.ButtonData.NO);
+        dialogPane.getButtonTypes().addAll(okButtonType, CancelButtonType);
+        dialogPane.lookupButton(okButtonType).setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
+        dialogPane.lookupButton(CancelButtonType).setStyle("-fx-background-color: red; -fx-max-width: 50; -fx-border-radius: 10; -fx-text-fill: white;");
+
+        return alert.showAndWait().filter(resposta -> resposta == okButtonType).isPresent();
     }
 
     public void deleteOrder(int id) {
@@ -329,8 +307,8 @@ public class OrdersController extends MenuLoader {
 
         String sql = "UPDATE `Order` SET Status = 'Cancelled' WHERE ID = ?";
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
             int linhasAfetadas = stmt.executeUpdate();
 
@@ -338,6 +316,34 @@ public class OrdersController extends MenuLoader {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Order successfully cancelled!");
             } else {
                 showAlert(Alert.AlertType.WARNING, "Warning", "No order was cancelled");
+            }
+            sql = "Select Type,Amount,Coin from `Order` where ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            Client LoggedClient = (Client) super.getLoggedUser();
+            if(rs.getString("Type").equals("Buy")){
+                LoggedClient.getWallet().SetBalance(LoggedClient.getWallet().getBalance()+LoggedClient.getWallet().getPendingBalance(), 0.00);
+                scene = MainPanel.getScene();
+                root = scene.getRoot();
+                Node node = root.lookup("#balanceLabel");
+                if (node instanceof Label) {
+                    Label label = (Label) node;
+                    label.setText(String.format("%.2f", LoggedClient.getWallet().getBalance()));
+                }
+                node = root.lookup("#PendingbalanceLabel");
+                if (node instanceof Label) {
+                    Label label = (Label) node;
+                    label.setText(String.format("%.2f", LoggedClient.getWallet().getPendingBalance()));
+                }
+            }else{
+                String sql2 = "Update Portfolio Set Amount = Amount + ? where WalletID = ? and Coin=?";
+                stmt = conn.prepareStatement(sql2);
+                stmt.setDouble(1, rs.getInt("Amount"));
+                stmt.setInt(2, LoggedClient.getWallet().getID());
+                stmt.setInt(3, rs.getInt("Coin"));
+                stmt.executeUpdate();
             }
             loadTransactions();
         } catch (SQLException e) {

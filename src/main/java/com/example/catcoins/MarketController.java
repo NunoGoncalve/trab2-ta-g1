@@ -6,6 +6,7 @@ import com.example.catcoins.model.User;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,6 +21,7 @@ import javafx.stage.Stage;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.time.LocalDate;
@@ -148,7 +150,7 @@ public class MarketController extends MenuLoader {
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection()){
 
-            String sql = "SELECT XValue, Value FROM ( SELECT DATE_FORMAT(Date, '%H:%i') AS XValue, Value, Date FROM CoinHistory WHERE Date >= NOW() - INTERVAL 23 HOUR AND Coin = ? ORDER BY Date DESC LIMIT 24 ) sub ORDER BY Date ASC";
+            String sql = "SELECT XValue, Value FROM ( SELECT DATE_FORMAT(Date, '%H:%i') AS XValue, Value, Date FROM CoinHistory WHERE Date >= NOW() - INTERVAL 24 HOUR AND Coin = ? ORDER BY Date DESC LIMIT 24 ) sub ORDER BY Date ASC";
             PreparedStatement stmt=conn.prepareStatement(sql);
             stmt.setInt(1, CryptoCoin.getID());
 
@@ -211,8 +213,7 @@ public class MarketController extends MenuLoader {
                 Error();
                 flag=true;
             }else{
-                client.getWallet().SetBalance(client.getWallet().getBalance()-Amount*Value);
-                client.getWallet().SetPendingBalance(client.getWallet().getPendingBalance()+Amount*Value);
+                client.getWallet().SetBalance(client.getWallet().getBalance()-Amount*Value, client.getWallet().getPendingBalance()+Amount*Value);
             }
         }else{
             Amount = Integer.parseInt(InputWindow("Amount"));
@@ -243,13 +244,6 @@ public class MarketController extends MenuLoader {
                 ResultSet result = stmt.getGeneratedKeys();
                 result.next();
                 int OrderID = result.getInt(1);
-                scene = ((Node) event.getSource()).getScene();
-                root = scene.getRoot();
-                Node node = root.lookup("#OrderbalanceLabel");
-                if (node instanceof Label) {
-                    Label label = (Label) node;
-                    label.setText(String.format("%.2f", client.getWallet().getPendingBalance()));
-                }
 
                 String SearchOrder = "Call SaleSearch(?, ?, ?, ?, ?, ?,?, ?, ?, ?)";
                 CallableStatement stmts = conn.prepareCall(SearchOrder);
@@ -267,7 +261,10 @@ public class MarketController extends MenuLoader {
                 Boolean Orderdone= stmts.getBoolean(7), Matchdone=stmts.getBoolean(8);
                 int MatchID = stmts.getInt(10), MatchWalletID = stmts.getInt(9);
                 if(Orderdone){
+                    AlertUtils.showAlert(StackPane,Alert.AlertType.INFORMATION, "Order Complete", "Your order has been completed");
                     EmailConfig.SendEmail(client.getEmail(), "The Order with ID: "+OrderID+" has been completed","Order complete");
+                }else{
+                    AlertUtils.showAlert(StackPane,Alert.AlertType.INFORMATION, "Order Posted", "Your order has been posted");
                 }
                 if(Matchdone){
 
@@ -316,7 +313,7 @@ public class MarketController extends MenuLoader {
         Button MarketButton = new Button("Market value");
         MarketButton.setStyle("-fx-background-color: #FFA630; -fx-border-radius: 10;");
         MarketButton.setOnAction(event -> {
-            inputField.setText(String.format(Locale.US,"%.2f", CryptoCoin.getValue()));
+            inputField.setText(String.format(Locale.US,"%.10f", CryptoCoin.getValue()));
         });
 
         dialog.getDialogPane().getButtonTypes().addAll(okButtonType, CancelButtonType);
@@ -381,6 +378,11 @@ public class MarketController extends MenuLoader {
 
     @FXML
     private void exportLineChartToCSV() throws IOException {
+        java.nio.file.Path dirPath = Paths.get("src/main/resources/CSV");
+        if (!Files.exists(dirPath)) {
+            Files.createDirectories(dirPath);
+        }
+
         try (FileWriter writer = new FileWriter("src/main/resources/CSV/market.csv")) {
             // Write header
             writer.write("Hour,Value\n");

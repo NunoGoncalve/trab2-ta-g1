@@ -206,21 +206,24 @@ public class ManageUserController extends MenuLoader {
 
     private void initializeComboBoxes() {
         // Inicializar ComboBoxes com valores padrão
-        userRoleField.getItems().addAll("Admin", "Client");
-        userStatusField.getItems().addAll("Active", "Disabled");
-        editUserRoleField.getItems().addAll("Admin", "Client");
+        userRoleField.getItems().addAll("Admin");
+        userStatusField.getItems().addAll("Active");
+        editUserRoleField.getItems().addAll("Client");
         editUserStatusField.getItems().addAll("Active", "Disabled");
 
         // Definir valores padrão
-        userRoleField.setValue("Client");
+        userRoleField.setValue("Admin");
         userStatusField.setValue("Active");
     }
 
     @FXML
     public void newUserForm() {
+        editUserForm.setVisible(false);
+        editUserForm.setManaged(false);
         boolean isVisible = newUserForm.isVisible();
         newUserForm.setVisible(!isVisible);
         newUserForm.setManaged(!isVisible);
+
     }
 
     @FXML
