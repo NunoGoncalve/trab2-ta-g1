@@ -21,11 +21,6 @@
                                 <Insets bottom="45.0" />
                             </VBox.margin>
                         </Button>
-                        <Button onAction="#GoMarket" prefHeight="35.0" prefWidth="89.0" styleClass="sidebar-button" text="Market" VBox.vgrow="ALWAYS">
-                            <VBox.margin>
-                                <Insets bottom="45.0" />
-                            </VBox.margin>
-                        </Button>
                         <Button onAction="#GoWallet" prefHeight="25.0" prefWidth="80.0" styleClass="sidebar-button" text="Wallet">
                             <VBox.margin>
                                 <Insets bottom="45.0" />
@@ -61,14 +56,6 @@
                   <ImageView fitHeight="23.0" fitWidth="23.0" onMouseClicked="#GoHome" pickOnBounds="true" styleClass="sidebar-icon">
                      <image>
                         <Image url="@imgs/house.png" />
-                     </image>
-                     <VBox.margin>
-                        <Insets bottom="60.0" />
-                     </VBox.margin>
-                  </ImageView>
-                  <ImageView fx:id="menu1" fitHeight="23.0" fitWidth="23.0" onMouseClicked="#GoMarket" pickOnBounds="true" styleClass="sidebar-icon">
-                     <image>
-                        <Image url="@imgs/chart.png" />
                      </image>
                      <VBox.margin>
                         <Insets bottom="60.0" />

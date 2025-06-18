@@ -63,7 +63,7 @@ public class ManageCoinController extends MenuLoader {
 
 
     public void carregarMoedas() {
-        String sql = "SELECT id, Name, (Select Value from CoinHistory Where Coin=id ORDER BY Date DESC LIMIT 1) as value FROM Coin";
+        String sql = "SELECT id, Name, (Select Value from CoinHistory Where Coin=id ORDER BY Date DESC LIMIT 1) as value FROM Coin where Status='Active'";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              Statement stmt = conn.createStatement();
@@ -140,14 +140,14 @@ public class ManageCoinController extends MenuLoader {
             }
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro no Banco de Dados", "Erro ao carregar moedas: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Error loading coins: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private void selecionarImagem() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Selecione uma imagem PNG");
+        fileChooser.setTitle("Choose a .PNG file");
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Imagem PNG", "*.png")
         );
@@ -170,9 +170,9 @@ public class ManageCoinController extends MenuLoader {
             return;
         }
 
-        double preco;
+        double Value;
         try {
-            preco = Double.parseDouble(precoText.replace(",", "."));
+            Value = Double.parseDouble(precoText.replace(",", "."));
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.WARNING, "Invalid format", "The value must be a valid number!");
             return;
@@ -184,7 +184,8 @@ public class ManageCoinController extends MenuLoader {
         }
 
         String checkSql = "SELECT COUNT(*) FROM Coin WHERE Name = ?";
-        String insertSql = "INSERT INTO Coin (Name, Value) VALUES (?, ?)";
+        String insertSql = "INSERT INTO Coin (Name) VALUES (?)";
+        String ValueInsertSql = "INSERT INTO CoinHistory (Coin, Value) VALUES (?,?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
 
@@ -201,12 +202,15 @@ public class ManageCoinController extends MenuLoader {
 
             try (PreparedStatement insertStmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
                 insertStmt.setString(1, nome);
-                insertStmt.setDouble(2, preco);
                 insertStmt.executeUpdate();
 
                 try (ResultSet generatedKeys = insertStmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         coinId = generatedKeys.getInt(1);
+                        PreparedStatement InsertStmt = conn.prepareStatement(ValueInsertSql);
+                        InsertStmt.setInt(1, coinId);
+                        InsertStmt.setDouble(2, Value);
+                        InsertStmt.executeUpdate();
                     } else {
                         throw new SQLException("Error getting coin ID.");
                     }
@@ -227,7 +231,7 @@ public class ManageCoinController extends MenuLoader {
             try {
                 Files.deleteIfExists(targetPath);
             } catch (IOException e) {
-                System.err.println("Erro ao apagar imagem local: " + e.getMessage());
+                System.err.println("Error deleting image: " + e.getMessage());
             }
 
             coinNameField.clear();
@@ -238,11 +242,11 @@ public class ManageCoinController extends MenuLoader {
             newCoinForm.setVisible(false);
             newCoinForm.setManaged(false);
 
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Moeda adicionada com sucesso!");
+            showAlert(Alert.AlertType.INFORMATION, "Success", "The coin was added with success!");
             carregarMoedas();
 
         } catch (SQLException | IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro ao adicionar moeda", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error creating coin", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -258,7 +262,8 @@ public class ManageCoinController extends MenuLoader {
         precoOriginal = preco;
 
         editCoinNameField.setText(nome);
-        editCoinPriceField.setText(String.format("%.2f", preco));  // ou use vírgula se preferir
+        editCoinPriceField.setText(String.format("%.2f", preco));
+        editCoinPriceField.setEditable(false);
         editingCoinLabel.setText("• " + nome);
 
         editCoinForm.setVisible(true);
@@ -268,57 +273,44 @@ public class ManageCoinController extends MenuLoader {
         newCoinForm.setManaged(false);
     }
 
-
-
-
     /**
      * Confirma a edição da moeda
      */
     @FXML
     public void confirmarEdicaoMoeda() {
         String nome = editCoinNameField.getText().trim();
-        String precoText = editCoinPriceField.getText().trim();
 
-        if (nome.isEmpty() || precoText.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Dados Incompletos", "Por favor, preencha todos os campos.");
-            return;
-        }
-
-        double preco;
-        try {
-            preco = Double.parseDouble(precoText.replace(",", "."));
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.WARNING, "Formato Inválido", "O preço deve ser um número válido.");
+        if (nome.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Incomplete data", "Please,fill all the fields.");
             return;
         }
 
         // Verifica se houve alterações REAIS
-        if (nome.equalsIgnoreCase(nomeOriginal) && Double.compare(preco, precoOriginal) == 0) {
-            showAlert(Alert.AlertType.INFORMATION, "Sem Alterações", "Nenhuma modificação foi feita.");
+        if (nome.equalsIgnoreCase(nomeOriginal)) {
+            showAlert(Alert.AlertType.INFORMATION, "No alteration", "No modification was made.");
             return;
         }
 
-        String sql = "UPDATE Coin SET Name = ?, Value = ? WHERE id = ?";
+        String sql = "UPDATE Coin SET Name = ? WHERE id = ?";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, nome);
-            stmt.setDouble(2, preco);
-            stmt.setInt(3, currentEditCoinId);
+            stmt.setInt(2, currentEditCoinId);
 
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Moeda atualizada com sucesso!");
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Coin updated with success!");
                 cancelarEdicao();
                 carregarMoedas();
             } else {
-                showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma moeda foi atualizada.");
+                showAlert(Alert.AlertType.WARNING, "Warning", "The selected coin wasn't updated.");
             }
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro no Banco de Dados", "Erro ao atualizar moeda: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "There was an error updating the selected coin: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -347,26 +339,34 @@ public class ManageCoinController extends MenuLoader {
         alert.showAndWait();
     }
 
-    private boolean confirmarAcao(String titulo, String mensagem) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(titulo);
+    private boolean confirmarAcao(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(mensagem);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10");
 
-        ButtonType botaoSim = new ButtonType("Sim", ButtonBar.ButtonData.YES);
-        ButtonType botaoNao = new ButtonType("Não", ButtonBar.ButtonData.NO);
+        Label Label = new Label(message);
+        Label.setStyle("-fx-text-fill: white;");
 
-        alert.getButtonTypes().setAll(botaoSim, botaoNao);
+        VBox content = new VBox(10, Label);
+        dialogPane.setContent(content);
 
-        return alert.showAndWait().filter(resposta -> resposta == botaoSim).isPresent();
+        ButtonType okButtonType = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+        ButtonType CancelButtonType = new ButtonType("No", ButtonBar.ButtonData.NO);
+        dialogPane.getButtonTypes().addAll(okButtonType, CancelButtonType);
+        dialogPane.lookupButton(okButtonType).setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
+        dialogPane.lookupButton(CancelButtonType).setStyle("-fx-background-color: red; -fx-max-width: 50; -fx-border-radius: 10; -fx-text-fill: white;");
+
+        return alert.showAndWait().filter(resposta -> resposta == okButtonType).isPresent();
     }
 
     public void deletarMoeda(int id) {
-        if (!confirmarAcao("Confirmação", "Tem certeza que deseja deletar esta moeda?")) {
+        if (!confirmarAcao("Confirmation", "Are you sure you wish to deactivate this coin?")) {
             return;
         }
 
-        String sql = "DELETE FROM Coin WHERE id = ?";
+        String sql = "Update Coin Set Status='Disabled' WHERE id = ?";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -374,14 +374,14 @@ public class ManageCoinController extends MenuLoader {
             int linhasAfetadas = stmt.executeUpdate();
 
             if (linhasAfetadas > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Moeda removida com sucesso!");
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Coin deactivated with success!");
             } else {
-                showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma moeda foi removida.");
+                showAlert(Alert.AlertType.WARNING, "Warning", "The select coin wasn't deactivated");
             }
 
             carregarMoedas();
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro no Banco de Dados", "Erro ao deletar moeda: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "There was an error deactivating the coin: " + e.getMessage());
             e.printStackTrace();
         }
     }

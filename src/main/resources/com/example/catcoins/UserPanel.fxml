@@ -59,7 +59,7 @@
                                     </opaqueInsets>
                                 </Label>
 
-                                <Label fx:id="SumLabel" alignment="CENTER" prefHeight="107.0" prefWidth="532.0" style="-fx-font-size: 40;" styleClass="coin-label" text="100000€" textAlignment="CENTER" textFill="WHITE">
+                                <Label fx:id="SumLabel" alignment="CENTER" prefHeight="107.0" prefWidth="532.0" style="-fx-font-size: 40;" styleClass="coin-label" text="0€" textAlignment="CENTER" textFill="WHITE">
                                     <font>
                                         <Font size="20.0" />
                                     </font>

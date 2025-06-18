@@ -54,27 +54,24 @@ public class ViewBalanceController {
     // Valor do saldo atual na moeda de exibição
     private double currentDisplayBalance = 0.0;
 
-
     public void setUser(User LoggedUser) {
         if (LoggedUser instanceof Client) {
             Client LoggedClient = (Client) LoggedUser;
-            LoggedClient.getWallet().GetUpdatedPendingBalance();
+            LoggedClient.getWallet().GetUpdatedBalance();
             double Balance = LoggedClient.getWallet().getBalance();
             double PendingBalance = LoggedClient.getWallet().getPendingBalance();
-            currentDisplayBalance = currentBalanceInDol;
+            /*currentDisplayBalance = currentBalanceInDol;
 
             String dbCurrency = LoggedClient.getWallet().getCurrency();
             if (dbCurrency != null && !dbCurrency.isEmpty()) {
                 // Atualiza a moeda e converte o saldo se necessário
                // updateCurrency(dbCurrency);
-            }
+            }*/
 
             usernameLabel.setText(LoggedClient.getName());
 
             if (Balance <= 0) {
                 balanceLabel.setText("0.00");
-                //  mostrar uma mensagem em outro label, alerta, ou até trocar o texto do usernameLabel
-                //  usar o usernameLabel para mostrar a mensagem:
             } else {
                 balanceLabel.setText(String.format("%.2f", Balance));
             }
@@ -83,6 +80,7 @@ public class ViewBalanceController {
         }else{
             usernameLabel.setText(LoggedUser.getName());
             balanceLabel.setManaged(false);
+            PendingbalanceLabel.setManaged(false);
             currencyLabel.setManaged(false);
             WalletIcon.setManaged(false);
             Stack.setMaxWidth(200);

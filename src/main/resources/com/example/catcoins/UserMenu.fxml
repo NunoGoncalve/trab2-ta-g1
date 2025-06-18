@@ -4,11 +4,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane fx:id="UserMenuPane" prefHeight="668.0" prefWidth="178.0" styleClass="root" stylesheets="@styles/styles.css" visible="false" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserMenuController">
+<StackPane fx:id="UserMenuPane" prefHeight="668.0" prefWidth="190.0" styleClass="root" stylesheets="@styles/styles.css" visible="false" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.UserMenuController">
     <children>
         <HBox fx:id="UserMenu" alignment="CENTER_RIGHT" onMouseClicked="#Close" prefHeight="668.0" prefWidth="210.0">
             <children>
-                <VBox alignment="TOP_CENTER" fillWidth="true" prefHeight="668.0" prefWidth="209.0" styleClass="sidebar">
+                <VBox alignment="TOP_CENTER" fillWidth="true" prefHeight="668.0" prefWidth="214.0" styleClass="sidebar">
                     <children>
                         <!--ConfigButton-->
                         <Button onAction="#GoConfig" prefHeight="35.0" prefWidth="156.0" styleClass="sidebar-button" text="Settings">
@@ -34,8 +34,13 @@
                                 <Insets bottom="30.0" />
                             </VBox.margin>
                         </Button>
+                  <Button fx:id="BalanceHistoryBttn" layoutX="30.0" layoutY="119.0" onAction="#BalanceHistory" prefHeight="39.0" prefWidth="165.0" styleClass="sidebar-button" text="Balance History">
+                     <VBox.margin>
+                        <Insets bottom="30.0" />
+                     </VBox.margin>
+                  </Button>
                         <!--TransactionHistoryButton-->
-                        <Button fx:id="TransactionHistoryBttn" onAction="#TransactionHistory" prefHeight="29.0" prefWidth="132.0" styleClass="sidebar-button" text="Transactions" visible="true">
+                        <Button fx:id="OrderHistoryBttn" onAction="#TransactionHistory" prefHeight="29.0" prefWidth="132.0" styleClass="sidebar-button" text="Order History" visible="true">
                             <VBox.margin>
                                 <Insets bottom="30.0" />
                             </VBox.margin>

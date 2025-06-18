@@ -146,7 +146,7 @@ public class LoginController {
         }
     }
 
-        @FXML
+    @FXML
     private void handleEsqueceuSenha() {
         try {
             Main.setRoot("RecoverPassword.fxml", null);

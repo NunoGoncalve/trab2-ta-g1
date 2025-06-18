@@ -65,6 +65,16 @@
     -fx-table-cell-border-color: transparent;
     -fx-alignment: CENTER;
 }
+
+#BalanceHistoryTable {
+    -fx-background-color: transparent;
+    -fx-border-radius: 16;
+    -fx-border-color: #ffffff;
+    -fx-padding: 5;
+    -fx-table-cell-border-color: transparent;
+    -fx-alignment: CENTER;
+}
+
 .table-view .column-header-background {
     -fx-background-color: transparent;
 }
@@ -83,6 +93,13 @@
     -fx-border-color: transparent;
     -fx-padding: 5px 10px;
     -fx-font-size: 16px;
+    -fx-alignment: CENTER;
+}
+
+.table-view .filler,
+.table-view .column-header-background .filler,
+.table-view .corner {
+    -fx-background-color: #28323E; /* Replace with your header color */
 }
 
 .table-row-cell:odd {

@@ -4,11 +4,6 @@ import com.example.catcoins.model.Client;
 import com.example.catcoins.model.Transaction;
 import com.example.catcoins.model.User;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -31,7 +26,7 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-public class TransactionHistoryController extends MenuLoader {
+public class OrderHistoryController extends MenuLoader {
 
     @FXML
     private Text userNameText;
@@ -140,7 +135,6 @@ public class TransactionHistoryController extends MenuLoader {
         String sql = " SELECT O.ID,O.Type, O.Value,O.Date, O.Coin ,Sum(Transaction.Amount) as Amount " +
                     "FROM Transaction inner join `Order` O on Transaction.OrderID=O.ID " +
                     "Where Wallet = ? group by OrderID Order by Date DESC";
-
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             Client LoggedClient = (Client) super.getLoggedUser();
@@ -149,11 +143,20 @@ public class TransactionHistoryController extends MenuLoader {
 
             transactionList.clear();
             while (rs.next()) {
+                double value = rs.getDouble("Value");
+                if(value == 0.00){
+                    sql="Select Value from CoinHistory Where Coin= ? Order By Date Desc limit 1";
+                    PreparedStatement Newstmt = conn.prepareStatement(sql);
+                    Newstmt.setInt(1, rs.getInt("O.Coin"));
+                    ResultSet RS = Newstmt.executeQuery();
+                    RS.next();
+                    value= RS.getDouble("Value");
+                }
                 Transaction t = new Transaction(
                         rs.getInt("ID"),
                         rs.getString("Type"),
                         rs.getString("Coin"),
-                        rs.getDouble("Value"),
+                        value,
                         rs.getDouble("Amount"),
                         rs.getTimestamp("Date").toString()  // Alterado para getTimestamp
                 );
