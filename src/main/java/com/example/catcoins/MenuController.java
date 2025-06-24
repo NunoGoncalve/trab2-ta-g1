@@ -4,19 +4,14 @@ import com.example.catcoins.model.Client;
 import com.example.catcoins.model.User;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
+import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import java.io.IOException;
 
 public class MenuController {
 
-    private Stage stage;
-    private Scene scene;
-    private Parent root;
     private User LoggedInUser;
 
     @FXML
@@ -26,6 +21,8 @@ public class MenuController {
     private HBox ExtendedMenu;
 
     @FXML private ImageView Wallet;
+
+    private StackPane Background;
 
     @FXML
     void Open() {
@@ -44,6 +41,10 @@ public class MenuController {
         if (user instanceof Client) {
             Wallet.setVisible(true);
         }
+    }
+
+    public void SetBackground(StackPane background) {
+        Background = background;
     }
 
     public User getUser() {
@@ -84,16 +85,12 @@ public class MenuController {
         GoTo("Login.fxml");
     }
 
-    @FXML
-    void GoMarket() {
-        GoTo("Market.fxml");
-    }
-
     private void GoTo(String View) {
         try {
             Main.setRoot(View, LoggedInUser);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertUtils.showAlert(Background, "It wasn't possible to load the requested page.");
         }
 
     }

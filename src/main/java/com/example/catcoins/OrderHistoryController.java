@@ -1,59 +1,42 @@
 package com.example.catcoins;
 
-import com.example.catcoins.model.Client;
-import com.example.catcoins.model.Transaction;
-import com.example.catcoins.model.User;
+import com.example.catcoins.model.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.stage.Stage;
 
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class OrderHistoryController extends MenuLoader {
 
     @FXML
-    private Text userNameText;
+    private TableView<Order> transactionsTable;
     @FXML
-    private Text userEmailText;
+    private TableColumn<Order, Integer> idColumn;
     @FXML
-    private Text userRoleText;
+    private TableColumn<Order, String> typeColumn;
     @FXML
-    private Text userStatusText;
+    private TableColumn<Order, String> coinColumn;
     @FXML
-    private Text balanceText;
+    private TableColumn<Order, Double> valueColumn;
     @FXML
-    private Text coinBalanceText;
+    private TableColumn<Order, Double> amountColumn;
     @FXML
-    private TableView<Transaction> transactionsTable;
-    @FXML
-    private TableColumn<Transaction, Integer> idColumn;
-    @FXML
-    private TableColumn<Transaction, String> typeColumn;
-    @FXML
-    private TableColumn<Transaction, String> coinColumn;
-    @FXML
-    private TableColumn<Transaction, Double> valueColumn;
-    @FXML
-    private TableColumn<Transaction, Double> amountColumn;
-    @FXML
-    private TableColumn<Transaction, String> dateColumn;
+    private TableColumn<Order, String> dateColumn;
     @FXML
     private VBox Stack;
     @FXML
@@ -62,32 +45,21 @@ public class OrderHistoryController extends MenuLoader {
     private StackPane Background;
 
 
-    private final ObservableList<Transaction> transactionList = FXCollections.observableArrayList();
+    private final ObservableList<Order> orderList = FXCollections.observableArrayList();
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
     private final NumberFormat coinFormat = NumberFormat.getNumberInstance(Locale.getDefault());
-    private Stage stage;
 
-
-
+    private OrderDAO OrdDao = new OrderDAO();
 
     @Override
     public void setLoggedUser(User user) {
         super.setLoggedUser(user);
-        super.LoadMenus(Stack, MainPanel);
-        loadTransactions();
+        super.LoadMenus(Stack, MainPanel, Background);
+        LoadOrderHistory();
         configureTableColumns();
         configureNumberFormats();
 
     }
-
-
-//    @FXML
-//    public void initialize() {
-//        configureTableColumns();
-//        configureNumberFormats();
-//        loadTransactions();
-//
-//    }
 
     private void configureTableColumns() {
         // Configuração das colunas da tabela
@@ -98,7 +70,7 @@ public class OrderHistoryController extends MenuLoader {
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         // Formatação personalizada para valores monetários
-        valueColumn.setCellFactory(column -> new javafx.scene.control.TableCell<Transaction, Double>() {
+        valueColumn.setCellFactory(column -> new javafx.scene.control.TableCell<>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -110,17 +82,10 @@ public class OrderHistoryController extends MenuLoader {
             }
         });
 
-        // Formatação personalizada para valores de moedas
-        amountColumn.setCellFactory(column -> new javafx.scene.control.TableCell<Transaction, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(coinFormat.format(item));
-                }
-            }
+        coinColumn.setCellValueFactory(cellData -> {
+            Coin product = cellData.getValue().getCoin();
+            String name = (product != null) ? product.getName() : "";
+            return new SimpleStringProperty(name);
         });
     }
 
@@ -130,53 +95,19 @@ public class OrderHistoryController extends MenuLoader {
     }
 
 
-    private void loadTransactions() {
+    private void LoadOrderHistory() {
 
-        String sql = " SELECT O.ID,O.Type, O.Value,O.Date, O.Coin ,Sum(Transaction.Amount) as Amount " +
-                    "FROM Transaction inner join `Order` O on Transaction.OrderID=O.ID " +
-                    "Where Wallet = ? group by OrderID Order by Date DESC";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try{
             Client LoggedClient = (Client) super.getLoggedUser();
-            stmt.setInt(1,   LoggedClient.getWallet().getID());
-            ResultSet rs = stmt.executeQuery();
-
-            transactionList.clear();
-            while (rs.next()) {
-                double value = rs.getDouble("Value");
-                if(value == 0.00){
-                    sql="Select Value from CoinHistory Where Coin= ? Order By Date Desc limit 1";
-                    PreparedStatement Newstmt = conn.prepareStatement(sql);
-                    Newstmt.setInt(1, rs.getInt("O.Coin"));
-                    ResultSet RS = Newstmt.executeQuery();
-                    RS.next();
-                    value= RS.getDouble("Value");
-                }
-                Transaction t = new Transaction(
-                        rs.getInt("ID"),
-                        rs.getString("Type"),
-                        rs.getString("Coin"),
-                        value,
-                        rs.getDouble("Amount"),
-                        rs.getTimestamp("Date").toString()  // Alterado para getTimestamp
-                );
-                transactionList.add(t);
-            }
-
-            transactionsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY) ; // removeu aquele espaço branco
-            transactionsTable.setItems(transactionList);
-            System.out.println("Loaded " + transactionList.size() + " transactions for user ID: " + LoggedClient.getWallet().getID());
+            ArrayList<Order> OrderHistoryList = OrdDao.GetUserOrderHistory(LoggedClient.getWallet());
+            ObservableList<Order> orderList = FXCollections.observableArrayList(OrderHistoryList);
+            transactionsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            transactionsTable.setItems(orderList);
 
         } catch (SQLException e) {
-            System.err.println("Error loading transactions: " + e.getMessage());
-            handleDatabaseError(e);
+            DatabaseConnection.HandleConnectionError(Background, e);
             transactionsTable.setItems(FXCollections.emptyObservableList());
         }
-    }
-
-    private void handleDatabaseError(SQLException e) {
-        e.printStackTrace();
-        System.err.println("Database error: " + e.getMessage());
     }
 
     @FXML
@@ -190,15 +121,15 @@ public class OrderHistoryController extends MenuLoader {
         // Cria o arquivo CSV com separador ponto e vírgula
         try (FileWriter writer = new FileWriter("src/main/resources/CSV/transactions.csv")) {
             writer.write("ID;Type;Coin;Value;Amount;Date\n");
-            for (Transaction transaction : transactionsTable.getItems()) {
+            for (Order order : transactionsTable.getItems()) {
                 String line = String.format(
                         "%d;\"%s\";\"%s\";%.2f;%.4f;\"%s\"\n",
-                        transaction.getId(),
-                        transaction.getType(),
-                        transaction.getCoin(),
-                        transaction.getValue(),
-                        transaction.getAmount(),
-                        transaction.getDate()
+                        order.getId(),
+                        order.getType(),
+                        order.getCoin(),
+                        order.getValue(),
+                        order.getAmount(),
+                        order.getDate()
                 );
                 writer.write(line);
             }
@@ -219,6 +150,6 @@ public class OrderHistoryController extends MenuLoader {
         }
 
     // Substituindo o Alert padrão pelo ShowAlert personalizado
-        AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Export completed", "The full history has been sent to your email!");
+        AlertUtils.showAlert(Background, "The full history has been sent to your email!");
     }
 }

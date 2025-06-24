@@ -19,7 +19,7 @@ public abstract class MenuLoader implements Loader {
         return LoggedUser;
     }
 
-    public void LoadMenus(VBox Stack, BorderPane MainPanel){
+    public void LoadMenus(VBox Stack, BorderPane MainPanel, StackPane Background){
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu.fxml"));
         Parent menu = null;
         try {
@@ -27,8 +27,9 @@ public abstract class MenuLoader implements Loader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        MenuController controller = loader.getController();
-        controller.setUser(LoggedUser);
+        MenuController MenuCntrl = loader.getController();
+        MenuCntrl.setUser(LoggedUser);
+        MenuCntrl.SetBackground(Background);
         MainPanel.setLeft(menu);
         loader = new FXMLLoader(getClass().getResource("UserMenu.fxml"));
         Parent usermenu = null;
@@ -37,8 +38,9 @@ public abstract class MenuLoader implements Loader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        UserMenuController controller2 = loader.getController();
-        controller2.setUser(LoggedUser);
+        UserMenuController UserMenuCntrl = loader.getController();
+        UserMenuCntrl.setUser(LoggedUser);
+        UserMenuCntrl.SetBackground(Background);
         MainPanel.setRight(usermenu);
 
         loader = new FXMLLoader(getClass().getResource("ViewBalance.fxml"));
@@ -48,9 +50,27 @@ public abstract class MenuLoader implements Loader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        ViewBalanceController controller3 = loader.getController();
-        controller3.setUser(LoggedUser);
-        controller3.setUserMenu((HBox)usermenu.lookup("#UserMenu"), (StackPane)usermenu.lookup("#UserMenuPane"));
+        ViewBalanceController ViewBalanceCntrl = loader.getController();
+        ViewBalanceCntrl.setUser(LoggedUser);
+        ViewBalanceCntrl.setUserMenu((HBox)usermenu.lookup("#UserMenu"), (StackPane)usermenu.lookup("#UserMenuPane"));
         Stack.getChildren().add(0, Balance);
+    }
+
+    public void GoTo(String fxml, User user, StackPane Background) {
+        try {
+            Main.setRoot(fxml, user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertUtils.showAlert(Background, "It wasn't possible to load the requested page.");
+        }
+    }
+
+    public void GoTo(String fxml, User user, Object object,StackPane Background) {
+        try {
+            Main.setRoot(fxml, user, object);
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertUtils.showAlert(Background, "It wasn't possible to load the requested page.");
+        }
     }
 }

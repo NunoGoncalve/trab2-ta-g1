@@ -3,6 +3,7 @@ package com.example.catcoins;
 import com.example.catcoins.model.Client;
 import com.example.catcoins.model.Role;
 import com.example.catcoins.model.User;
+import com.example.catcoins.model.UserDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,10 +12,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class UserConfigController extends MenuLoader {
 
@@ -31,6 +35,9 @@ public class UserConfigController extends MenuLoader {
     private Button EditButton;
 
     @FXML
+    private StackPane Background;
+
+   /* @FXML
     private ComboBox<String> currencyComboBox;
 
     @FXML
@@ -41,7 +48,7 @@ public class UserConfigController extends MenuLoader {
 
     private String selectedCurrency = "USD"; // USD padrão
     // Taxa de conversão conforme especificado: 1 USD = 0.88 EUR
-    private final double USD_TO_EUR_RATE = 0.88;
+    private final double USD_TO_EUR_RATE = 0.88;*/
 
     @Override
     public void setLoggedUser(User user) {
@@ -80,9 +87,14 @@ public class UserConfigController extends MenuLoader {
             Name.setEditable(true);
             EditButton.setText("Save");
         }else{
+            UserDAO UsrDao = new UserDAO();
             EditButton.setText("Edit");
             Name.setEditable(false);
             super.getLoggedUser().setName(Name.getText().toString());
+           try{ UsrDao.Update(super.getLoggedUser()); }
+           catch (SQLException e){
+               DatabaseConnection.HandleConnectionError(Background, e);
+           }
         }
     }
 
@@ -205,19 +217,10 @@ public class UserConfigController extends MenuLoader {
     @FXML
     public void goBack(){
         if(super.getLoggedUser().getRole()== Role.Admin){
-            try {
-                Main.setRoot("Main.fxml", super.getLoggedUser());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            super.GoTo("Main.fxml", super.getLoggedUser(), Background);
         }else{
-            try {
-                Main.setRoot("Userpanel.fxml", super.getLoggedUser());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            super.GoTo("Userpanel.fxml", super.getLoggedUser(), Background);
         }
-
     }
 
 }

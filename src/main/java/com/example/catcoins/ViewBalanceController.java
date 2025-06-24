@@ -42,17 +42,16 @@ public class ViewBalanceController {
     @FXML
     private StackPane Stack;
 
-    // Moeda atual para exibição (padrão é USD)
+    /*Moeda atual para exibição (padrão é USD)
     private String currentCurrency = "USD $";
-
-    // Símbolo da moeda atual
+     Símbolo da moeda atual
     private String currencySymbol = "$";
 
-    // Valor do saldo atual em EUR (moeda base do banco de dados)
+     Valor do saldo atual em EUR (moeda base do banco de dados)
     private double currentBalanceInDol = 0.0;
 
-    // Valor do saldo atual na moeda de exibição
-    private double currentDisplayBalance = 0.0;
+     Valor do saldo atual na moeda de exibição
+    private double currentDisplayBalance = 0.0;*/
 
     public void setUser(User LoggedUser) {
         if (LoggedUser instanceof Client) {

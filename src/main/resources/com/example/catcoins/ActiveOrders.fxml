@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1792.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.OrdersController">
+<BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1792.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.OrdersController">
     <stylesheets>
         <URL value="@styles/styles.css" />
         <URL value="@styles/UserDetails.css" />
@@ -31,9 +36,9 @@
                          <columns>
                              <TableColumn fx:id="idColumn" editable="false" prefWidth="85.0" resizable="false" style="-fx-alignment: CENTER;" text="ID" />
                              <TableColumn fx:id="typeColumn" editable="false" prefWidth="85.0" style="-fx-alignment: CENTER;" text="Type" />
-                             <TableColumn fx:id="valueColumn" editable="false" prefWidth="170.0" style="-fx-alignment: CENTER;" text="Value (€)" />
-                             <TableColumn fx:id="amountColumn" editable="false" prefWidth="140.0" style="-fx-alignment: CENTER;" text="Amount" />
                              <TableColumn fx:id="coinColumn" editable="false" prefWidth="170.0" style="-fx-alignment: CENTER;" text="Coin" />
+                             <TableColumn fx:id="amountColumn" editable="false" prefWidth="140.0" style="-fx-alignment: CENTER;" text="Amount" />
+                             <TableColumn fx:id="valueColumn" editable="false" prefWidth="170.0" style="-fx-alignment: CENTER;" text="Value (€)" />
                              <TableColumn fx:id="dateColumn" editable="false" prefWidth="190.0" style="-fx-alignment: CENTER;" text="Date" />
                              <TableColumn fx:id="ActionsColumn" editable="false" prefWidth="170.0" style="-fx-alignment: CENTER;" text="Actions" />
                          </columns>

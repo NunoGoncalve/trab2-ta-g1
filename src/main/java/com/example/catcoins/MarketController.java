@@ -1,12 +1,9 @@
 package com.example.catcoins;
 
-import com.example.catcoins.model.Client;
-import com.example.catcoins.model.Coin;
-import com.example.catcoins.model.User;
+import com.example.catcoins.model.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,10 +18,9 @@ import javafx.stage.Stage;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -49,18 +45,20 @@ public class MarketController extends MenuLoader {
     private VBox Scroll;
 
     @FXML
-    private StackPane StackPane;
+    private StackPane Background;
 
     @FXML private Button BuyBttn;
 
     @FXML private Button SellBttn;
 
     private Client client;
+    private CoinDAO CnDao =  new CoinDAO();
+    private OrderDAO OrdDao =  new OrderDAO();
 
     @Override
     public void setLoggedUser(User user) {
         super.setLoggedUser(user);
-        super.LoadMenus(Stack, MainPanel);
+        super.LoadMenus(Stack, MainPanel, Background);
         if(super.getLoggedUser() instanceof Client){
             client = (Client) super.getLoggedUser();
             BuyBttn.setVisible(true);
@@ -68,8 +66,8 @@ public class MarketController extends MenuLoader {
         }
     }
 
-    public void setCoin(int CoinID){
-        CryptoCoin = new Coin(CoinID);
+    public void setCoin(Coin CoinDetails){
+        CryptoCoin = CoinDetails;
         lineChart.setTitle(CryptoCoin.getName());
         LoadGraph("Day");
         LoadData();
@@ -79,24 +77,17 @@ public class MarketController extends MenuLoader {
     private void goBack(){
         try {
             Main.setRoot("Main.fxml", super.getLoggedUser());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            AlertUtils.showAlert(Background, "It wasn't possible to load the requested page.");
         }
     }
 
     private void LoadData() {
-        // Create a new series
 
+        try{
+            ArrayList<Order> orders = OrdDao.GetCoinOrders(CryptoCoin.getID());
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
-
-            String sql = "SELECT `Order`.ID,`Order`.Type, `Order`.Value,`Order`.Date ,Sum(Transaction.Amount) as Amount " +
-                    "FROM `Transaction` inner join `Order` on Transaction.OrderID=`Order`.ID " +
-                    "Where Coin = ? group by OrderID Order by Date DESC";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, CryptoCoin.getID());
-            ResultSet TransactResult = stmt.executeQuery();
-            while (TransactResult.next()) {
+            for (Order ord : orders) {
                 GridPane grid = new GridPane();
                 grid.getStyleClass().add("transaction");
                 grid.setPadding(new Insets(10));
@@ -117,23 +108,24 @@ public class MarketController extends MenuLoader {
                 col3.setHalignment(HPos.CENTER);
                 grid.getColumnConstraints().addAll(col1, col2, col3);
 
-                Label type = new Label(TransactResult.getString("Type"));
+                Label type = new Label(ord.getType());
                 type.getStyleClass().add("axis-label");
                 grid.add(type, 0, 0);
 
-                Label Value = new Label(TransactResult.getString("Value"));
+                double valueToShow = ord.getValue() == 0 ? CryptoCoin.getValue() : ord.getValue();
+                Label Value = new Label(String.format("%.2f", valueToShow));
                 Value.alignmentProperty().setValue(Pos.CENTER);
                 Value.getStyleClass().add("axis-label");
                 grid.add(Value, 1, 0);
 
-                Label Amount = new Label(TransactResult.getString("Amount"));
+                Label Amount = new Label(String.valueOf(ord.getAmount()));
                 Amount.getStyleClass().add("axis-label");
                 grid.add(Amount, 2, 0);
                 Scroll.getChildren().add(grid);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
 
     }
@@ -146,34 +138,10 @@ public class MarketController extends MenuLoader {
 
     private void LoadGraph(String filter){
         lineChart.getData().clear();
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
-
-            String sql = "SELECT XValue, Value FROM ( SELECT DATE_FORMAT(Date, '%H:%i') AS XValue, Value, Date FROM CoinHistory WHERE Date >= NOW() - INTERVAL 24 HOUR AND Coin = ? ORDER BY Date DESC LIMIT 24 ) sub ORDER BY Date ASC";
-            PreparedStatement stmt=conn.prepareStatement(sql);
-            stmt.setInt(1, CryptoCoin.getID());
-
-            if(filter.equals("Week")){
-                sql = "SELECT DAY(Date) AS XValue, AVG(Value) AS Value FROM CoinHistory WHERE Date >= CURDATE() - INTERVAL 7 DAY AND Date <= CURDATE() AND Coin=? GROUP BY Coin, XValue ORDER BY Coin, XValue";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, CryptoCoin.getID());
-            }else if(filter.equals("Month")){
-                sql = "SELECT DAY(Date) AS XValue, AVG(Value) AS Value FROM CoinHistory WHERE MONTH(Date) = ? AND YEAR(Date) = ? AND Coin=? GROUP BY Coin, XValue ORDER BY Coin, XValue";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, LocalDate.now().getMonthValue());
-                stmt.setInt(2, LocalDate.now().getYear());
-                stmt.setInt(3, CryptoCoin.getID());
-            }
-            ResultSet CoinResult = stmt.executeQuery();
-
-            while (CoinResult.next()) {
-                series.getData().add(new XYChart.Data<>(CoinResult.getString("XValue"), CoinResult.getDouble("Value")));
-            }
-
-            lineChart.getData().add(series);
+        try{
+            lineChart.getData().add(CnDao.GetCoinHistory(CryptoCoin.getID(), filter));
         }catch (SQLException e){
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
 
     }
@@ -193,7 +161,7 @@ public class MarketController extends MenuLoader {
             }
 
         }catch (SQLException e){
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
     }
 
@@ -204,26 +172,31 @@ public class MarketController extends MenuLoader {
         Boolean flag=false;
         Button clickedBttn = (Button) event.getSource();
         String OrderType = clickedBttn.getId().replace("Bttn", "");
+        WalletDAO WltDAO = new WalletDAO();
         //CheckExpired();
-        if(OrderType.equals("Buy")){
-            Value = Double.parseDouble(InputWindow("Value"));
-            Amount = Integer.parseInt(InputWindow("Amount"));
-
-            if(Value*Amount > client.getWallet().getBalance()) {
-                Error();
-                flag=true;
-            }else{
-                client.getWallet().SetBalance(client.getWallet().getBalance()-Amount*Value, client.getWallet().getPendingBalance()+Amount*Value);
-            }
-        }else{
-            Amount = Integer.parseInt(InputWindow("Amount"));
-            if(Amount> client.getWallet().GetCoinAmount(CryptoCoin.getID()) ){
-                Error();
-                flag=true;
-            }else{
+        try {
+            if (OrderType.equals("Buy")) {
                 Value = Double.parseDouble(InputWindow("Value"));
-                client.getWallet().UpdatePortfolio(client.getWallet().GetCoinAmount(CryptoCoin.getID())-Amount, CryptoCoin.getID());
+                Amount = Integer.parseInt(InputWindow("Amount"));
+
+                if (Value * Amount > client.getWallet().getBalance()) {
+                    AlertUtils.showAlert(Background, "You don't have enough balance!");
+                    flag = true;
+                } else {
+                    client.getWallet().SetBalance(client.getWallet().getBalance() - Amount * Value, client.getWallet().getPendingBalance() + Amount * Value);
+                }
+            } else {
+                Amount = Integer.parseInt(InputWindow("Amount"));
+                if (Amount > client.getWallet().GetCoinAmount(CryptoCoin.getID())) {
+                    AlertUtils.showAlert(Background, "You don't have enough coins!");
+                    flag = true;
+                } else {
+                    Value = Double.parseDouble(InputWindow("Value"));
+                    client.getWallet().UpdatePortfolio(client.getWallet().GetCoinAmount(CryptoCoin.getID()) - Amount, CryptoCoin.getID());
+                }
             }
+        } catch (SQLException e) {
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
 
         if(Value== CryptoCoin.getValue()){
@@ -231,51 +204,28 @@ public class MarketController extends MenuLoader {
         }
 
         if(!flag){
-            String NewOrder = "INSERT INTO `Order` (Type, Wallet, Coin, Amount, Value) Values (?, ?, ?, ?, ?)"; // `Order` -> to escape word Order
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            try{
+                Order NewOrder = new Order(OrderType, client.getWallet(), CryptoCoin, Value, Amount, timestamp, OrderStatus.Active);
+                OrdDao.Add(NewOrder);
+                MarketInfo MkInfo = OrdDao.OrderSearch(NewOrder);
 
-            try (Connection conn = DatabaseConnection.getInstance().getConnection()){
-                PreparedStatement stmt = conn.prepareStatement(NewOrder, Statement.RETURN_GENERATED_KEYS);
-                stmt.setString(1, OrderType);
-                stmt.setInt(2, client.getWallet().getID());
-                stmt.setInt(3, CryptoCoin.getID());
-                stmt.setInt(4, Amount);
-                stmt.setDouble(5, Value);
-                stmt.executeUpdate();
-                ResultSet result = stmt.getGeneratedKeys();
-                result.next();
-                int OrderID = result.getInt(1);
-
-                String SearchOrder = "Call SaleSearch(?, ?, ?, ?, ?, ?,?, ?, ?, ?)";
-                CallableStatement stmts = conn.prepareCall(SearchOrder);
-                stmts.setString(1, OrderType);
-                stmts.setInt(2, OrderID);
-                stmts.setInt(3, client.getWallet().getID());
-                stmts.setInt(4, CryptoCoin.getID());
-                stmts.setInt(5, Amount);
-                stmts.setDouble(6, Value);
-                stmts.registerOutParameter(7, Types.BOOLEAN);
-                stmts.registerOutParameter(8, Types.BOOLEAN);
-                stmts.registerOutParameter(9, Types.INTEGER);
-                stmts.registerOutParameter(10, Types.INTEGER);
-                stmts.execute();
-                Boolean Orderdone= stmts.getBoolean(7), Matchdone=stmts.getBoolean(8);
-                int MatchID = stmts.getInt(10), MatchWalletID = stmts.getInt(9);
-                if(Orderdone){
-                    AlertUtils.showAlert(StackPane,Alert.AlertType.INFORMATION, "Order Complete", "Your order has been completed");
-                    EmailConfig.SendEmail(client.getEmail(), "The Order with ID: "+OrderID+" has been completed","Order complete");
+                if(MkInfo.Orderdone()){
+                    AlertUtils.showAlert(Background, "Your order has been completed");
+                    EmailConfig.SendEmail(client.getEmail(), "The Order with ID: "+NewOrder.getId()+" has been completed","Order complete");
                 }else{
-                    AlertUtils.showAlert(StackPane,Alert.AlertType.INFORMATION, "Order Posted", "Your order has been posted");
+                    AlertUtils.showAlert(Background, "Your order has been posted");
                 }
-                if(Matchdone){
-
-                    EmailConfig.SendEmail(client.getUserEmail(MatchWalletID), "The Order with ID: "+MatchID+" has been completed","Order complete");
+                if(MkInfo.Matchdone()){
+                    UserDAO UsrDao = new UserDAO();
+                    EmailConfig.SendEmail(UsrDao.GetUserByWalletID(MkInfo.MatchWalletID()).getEmail(), "The Order with ID: "+MkInfo.MatchID()+" has been completed","Order complete");
                 }
-
-
+                WltDAO.GetUpdatedInfo(client.getWallet());
             }catch (SQLException e){
-                e.printStackTrace();
+                DatabaseConnection.HandleConnectionError(Background, e);
             }
-            client.getWallet().GetUpdatedBalance();
+
+
             scene = ((Node) event.getSource()).getScene();
             root = scene.getRoot();
             Node node = root.lookup("#balanceLabel");
@@ -350,32 +300,6 @@ public class MarketController extends MenuLoader {
         return result.orElse(null);
     }
 
-    private void Error(){
-        VBox dialog = new VBox(3);
-        dialog.setSpacing(25);
-        dialog.setAlignment(Pos.CENTER);
-        dialog.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: white;");
-        dialog.setMaxWidth(320);
-        dialog.setMaxHeight(170);
-        Label message = new Label("Insufficient Balance");
-        message.setStyle("-fx-text-fill: white");
-        Button okButton = new Button("OK");
-        okButton.setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
-        dialog.getChildren().addAll(message, okButton);
-
-        // Optional: create a semi-transparent background overlay
-        StackPane overlay = new StackPane();
-        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.4 = 40% opacity
-        // Add the dialog to the overlay and center it
-        overlay.getChildren().add(dialog);
-        overlay.setAlignment(Pos.CENTER);
-        // Add overlay to the root StackPane
-        StackPane.getChildren().add(overlay);
-
-        // Remove overlay when OK is clicked
-        okButton.setOnAction(e -> StackPane.getChildren().remove(overlay));
-    }
-
     @FXML
     private void exportLineChartToCSV() throws IOException {
         java.nio.file.Path dirPath = Paths.get("src/main/resources/CSV");
@@ -405,11 +329,7 @@ public class MarketController extends MenuLoader {
         } catch (IOException e) {
             System.out.println("Failed to delete the file: " + e.getMessage());
         }
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Sent");
-        alert.setContentText("The requested information has been sent to your email.");
-        alert.initOwner(stage);
-        alert.showAndWait();
+        AlertUtils.showAlert(Background, "The requested information has been sent to your email");
 
     }
 }

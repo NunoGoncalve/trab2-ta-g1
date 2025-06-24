@@ -1,11 +1,11 @@
 package com.example.catcoins.model;
 
-public enum Status {
-    Active("Active"), Disabled("Disabled");
+public enum OrderStatus {
+    Active("Open"), Disabled("Filled"), Expired("Expired"), Cancelled("Cancelled");
 
     private final String label;
 
-    Status(String label) {
+    OrderStatus(String label) {
         this.label = label;
     }
 
@@ -15,8 +15,8 @@ public enum Status {
     }
 
     // Reverse lookup: from string to enum
-    public static Status fromString(String text) {
-        for (Status s : Status.values()) {
+    public static OrderStatus fromString(String text) {
+        for (OrderStatus s : OrderStatus.values()) {
             if (s.label.equalsIgnoreCase(text)) {
                 return s;
             }

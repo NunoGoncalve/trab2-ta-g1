@@ -1,20 +1,11 @@
 package com.example.catcoins;
 
 import com.example.catcoins.model.*;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -42,52 +33,21 @@ public class LoginController {
     @FXML
     private StackPane Background;
 
+    private UserDAO UsrDao = new UserDAO();
 
-    private User verificarUsuario(String email, String password) {
-        try {
-            password = PasswordUtils.hashPassword(password);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    private User VerifyUser(String email, String password) {
 
         try{
-            Connection conn = DatabaseConnection.getInstance().getConnection();
-            String sql = "SELECT * FROM User WHERE email = ? AND password = ? and Status = 'Active'";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-
-            stmt.setString(1, email);
-            stmt.setString(2, password);
-            ResultSet UserResult = stmt.executeQuery();
-
-            if (UserResult.next()) {
-
-                if(UserResult.getString("Role").equals("Client")) {
-                    sql = "SELECT Wallet.* FROM Client inner join Wallet on Client.Wallet = Wallet.ID WHERE Client.ID = ?";
-                    stmt = conn.prepareStatement(sql);
-                    stmt.setInt(1, UserResult.getInt("ID"));
-
-                    ResultSet Walletresult = stmt.executeQuery();
-                    if(Walletresult.next()){
-                        Wallet ClientWallet = new Wallet(
-                                Walletresult.getInt("ID"),
-                                Walletresult.getDouble("Balance"),
-                                Walletresult.getDouble("PendingBalance"),
-                                Walletresult.getString("Currency"));
-                        Client LoggedClient = new Client(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, Role.Client, Status.Active, ClientWallet);
-                        return LoggedClient;
-                    }
-                }
-                else{
-                    User LoggedAdmin = new User(Integer.parseInt(UserResult.getString("ID")), UserResult.getString("Name"), email, Role.Admin, Status.Active);
-                    return LoggedAdmin;
-                }
-
-            }
+            password = PasswordUtils.hashPassword(password);
+            return UsrDao.Login(email, password);
 
         } catch (SQLException e) {
+            AlertUtils.showAlert(Background, "There was an error while trying to login. Please try again.");
+            e.printStackTrace();
+        } catch (Exception e) {
+            AlertUtils.showAlert(Background, "There was an error while trying to login. Please try again.");
             e.printStackTrace();
         }
-
         return null;
     }
 
@@ -112,22 +72,23 @@ public class LoginController {
 
         }else {
             ToggleErroLabel(errorLabelEmail, false);
-            User usuario = verificarUsuario(email, password);
 
-            if (usuario != null) {
+            User user = VerifyUser(email, password);
+            if (user != null) {
                 limparCampos();
 
                 try {
-                    trocarCena("Main.fxml", usuario);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    trocarCena("Main.fxml", user);
+                } catch (Exception e) {
+                    AlertUtils.showAlert(Background, "It wasn't possible to load the requested page.");
                 }
             }
             else{
-                AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Verify the credentials entered");
+                AlertUtils.showAlert(Background, "Verify the credentials entered");
                 esqueceuSenhaLink.setVisible(true);
-               esqueceuSenhaLink.setManaged(true);
+                esqueceuSenhaLink.setManaged(true);
             }
+
         }
 
     }
@@ -150,9 +111,9 @@ public class LoginController {
     private void handleEsqueceuSenha() {
         try {
             Main.setRoot("RecoverPassword.fxml", null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "It wasn't possible to load the password recovery page.");
+            AlertUtils.showAlert(Background, "It wasn't possible to load the password recovery page.");
         }
     }
 
@@ -173,7 +134,8 @@ public class LoginController {
         }
     }
 
-    public void trocarCena(String fxmlPath, User loggedInUser) throws IOException {
+    public void trocarCena(String fxmlPath, User loggedInUser) throws Exception {
+
         Main.setRoot(fxmlPath, loggedInUser);
     }
 
@@ -181,9 +143,9 @@ public class LoginController {
     private void GoRegister() {
         try {
             trocarCena("registo.fxml", null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "It wasn't possible to load the register page.");
+            AlertUtils.showAlert(Background, "It wasn't possible to load the register page.");
         }
     }
 
