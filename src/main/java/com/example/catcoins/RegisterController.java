@@ -1,20 +1,11 @@
 package com.example.catcoins;
 
-import com.example.catcoins.model.Client;
-import com.example.catcoins.model.Role;
-import com.example.catcoins.model.Status;
-import com.example.catcoins.model.Wallet;
-import javafx.application.Application;
-import javafx.application.HostServices;
-import javafx.event.ActionEvent;
+import com.example.catcoins.model.*;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 
 import java.awt.*;
 import java.io.IOException;
@@ -46,6 +37,8 @@ public class RegisterController {
     @FXML
     private StackPane Background;
 
+    private UserDAO UsrDao = new UserDAO();
+
     public void ToggleErroLabel(Label errorLabel, Boolean IsVisible) {
         if (IsVisible) {
             errorLabel.setVisible(true);
@@ -76,77 +69,53 @@ public class RegisterController {
         String password = passwordField.getText();
         boolean acceptedTerms = termsCheckBox.isSelected();
 
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            ToggleErroLabel(errorLabelFields, true);
-            errorLabelFields.setText("All fields are required!");
-        } else if (!acceptedTerms) {
-            ToggleErroLabel(errorLabelTerms, true);
-            errorLabelTerms.setText("You must accept the terms and conditions!");
-            // Verifica se o e-mail já está registrado
-        } else if (CheckIfEmail(email)) {
-            if (CheckIfEmail(email)) {
-                //showAlert(Alert.AlertType.INFORMATION, "Email já registrado", "Este email já está registrado.\nVá para o Login", () -> GoLogin());  // redireciona só depois do OK
-                AlertUtils.showAlert(Background,"This email is already linked to an account", () -> GoLogin());
-            }
+        try {
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                ToggleErroLabel(errorLabelFields, true);
+                errorLabelFields.setText("All fields are required!");
+            } else if (!acceptedTerms) {
+                ToggleErroLabel(errorLabelTerms, true);
+                errorLabelTerms.setText("You must accept the terms and conditions!");
+                // Verifica se o e-mail já está registrado
+            } else if (UsrDao.CheckIfEmail(email)) {
+                AlertUtils.showAlert(Background, "This email is already linked to an account", () -> GoLogin()); // redireciona só depois do OK
 
-        }else if (passwordStrengthBar.getProgress() == 1 && !errorLabelEmail.isVisible()) {
-            String salt = PasswordUtils.generateSalt();
-            String PasswordHash = null;
-
-            try {
+            } else if (passwordStrengthBar.getProgress() == 1 && !errorLabelEmail.isVisible()) {
+                String PasswordHash = null;
                 PasswordHash = PasswordUtils.hashPassword(password);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
 
-            String NewIDs = NewUser(username, email, PasswordHash);
-            String[] partes = NewIDs.split(";");
 
-            int UserID = Integer.parseInt(partes[0]);
-            int WalletID = Integer.parseInt(partes[1]);
+                String NewIDs = NewUser(username, email, PasswordHash);
+                String[] partes = NewIDs.split(";");
 
-            if (UserID!=0) {
-                AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Success", "Record saved successfully!");
-                limparCampos();
+                int UserID = Integer.parseInt(partes[0]);
+                int WalletID = Integer.parseInt(partes[1]);
 
-                try {
-                    Registered(WalletID,UserID , username, email);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (UserID != 0) {
+                    AlertUtils.showAlert(Background, "Record saved successfully!");
+                    limparCampos();
+
+                    Registered(WalletID, UserID, username, email, PasswordHash);
+
+                } else {
+                    AlertUtils.showAlert(Background, "Failed to save data");
                 }
-            }else {
-                AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Failed to save data");
+            } else {
+                ToggleErroLabel(errorLabelEmail, false);
+                ToggleErroLabel(errorLabelFields, false);
+                ToggleErroLabel(errorLabelTerms, false);
             }
-        }else{
-            ToggleErroLabel(errorLabelEmail, false);
-            ToggleErroLabel(errorLabelFields, false);
-            ToggleErroLabel(errorLabelTerms, false);
-        }
-
-    }
-
-    private void showAlert() {
-        AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Verify the credentials entered");
-
-    }
-
-    //Verifica se o email existe no banco de dados
-    private boolean CheckIfEmail(String email) {
-        String query = "SELECT 1 FROM User WHERE Email = ?";
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, email);
-            return stmt.executeQuery().next();
-
-        } catch (SQLException e) {
+        }catch (SQLException e) {
+            DatabaseConnection.HandleConnectionError(Background, e);
+        }catch (IOException e) {
+            AlertUtils.showAlert(Background, "Error");
             e.printStackTrace();
-            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Error verifying email.");
-            return false;
+        }catch (Exception e) {
+            AlertUtils.showAlert(Background, "Error");
+            e.printStackTrace();
         }
-    }
 
+    }
 
     public void CalculateStrength() {
         String password = passwordField.getText();
@@ -197,45 +166,48 @@ public class RegisterController {
 
 
     private String NewUser(String username, String email, String password) {
-        String sql = "INSERT INTO User (Name, Email, Password) VALUES (?, ?, ?)";
+        String UserSql = "INSERT INTO User (Name, Email, Password) VALUES (?, ?, ?)",
+                WalletSql  = "INSERT INTO Wallet (balance) VALUES (0.00)",
+                ClientSql = "INSERT INTO Client (ID, Wallet) VALUES (?, ?)";
+        int UserID, WalletID;
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()){
+            conn.setAutoCommit(false);
+            try (PreparedStatement stmt = conn.prepareStatement(UserSql, Statement.RETURN_GENERATED_KEYS)){
+                stmt.setString(1, username);
+                stmt.setString(2, email);
+                stmt.setString(3, password);
+                stmt.executeUpdate();
+                ResultSet result = stmt.getGeneratedKeys();
+                if (result.next()) UserID = result.getInt(1);
+                else throw new SQLException("No user ID generated");
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, username);
-            stmt.setString(2, email);
-            stmt.setString(3, password);
+            }
 
-            stmt.executeUpdate();
-            ResultSet result = stmt.getGeneratedKeys();
-            result.next();
-            int UserID = result.getInt(1);
+            try (PreparedStatement  stmt = conn.prepareStatement(WalletSql,Statement.RETURN_GENERATED_KEYS)){
+                stmt.executeUpdate();
+                ResultSet result = stmt.getGeneratedKeys();
+                if (result.next()) WalletID = result.getInt(1);
+                else throw new SQLException("No wallet ID generated");
+            }
 
-            sql = "INSERT INTO Wallet (balance) VALUES (0.00)";
-            stmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-            stmt.executeUpdate();
-            result = stmt.getGeneratedKeys();
-            result.next();
-            int Wallet = result.getInt(1);
-
-
-            sql = "INSERT INTO Client (ID, Wallet) VALUES (?,?)";// arranjar forma de buscar os ID dos objetos recem criados, se n der buscar o id pelo email/registo mais recente
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, UserID);
-            stmt.setInt(2, Wallet);
-            stmt.executeUpdate();
-
-            return UserID+";"+Wallet;
-
+            try (PreparedStatement  stmt = conn.prepareStatement(ClientSql)) {
+                stmt.setInt(1, UserID);
+                stmt.setInt(2, WalletID);
+                stmt.executeUpdate();
+            }
+            conn.commit();
+            return UserID+";"+WalletID;
         } catch (SQLException e) {
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
             return "0";
         }
+
     }
 
-    protected void Registered(int WalletID, int UserID, String Username, String Email) throws IOException {
+    private void Registered(int WalletID, int UserID, String Username, String Email, String Password) throws Exception {
         Wallet ClientWallet = new Wallet(WalletID,0.00, 0.00,"EUR €");
-        Client ClientRegistred = new Client(UserID, Username, Email, Role.Client, Status.Active, ClientWallet);
-        Main.setRoot("Main.fxml", ClientRegistred);
+        Client ClientRegistered = new Client(UserID, Username, Email, Password, Role.Client, Status.Active, ClientWallet);
+        Main.setRoot("Main.fxml", ClientRegistered);
     }
 
     private void limparCampos() {
@@ -256,9 +228,9 @@ public class RegisterController {
     private void GoToScreen(String fxmlPath) {
         try {
             Main.setRoot(fxmlPath, null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Unable to load screen: \n" + fxmlPath);
+            AlertUtils.showAlert(Background, "Unable to load screen: \n" + fxmlPath);
         }
     }
 
@@ -281,15 +253,13 @@ public class RegisterController {
 
     @FXML
     public void TermsConditions(){
-        if (Desktop.isDesktopSupported()) {
-            try {
-                Desktop.getDesktop().browse(new URI("http://foodsorter.fixstuff.net/CatCoins/Terms&Conditions.pdf"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("Desktop is not supported!");
+        try {
+            Desktop.getDesktop().browse(new URI("http://foodsorter.fixstuff.net/CatCoins/Terms&Conditions.pdf"));
+        } catch (Exception e) {
+            AlertUtils.showAlert(Background,  "Sorry there was an error");
+            e.printStackTrace();
         }
+
     }
 
 }

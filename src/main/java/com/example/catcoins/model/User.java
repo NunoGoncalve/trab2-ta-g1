@@ -1,24 +1,36 @@
 package com.example.catcoins.model;
 
-import com.example.catcoins.DatabaseConnection;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class User {
     private int ID;
     private String Name;
     private String Email;
+    private String Password;
     private Role Role;
     private Status Status;
 
 
-    public User(int id, String name, String email, Role role, Status status) {
+    public String getPassword() {
+        return Password;
+    }
+
+    public void setStatus(Status status) {
+        Status = status;
+    }
+
+    public User(int id, String name, String email, String Password, Role role, Status status) {
         this.ID = id;
         this.Name = name;
         this.Email = email;
+        this.Password = Password;
+        this.Role = role;
+        this.Status = status;
+    }
+
+    public User( String name, String email, String Password, Role role, Status status) {
+        this.ID = -1;
+        this.Name = name;
+        this.Email = email;
+        this.Password = Password;
         this.Role = role;
         this.Status = status;
     }
@@ -46,30 +58,6 @@ public class User {
 
     public void setName(String name) {
         this.Name = name;
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String sql = "UPDATE User SET Name = ? WHERE ID = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, Name);
-            stmt.setInt(2, ID);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String getUserEmail(int WalletID) {
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String sql = "Select Email From UserClientWallet WHERE WalletID = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, WalletID);
-            ResultSet ResultID = stmt.executeQuery();
-            ResultID.next();
-            return ResultID.getString("Email");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return "";
-
     }
 
     public void setEmail(String email) { this.Email = email; }

@@ -1,5 +1,7 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Coin;
+import com.example.catcoins.model.CoinDAO;
 import com.example.catcoins.model.User;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -28,82 +30,56 @@ public class MainController extends MenuLoader {
 
     @FXML private BorderPane MainPanel;
     @FXML private VBox Stack;
-    @FXML private VBox coinListVBox; // Este é o GridPane com fx:id="coinGrid" no FXML
+    @FXML private VBox coinListVBox;
     @FXML private MenuButton sortMenuButton;
     @FXML private Label sortPriceLabel;
     @FXML private Label sortVarianceLabel;
     @FXML private Label sortNameLabel;
+    @FXML private StackPane Background;
+
+    private CoinDAO CnDao = new CoinDAO();
+    ArrayList<Coin> coins = new ArrayList<>();
 
     @Override
     public void setLoggedUser(User user) {
         super.setLoggedUser(user);
-        super.LoadMenus(Stack, MainPanel);
+        super.LoadMenus(Stack, MainPanel, Background);
     }
 
     public void initialize() {
-        carregarMoedas(null);
+        LoadCoins(null);
 
         sortPriceLabel.setOnMouseClicked(event -> {
             sortMenuButton.setText("Price");
-            carregarMoedas("Price");
+            LoadCoins("Price");
         });
 
         sortVarianceLabel.setOnMouseClicked(event -> {
             sortMenuButton.setText("Variance");
-            carregarMoedas("Variance");
+            LoadCoins("Variance");
         });
 
         sortNameLabel.setOnMouseClicked(event -> {
             sortMenuButton.setText("Name");
-            carregarMoedas("Name");
+            LoadCoins("Name");
         });
     }
 
-    public void carregarMoedas(String filtro) {
-        String sql = "SELECT id, Name, VarianceCalc(id) as variance, (Select Value from CoinHistory Where Coin=id ORDER BY Date DESC LIMIT 1) as value FROM Coin where Status='Active'";
+    public void LoadCoins(String filtro) {
 
-        class CoinData {
-            int id;
-            String name;
-            double value;
-            double variance;
-
-            CoinData(int id, String name, double value, double variance) {
-                this.id = id;
-                this.name = name;
-                this.value = value;
-                this.variance = variance;
-            }
-        }
-
-        List<CoinData> coins = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            Statement stmt = conn.createStatement();
-            ResultSet CoinInfo = stmt.executeQuery(sql);
-
-            while (CoinInfo.next()) {
-                int id = CoinInfo.getInt("id");
-                String name = CoinInfo.getString("name");
-                double price = CoinInfo.getDouble("value");
-                double variance = CoinInfo.getDouble("variance");
-
-
-
-                coins.add(new CoinData(id, name, price, variance));
-            }
-
+        try  {
+            coins = CnDao.GetAll();
             // FILTRAGEM OPCIONAL
             if (filtro != null) {
                 switch (filtro) {
                     case "Price":
-                        coins.sort(Comparator.comparingDouble(c -> -c.value));
+                        coins.sort(Comparator.comparingDouble(c -> -c.getValue()));
                         break;
                     case "Variance":
-                        coins.sort(Comparator.comparingDouble(c -> -c.variance));
+                        coins.sort(Comparator.comparingDouble(c -> -c.getVariance()));
                         break;
                     case "Name":
-                        coins.sort(Comparator.comparing(c -> c.name.toLowerCase()));
+                        coins.sort(Comparator.comparing(c -> c.getName().toLowerCase()));
                         break;
                     default:
                         break;
@@ -114,7 +90,7 @@ public class MainController extends MenuLoader {
             coinListVBox.getChildren().removeIf(node -> node instanceof GridPane && node.getStyleClass().contains("coin-entry"));
 
             // ADICIONA À UI
-            for (CoinData coin : coins) {
+            for (Coin coin : coins) {
                 GridPane grid = new GridPane();
                 grid.setAlignment(Pos.CENTER);
                 grid.setHgap(20);
@@ -123,7 +99,7 @@ public class MainController extends MenuLoader {
                 grid.setPrefWidth(1090);
                 grid.setPrefHeight(59);
                 grid.setOnMouseClicked(mouseEvent -> ViewDetails(mouseEvent));
-                grid.setId(String.valueOf(coin.id));
+                grid.setId(String.valueOf(coins.indexOf(coin)));
 
                 ColumnConstraints col0 = new ColumnConstraints(); col0.setPercentWidth(5);  col0.setHalignment(HPos.CENTER);
                 ColumnConstraints col1 = new ColumnConstraints(); col1.setPercentWidth(15); col1.setHalignment(HPos.CENTER);
@@ -134,26 +110,26 @@ public class MainController extends MenuLoader {
                 RowConstraints row = new RowConstraints(); row.setValignment(VPos.CENTER);
                 grid.getRowConstraints().add(row);
 
-                Image logoImage = new Image("http://foodsorter.fixstuff.net/CatCoins/img/" + coin.id + ".png", true);
+                Image logoImage = new Image("http://foodsorter.fixstuff.net/CatCoins/img/" + coin.getID()+ ".png", true);
                 ImageView logoImageView = new ImageView(logoImage);
                 logoImageView.setFitWidth(35);
                 logoImageView.setFitHeight(35);
                 logoImageView.getStyleClass().add("coin-logo");
                 grid.add(logoImageView, 0, 0);
 
-                Label nameLabel = new Label(coin.name.toUpperCase());
+                Label nameLabel = new Label(coin.getName().toUpperCase());
                 nameLabel.getStyleClass().add("coin-label");
                 grid.add(nameLabel, 1, 0);
 
-                Label priceLabel = new Label(String.format("%.2f€", coin.value));
+                Label priceLabel = new Label(String.format("%.2f€", coin.getValue()));
                 priceLabel.setPrefSize(78, 25);
                 priceLabel.getStyleClass().add("coin-price");
                 grid.add(priceLabel, 2, 0);
 
-                Label taxLabel = new Label(String.format("%.2f", coin.variance) + "%");
+                Label taxLabel = new Label(String.format("%.2f", coin.getVariance()) + "%");
                 taxLabel.setPrefSize(87, 25);
                 taxLabel.getStyleClass().add("coin-price");
-                taxLabel.setStyle(coin.variance >= 0 ? "-fx-text-fill: #4caf50" : "-fx-text-fill: red");
+                taxLabel.setStyle(coin.getVariance() >= 0 ? "-fx-text-fill: #4caf50" : "-fx-text-fill: red");
                 grid.add(taxLabel, 3, 0);
 
                 VBox.setMargin(grid, new Insets(0, 0, 0, 0));
@@ -163,29 +139,14 @@ public class MainController extends MenuLoader {
             }
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Error loading coins: " + e.getMessage());
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
-    }
-
-
-
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     public void ViewDetails(MouseEvent mouseEvent) {
         Node ClickedNode = (Node) mouseEvent.getTarget();
-        int CoinID = Integer.parseInt(ClickedNode.getId());
-        try {
-            Main.setRoot("Market.fxml", super.getLoggedUser(), CoinID);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        int CoinIndex = Integer.parseInt(ClickedNode.getId());
+        super.GoTo("Market.fxml", super.getLoggedUser(), coins.get(CoinIndex),Background);
 
     }
 

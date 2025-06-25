@@ -1,5 +1,8 @@
 package com.example.catcoins;
+import com.example.catcoins.model.Role;
+import com.example.catcoins.model.Status;
 import com.example.catcoins.model.User;
+import com.example.catcoins.model.UserDAO;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -11,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ManageUserController extends MenuLoader {
 
@@ -27,9 +32,11 @@ public class ManageUserController extends MenuLoader {
     @FXML private TextField editUserPasswordField;
     @FXML private ComboBox<String> editUserRoleField;
     @FXML private ComboBox<String> editUserStatusField;
+    @FXML private BorderPane editUserHeader;
     @FXML private VBox editUserForm;
     @FXML private Label editingUserLabel;
     @FXML private VBox Stack;
+    @FXML private StackPane Background;
 
     @FXML private Button prevPageButton;
     @FXML private Button nextPageButton;
@@ -38,12 +45,14 @@ public class ManageUserController extends MenuLoader {
     private int currentPage = 0;
     private int usersPerPage = 4;
     private int totalUsers = 0;
-    private int currentEditUserId;
+    private int currentEditUserIndex;
+    private UserDAO UsrDao=new UserDAO();
+    private ArrayList<User> users;
 
     @Override
     public void setLoggedUser(User user) {
         super.setLoggedUser(user);
-        super.LoadMenus(Stack, MainPanel);
+        super.LoadMenus(Stack, MainPanel, Background);
     }
 
     @FXML
@@ -68,41 +77,29 @@ public class ManageUserController extends MenuLoader {
     }
 
     private void LoadTotalUsers() {
-        String sql = "SELECT COUNT(*) FROM User";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            if (rs.next()) {
-                totalUsers = rs.getInt(1);
-            }
+        try {
+            totalUsers=UsrDao.LoadTotalUsers();
         } catch (SQLException e) {
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
     }
 
     public void LoadUsersPage(int pagina) {
 
         int offset = pagina * usersPerPage;
-        String sql = "SELECT ID, Name, Email, Password, Role, Status FROM User ORDER BY Status ASC LIMIT ? OFFSET ?";
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, usersPerPage);
-            stmt.setInt(2, offset);
-
-            ResultSet rs = stmt.executeQuery();
+        try {
 
             // Remove user entries but keep the header
             userListVBox.getChildren().removeIf(node ->
                     node instanceof GridPane && node.getStyleClass().contains("user-entry"));
-
-            while (rs.next()) {
-                int id = rs.getInt("ID");
-                String name = rs.getString("Name");
-                String email = rs.getString("Email");
-                String password = rs.getString("Password");
-                String role = rs.getString("Role");
-                String status = rs.getString("Status");
+            users = UsrDao.GetAll();
+            for(int i=offset;i<usersPerPage+offset;i++) {
+                int finalI = i;
+                String name = users.get(i).getName();
+                String email = users.get(i).getEmail();
+                String role = users.get(i).getRole().toString();
+                String status = users.get(i).getStatus().toString();
 
                 GridPane grid = new GridPane();
                 grid.setAlignment(Pos.CENTER_LEFT);
@@ -169,15 +166,15 @@ public class ManageUserController extends MenuLoader {
 
                 Button detailsButton = new Button("🔍");
                 detailsButton.getStyleClass().add("details-btn");
-                detailsButton.setOnAction(e -> UserDetails(id));
+                detailsButton.setOnAction(e -> UserDetails(finalI));
 
                 Button editButton = new Button("✏");
                 editButton.getStyleClass().add("edit-btn");
-                editButton.setOnAction(e -> editarUtilizador(id, name, email, password, role, status));
+                editButton.setOnAction(e -> EditUser(finalI));
 
                 Button deleteButton = new Button("✖");
                 deleteButton.getStyleClass().add("delete-btn");
-                deleteButton.setOnAction(e -> deletarUtilizador(id));
+                deleteButton.setOnAction(e -> DisableUser(finalI));
 
                 buttonsBox.getChildren().addAll(detailsButton, editButton, deleteButton);
                 grid.add(buttonsBox, 5, 0);
@@ -189,8 +186,7 @@ public class ManageUserController extends MenuLoader {
             updatePageInfo();
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Erro ao carregar utilizadores: " + e.getMessage());
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
     }
 
@@ -228,46 +224,34 @@ public class ManageUserController extends MenuLoader {
 
     @FXML
     public void CreateUser() {
-        String nome = userNameField.getText().trim();
+        String name = userNameField.getText().trim();
         String email = userEmailField.getText().trim();
         String password = userPasswordField.getText().trim();
         String role = userRoleField.getValue();
         String status = userStatusField.getValue();
 
         // Validação básica
-        if (nome.isEmpty() || email.isEmpty() || password.isEmpty() || role == null || status == null) {
-            showAlert(Alert.AlertType.WARNING, "Incomplete Data", "Por favor, preencha todos os campos.");
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || role == null || status == null) {
+            AlertUtils.showAlert(Background, "Please fill all the fields!");
             return;
         }
 
         // Validação do email
         if (!isValidEmail(email)) {
-            showAlert(Alert.AlertType.WARNING, "Invalid Email", "Please fill in all fields.");
+            AlertUtils.showAlert(Background, "Invalid email!.");
             return;
         }
 
-        // Verificar se o email já existe
-        if (emailExists(email)) {
-            showAlert(Alert.AlertType.WARNING, "Email already exists", "Please enter a valid email.");
-            return;
-        }
+        try{
+            // Verificar se o email já existe
+            if (UsrDao.CheckIfEmail(email)) {
+                AlertUtils.showAlert(Background, "This email is already registered by another user.");
+                return;
+            }
 
-        try {
             password = PasswordUtils.hashPassword(password);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        String sql = "INSERT INTO User (Name, Email, Password, Role, Status) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nome);
-            stmt.setString(2, email);
-            stmt.setString(3, password);
-            stmt.setString(4, role);
-            stmt.setString(5, status);
-            stmt.executeUpdate();
+            User NewUser = new User (name, email, password, Role.Admin, Status.Active);
+            users.add(UsrDao.Add(NewUser));
 
             userNameField.clear();
             userEmailField.clear();
@@ -279,25 +263,28 @@ public class ManageUserController extends MenuLoader {
             newUserForm.setVisible(false);
             newUserForm.setManaged(false);
 
-            showAlert(Alert.AlertType.INFORMATION, "Success", "User added successfully!");
+            AlertUtils.showAlert(Background, "User added successfully!");
             LoadTotalUsers();
             LoadUsersPage(currentPage);
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error adding user: " + e.getMessage());
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
+        } catch (Exception e) {
+            AlertUtils.showAlert(Background, "There was an error");
         }
     }
 
-    public void editarUtilizador(int id, String nome, String email, String password, String role, String status) {
-        currentEditUserId = id;
+    public void EditUser(int index) {
+        User EditUser = users.get(index);
+        currentEditUserIndex = index;
+        editUserNameField.setText(EditUser.getName());
+        editUserEmailField.setText(EditUser.getEmail());
+        editUserPasswordField.setText(EditUser.getPassword());
+        editUserRoleField.setValue(EditUser.getRole().toString());
+        editUserStatusField.setValue(EditUser.getStatus().toString());
+        editingUserLabel.setText("• " + EditUser.getName());
 
-        editUserNameField.setText(nome);
-        editUserEmailField.setText(email);
-        editUserPasswordField.setText(password);
-        editUserRoleField.setValue(role);
-        editUserStatusField.setValue(status);
-        editingUserLabel.setText("• " + nome);
-
+        editUserHeader.setVisible(true);
+        editUserHeader.setManaged(true);
         editUserForm.setVisible(true);
         editUserForm.setManaged(true);
 
@@ -306,63 +293,52 @@ public class ManageUserController extends MenuLoader {
     }
 
     @FXML
-    public void confirmarEdicaoUtilizador() {
-        String nome = editUserNameField.getText().trim();
+    public void ConfirmEdit() {
+        String name = editUserNameField.getText().trim();
         String email = editUserEmailField.getText().trim();
         String password = editUserPasswordField.getText().trim();
         String role = editUserRoleField.getValue();
         String status = editUserStatusField.getValue();
 
         // Validação básica
-        if (nome.isEmpty() || email.isEmpty() || password.isEmpty() || role == null || status == null) {
-            showAlert(Alert.AlertType.WARNING, "Incomplete Data", "Please fill in all fields.");
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || role == null || status == null) {
+            AlertUtils.showAlert(Background, "Please fill in all fields.");
             return;
         }
 
         // Validação do email
         if (!isValidEmail(email)) {
-            showAlert(Alert.AlertType.WARNING, "Invalid Email", "Please enter a valid email");
+            AlertUtils.showAlert(Background, "Please enter a valid email");
             return;
         }
 
         // Verificar se o email já existe (exceto para o utilizador atual)
-        if (emailExistsExceptCurrent(email, currentEditUserId)) {
-            showAlert(Alert.AlertType.WARNING, "Email already exists", "This email is already registered by another user.");
+        if (emailExistsExceptCurrent(email, users.get(currentEditUserIndex).getID())) {
+            AlertUtils.showAlert(Background, "This email is already registered by another user.");
             return;
         }
 
-        // Atualiza o utilizador no banco de dados
-        String sql = "UPDATE User SET Name = ?, Email = ?, Password = ?, Role = ?, Status = ? WHERE ID = ?";
+        try{
+            users.get(currentEditUserIndex).setName(name);
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nome);
-            stmt.setString(2, email);
-            stmt.setString(3, password); // Em produção, deve ser hash da password
-            stmt.setString(4, role);
-            stmt.setString(5, status);
-            stmt.setInt(6, currentEditUserId);
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "User updated successfully!");
+            if (UsrDao.Update(users.get(currentEditUserIndex))) {
+                AlertUtils.showAlert(Background, "User updated successfully!");
 
                 // Limpa os campos e fecha o formulário de edição
-                cancelarEdicao();
+                CancelEdit();
 
                 // Recarrega a lista de utilizadores
                 LoadUsersPage(currentPage);
             } else {
-                showAlert(Alert.AlertType.WARNING, "Warning", "No user was updated.");
+                AlertUtils.showAlert(Background,"Error, No user was updated.");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error updating user: " + e.getMessage());
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
     }
 
     @FXML
-    public void cancelarEdicao() {
+    public void CancelEdit() {
         editUserNameField.clear();
         editUserEmailField.clear();
         editUserPasswordField.clear();
@@ -370,36 +346,34 @@ public class ManageUserController extends MenuLoader {
         editUserStatusField.setValue(null);
         editingUserLabel.setText("");
 
+        editUserHeader.setVisible(false);
+        editUserHeader.setManaged(false);
         editUserForm.setVisible(false);
         editUserForm.setManaged(false);
 
-        currentEditUserId = -1;
+        currentEditUserIndex = -1;
     }
 
-    public void UserDetails(int id) {
+    public void UserDetails(int Index) {
         try {
-            Main.setRoot("UserDetails.fxml", getLoggedUser(), id);
+            Main.setRoot("UserDetails.fxml", getLoggedUser(), users.get(Index));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deletarUtilizador(int id) {
-        if (!confirmarAcao("Confimation", "Are you sure you want to deactivate this user?")) {
+    public void DisableUser(int index) {
+        if (!AlertUtils.ConfirmAction("Confimation", "Are you sure you want to deactivate this user?")) {
             return;
         }
 
-        String sql = "UPDATE User SET Status = 'Disabled'  WHERE ID = ?";
+        try{
+            users.get(index).setStatus(Status.Disabled);
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            int linhasAfetadas = stmt.executeUpdate();
-
-            if (linhasAfetadas > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "User successfully removed!");
+            if (UsrDao.Update(users.get(index))) {
+                AlertUtils.showAlert(Background, "User successfully removed!");
             } else {
-                showAlert(Alert.AlertType.WARNING, "Warning", "No user was removed");
+                AlertUtils.showAlert(Background, "No user was removed");
             }
 
             LoadTotalUsers();
@@ -409,8 +383,7 @@ public class ManageUserController extends MenuLoader {
             }
             LoadUsersPage(currentPage);
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error deleting user: " + e.getMessage());
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
     }
 
@@ -418,25 +391,10 @@ public class ManageUserController extends MenuLoader {
         return email != null && email.contains("@") && email.contains(".");
     }
 
-    private boolean emailExists(String email) {
-        String sql = "SELECT COUNT(*) FROM User WHERE Email = ?";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     private boolean emailExistsExceptCurrent(String email, int currentUserId) {
         String sql = "SELECT COUNT(*) FROM User WHERE Email = ? AND ID != ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.setInt(2, currentUserId);
             ResultSet rs = stmt.executeQuery();
@@ -444,38 +402,9 @@ public class ManageUserController extends MenuLoader {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
         return false;
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10");
-
-        Label Label = new Label(message);
-        Label.setStyle("-fx-text-fill: white;");
-
-        VBox content = new VBox(10, Label);
-        dialogPane.setContent(content);
-        alert.showAndWait();
-    }
-
-    private boolean confirmarAcao(String titulo, String mensagem) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensagem);
-
-        ButtonType botaoSim = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-        ButtonType botaoNao = new ButtonType("No", ButtonBar.ButtonData.NO);
-
-        alert.getButtonTypes().setAll(botaoSim, botaoNao);
-
-        return alert.showAndWait().filter(resposta -> resposta == botaoSim).isPresent();
     }
 
     @FXML
@@ -489,50 +418,34 @@ public class ManageUserController extends MenuLoader {
         // Caminho do ficheiro
         String filePath = "src/main/resources/CSV/users.csv";
 
-        try (FileWriter writer = new FileWriter(filePath)) {
-            writer.write("Name;Email;Role;Status\n");
+        FileWriter writer = new FileWriter(filePath);
+        writer.write("Name;Email;Role;Status\n");
 
-            String sql = "SELECT Name, Email, Role, Status FROM User ORDER BY Status";
-
-            try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-
-                while (rs.next()) {
-                    String name = rs.getString("Name");
-                    String email = rs.getString("Email");
-                    String role = rs.getString("Role");
-                    String status = rs.getString("Status");
-
-                    String line = String.format("\"%s\";\"%s\";\"%s\";\"%s\"\n", name, email, role, status);
-                    writer.write(line);
-                }
-            }
-
-        } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "It wasn't possible to export the data: " + e.getMessage());
-            e.printStackTrace();
+        for (User ur : users) {
+            String line = String.format("\"%s\";\"%s\";\"%s\";\"%s\"\n", ur.getName(), ur.getEmail(), ur.getRole().toString(), ur.getStatus().toString());
+            writer.write(line);
         }
 
         // Enviar o e-mail com o CSV
         String subject = "CatCoins Users";
         String content = "Data related to system users";
-        showAlert(Alert.AlertType.INFORMATION, "Export complete", "The information has been sent to your email");
+        AlertUtils.showAlert(Background, "The information has been sent to your email");
         EmailConfig.SendEmailAttach(super.getLoggedUser().getEmail(), content, subject, filePath);
 
         // Limpa o ficheiro temporário
         try {
             Files.delete(Paths.get(filePath));
         } catch (IOException e) {
-            System.out.println("Erro ao remover ficheiro: " + e.getMessage());
+            System.out.println("Error deleting file: " + e.getMessage());
         }
     }
+
     @FXML
     public void goBack(){
         try {
             Main.setRoot("Main.fxml", super.getLoggedUser());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            AlertUtils.showAlert(Background, "There was an error while trying to open the main page");
         }
     }
 }

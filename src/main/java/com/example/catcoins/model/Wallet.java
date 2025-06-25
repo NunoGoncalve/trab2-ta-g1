@@ -19,21 +19,6 @@ public class Wallet {
         this.PendingBalance = PendingBalance;
     }
 
-    private ResultSet GetPortfolio(){
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String GetCoins = "Select * From Portfolio Where WalletID = ?";
-            PreparedStatement Stmt = conn.prepareStatement(GetCoins);
-            Stmt.setInt(1, this.ID);
-            ResultSet result = Stmt.executeQuery();
-            return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-
-    }
-
     public int GetCoinAmount(int CoinID){
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
@@ -67,21 +52,11 @@ public class Wallet {
         }
     }
 
-    public Boolean SetBalance(Double balance, Double PendingBalance) {
+    public Boolean SetBalance(Double balance, Double PendingBalance) throws SQLException {
+        WalletDAO WltDao = new WalletDAO();
         this.Balance = balance;
         this.PendingBalance = PendingBalance;
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String updateCurrencySql = "Update Wallet Set Balance = ?, PendingBalance = ? WHERE ID = ?";
-            PreparedStatement Stmt = conn.prepareStatement(updateCurrencySql);
-            Stmt.setDouble(1, balance);
-            Stmt.setDouble(2, PendingBalance);
-            Stmt.setInt(3, this.ID);
-            Stmt.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        return WltDao.Update(this);
     }
 
     public void UpdatePortfolio(int Amount, int CoinID) {
@@ -95,6 +70,22 @@ public class Wallet {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public void setBalance(Double balance) {
+        Balance = balance;
+    }
+
+    public void setPendingBalance(Double pendingBalance) {
+        PendingBalance = pendingBalance;
+    }
+
+    public void setCurrency(String currency) {
+        Currency = currency;
     }
 
     public int getID() {

@@ -1,28 +1,19 @@
 package com.example.catcoins;
 
 // JavaFX imports
+import com.example.catcoins.model.UserDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-
-// JavaMail imports (versão clássica)
-
 // Java standard imports
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Base64;
 import java.util.Random;
-import java.util.ResourceBundle;
+
 
 
 public class RecoverPassword {
@@ -32,7 +23,7 @@ public class RecoverPassword {
 
 
     @FXML private TextField emailField;
-    @FXML private TextField codigoField;
+    @FXML private TextField codeField;
     @FXML private PasswordField passwordField;
     @FXML private TextField passwordVisibleField;
     @FXML private Button togglePasswordBtn;
@@ -43,41 +34,6 @@ public class RecoverPassword {
     @FXML private Button SendEmail;
     @FXML private StackPane Background;
     @FXML private HBox strengthIndicator; // Referência ao HBox do indicador de força
-
-    public void ToggleField(TextField Field, Boolean IsVisible) {
-        if (IsVisible) {
-            Field.setVisible(true);
-            Field.setManaged(true);
-
-        } else {
-            Field.setVisible(false);
-            Field.setManaged(false);
-            Field.setText(null);
-        }
-    }
-
-    public void ToggleBn(Button button, Boolean IsVisible) {
-        if (IsVisible) {
-            button.setVisible(true);
-            button.setManaged(true);
-
-        } else {
-            button.setVisible(false);
-            button.setManaged(false);
-            button.setText(null);
-        }
-    }
-
-    public void ToggleBar(ProgressBar bar, Boolean IsVisible) {
-        if (IsVisible) {
-            bar.setVisible(true);
-            bar.setManaged(true);
-
-        } else {
-            bar.setVisible(false);
-            bar.setManaged(false);
-        }
-    }
 
     public void ToggleErroLabel(Label errorLabel, Boolean IsVisible) {
         if (IsVisible) {
@@ -91,17 +47,6 @@ public class RecoverPassword {
         }
     }
 
-    public void ToggleEstrengthIndicator(HBox strengthIndicator, Boolean IsVisible) {
-        if (IsVisible) {
-            strengthIndicator.setVisible(true);
-            strengthIndicator.setManaged(true);
-
-        } else {
-            strengthIndicator.setVisible(false);
-            strengthIndicator.setManaged(false);
-        }
-    }
-
     private void BlockEditing(TextField Text) {
         Text.setEditable(false);
         Text.setDisable(true);
@@ -109,8 +54,8 @@ public class RecoverPassword {
 
     // Mostra a etapa de verificação e esconde as demais
     private void showVerificationCode() {
-
-        ToggleField(codigoField, true);
+        codeField.setVisible(true);
+        codeField.setManaged(true);
         BlockEditing(emailField);
 
         // Configurar botão (só texto)
@@ -120,12 +65,16 @@ public class RecoverPassword {
 
     // Mostra a Redefinir a senha e esconde as demais
     private void showNewPassword() {
-        ToggleField(passwordField, true);
-        ToggleBn(togglePasswordBtn, true);
-        ToggleBar(passwordStrengthBar, true);
-        ToggleEstrengthIndicator(strengthIndicator, true);
+        passwordField.setVisible(true);
+        passwordField.setManaged(true);
+        togglePasswordBtn.setVisible(true);
+        togglePasswordBtn.setManaged(true);
+        passwordStrengthBar.setVisible(true);
+        passwordStrengthBar.setManaged(true);
+        strengthIndicator.setVisible(true);
+        strengthIndicator.setManaged(true);
         BlockEditing(emailField);
-        BlockEditing(codigoField);
+        BlockEditing(codeField);
 
         // Configurar botão (só texto)
         SendEmail.setText("Trocar");
@@ -157,16 +106,15 @@ public class RecoverPassword {
 
 
      //Verifica se o código fornecido corresponde ao código armazenado para o email
-    private boolean verifyCode(String email, String code) {
+    private boolean verifyCode(String code) {
         long currentTime = System.currentTimeMillis();
         long elapsed = currentTime - codeTimestamp;
         final long EXPIRATION_TIME = 10 * 60 * 1000; // 10 minutos em milissegundos
 
-        if (!code.equals(storedCode)) {
+        if (elapsed > EXPIRATION_TIME) {
             return false;
         }
-
-        return true;
+        else return !code.equals(storedCode);
     }
 
     public void HandleEmail() {
@@ -181,66 +129,49 @@ public class RecoverPassword {
         }
     }
 
-
      //Processa o envio de email e avança para a próxima etapa
     @FXML
-    private void SendEmail(ActionEvent event) {
+    private void SendEmail() {
+        UserDAO UsrDao = new UserDAO();
         String email = emailField.getText();
 
-        if (email.isEmpty()){
-            ToggleErroLabel(errorLabelFields, true);
-            errorLabelFields.setText("Required field!");
-            ToggleErroLabel(errorLabelEmail, false);
+        try {
+            if (email.isEmpty()) {
+                ToggleErroLabel(errorLabelFields, true);
+                errorLabelFields.setText("Required field!");
+                ToggleErroLabel(errorLabelEmail, false);
 
-            // Verificar se o email existe no banco de dados
-        }else if (email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") && (!CheckIfEmail(email))){
-            AlertUtils.showAlert(Background, "This email isn't registered.\nRedirecting to register", () -> GoToScreen("registo.fxml"));
-        }
+                // Verificar se o email existe no banco de dados
+            } else if (email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") && (!UsrDao.CheckIfEmail(email))) {
+                AlertUtils.showAlert(Background, "This email isn't registered.\nRedirecting to register", () -> GoToScreen("registo.fxml"));
+            }
 
-        // Enviar o código de verificação para o email
-        if (sendVerificationCode(email)) {
-            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Sucess", "Verification code sent to: \n" + email);
-            System.out.println("COD: " + storedCode);
-        } else {
-            AlertUtils.showAlert(Background,Alert.AlertType.ERROR,  "ERROR", "Try again");
-        }
-    }
-
-     //Verifica se o email existe no banco de dados
-    private boolean CheckIfEmail(String email) {
-        String query = "SELECT 1 FROM User WHERE Email = ?";
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, email);
-            return stmt.executeQuery().next();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Error", "Error checking email.");
-            return false;
+            // Enviar o código de verificação para o email
+            if (sendVerificationCode(email)) {
+                AlertUtils.showAlert(Background, "Verification code sent to: \n" + email, this::showVerificationCode);
+                System.out.println("COD: " + storedCode);
+            } else {
+                AlertUtils.showAlert(Background, "Try again");
+            }
+        }catch (SQLException e) {
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
     }
-
 
      //Verifica o código inserido e avança para a próxima etapa
     @FXML
     private void VerifyCode(ActionEvent event) {
-        String code = codigoField.getText();
-        String email = emailField.getText();
+        String code = codeField.getText();
 
         if (code == null || code.trim().isEmpty()) {
             ToggleErroLabel(errorLabelFields, true);
             errorLabelFields.setText("Mandatory field!");
             ToggleErroLabel(errorLabelEmail, false);
 
-        } else if (!verifyCode(email, code)) {
-            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Error", "Code invalid!");
+        } else if (!verifyCode(code)) {
+            AlertUtils.showAlert(Background, "Code invalid!");
         }
-
-        else AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Code Verified", "Code Verified.");
-
+        else AlertUtils.showAlert(Background, "Code Verified.", this::showNewPassword);
     }
 
 
@@ -248,9 +179,9 @@ public class RecoverPassword {
     private void GoToScreen(String fxmlPath) {
         try {
             Main.setRoot(fxmlPath, null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Erro", "Unable to load screen: \n" + fxmlPath);
+            AlertUtils.showAlert(Background, "Unable to load screen: \n" + fxmlPath);
         }
     }
 
@@ -278,15 +209,6 @@ public class RecoverPassword {
         }
     }
 
-
-    //Gera hash SHA-256 da senha
-    private String hashPassword(String password) throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encodeToString(hash);
-    }
-
-
     //Processa a alteração de senha
     @FXML
     public void changePassword(ActionEvent event) {
@@ -296,18 +218,18 @@ public class RecoverPassword {
         // Validação da senha
         String senhaErro = validatePassword(novaSenha);
         if (senhaErro != null) {
-            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Password error", senhaErro);
+            AlertUtils.showAlert(Background, "Password error");
             return;
         }
 
         if (email == null || email.trim().isEmpty()) {
-            AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Erro", "Email not available.");
+            AlertUtils.showAlert(Background,  "Email not available.");
             return;
         }
 
         try {
             // Gera hash da senha
-            String hashedSenha = hashPassword(novaSenha);
+            String hashedSenha = PasswordUtils.hashPassword(novaSenha);
 
             // Comando SQL para atualizar senha do usuário pelo email
             String sql = "UPDATE User SET Password = ? WHERE Email = ?";
@@ -324,7 +246,7 @@ public class RecoverPassword {
                     AlertUtils.showAlert(Background,"Password changed with sucess!", () -> GoToScreen("Login.fxml"));
 
                 } else {
-                    AlertUtils.showAlert(Background,Alert.AlertType.ERROR, "Erro", "Check your credentials.");
+                    AlertUtils.showAlert(Background,  "Check your credentials.");
                 }
             }
 

@@ -1,18 +1,13 @@
 package com.example.catcoins;
 
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-//   AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "ERROR", "Verify the credentials entered");
-
-
 public class AlertUtils {
 
-    public static void showAlert(StackPane background, Alert.AlertType type, String title, String messageText) {
+    public static void showAlert(StackPane background, String messageText) {
         // Caixa de diálogo
         VBox dialog = new VBox(3);
         dialog.setSpacing(25);
@@ -73,5 +68,27 @@ public class AlertUtils {
                 onClose.run();
             }
         });
+    }
+
+    public static boolean ConfirmAction(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10");
+
+        Label Label = new Label(message);
+        Label.setStyle("-fx-text-fill: white;");
+
+        VBox content = new VBox(10, Label);
+        dialogPane.setContent(content);
+
+        ButtonType okButtonType = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+        ButtonType CancelButtonType = new ButtonType("No", ButtonBar.ButtonData.NO);
+        dialogPane.getButtonTypes().addAll(okButtonType, CancelButtonType);
+        dialogPane.lookupButton(okButtonType).setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
+        dialogPane.lookupButton(CancelButtonType).setStyle("-fx-background-color: red; -fx-max-width: 50; -fx-border-radius: 10; -fx-text-fill: white;");
+
+        return alert.showAndWait().filter(resposta -> resposta == okButtonType).isPresent();
     }
 }

@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -22,118 +23,131 @@
         <URL value="@styles/UserDetails.css" />
     </stylesheets>
     <center>
-      <VBox fx:id="Stack" alignment="CENTER_RIGHT" fillWidth="false" prefHeight="1000.0" prefWidth="1716.0">
+      <StackPane fx:id="Background">
          <BorderPane.margin>
             <Insets bottom="40.0" left="10.0" right="40.0" top="40.0" />
          </BorderPane.margin>
          <children>
-              <VBox alignment="CENTER_LEFT" prefHeight="780.0" prefWidth="1712.0" spacing="15.0" styleClass="main-container">
-                  <!-- Seção de Informações do Usuário -->
-                  <VBox fillWidth="false" spacing="5" style="-fx-padding: 0 0 10 0;">
-                      <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="User Details" textFill="#ffa630">
+            <VBox fx:id="Stack" alignment="CENTER_RIGHT" fillWidth="false" prefHeight="1000.0" prefWidth="1716.0">
+               <children>
+                    <VBox alignment="CENTER_LEFT" prefHeight="780.0" prefWidth="1712.0" spacing="15.0" styleClass="main-container">
+                        <!-- Seção de Informações do Usuário -->
+                        <VBox fillWidth="false" spacing="5" style="-fx-padding: 0 0 10 0;">
+                            <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="User Details" textFill="#ffa630">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Label>
+                            <GridPane alignment="CENTER" hgap="10" prefHeight="123.0" prefWidth="692.0" scaleShape="false" vgap="5">
+                                <columnConstraints>
+                                    <ColumnConstraints maxWidth="206.6666717529297" minWidth="56.00000762939453" percentWidth="0.0" prefWidth="66.66667175292969" />
+                                    <ColumnConstraints fillWidth="false" halignment="LEFT" hgrow="NEVER" maxWidth="627.9999923706055" minWidth="477.3333282470703" prefWidth="617.3333282470703" />
+                                </columnConstraints>
+            
+                                <Label prefHeight="26.0" prefWidth="67.0" style="-fx-font-weight: bold;" text="Name:">
+                              <font>
+                                 <Font size="18.0" />
+                              </font>
+                           </Label>
+                                <Text fx:id="userNameText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1">
+                              <font>
+                                 <Font size="18.0" />
+                              </font>
+                           </Text>
+            
+                                <Label prefHeight="27.0" prefWidth="55.0" style="-fx-font-weight: bold;" text="Email:" GridPane.rowIndex="1">
+                              <font>
+                                 <Font size="18.0" />
+                              </font>
+                           </Label>
+                                <Text fx:id="userEmailText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <font>
+                                 <Font size="18.0" />
+                              </font>
+                           </Text>
+            
+                                <Label style="-fx-font-weight: bold;" text="Role:" GridPane.rowIndex="2">
+                              <font>
+                                 <Font size="18.0" />
+                              </font>
+                           </Label>
+                                <Text fx:id="userRoleText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <font>
+                                 <Font size="18.0" />
+                              </font>
+                           </Text>
+            
+                                <Label prefHeight="27.0" prefWidth="184.0" style="-fx-font-weight: bold;" text="Status:" GridPane.rowIndex="3">
+                              <font>
+                                 <Font size="18.0" />
+                              </font>
+                           </Label>
+                                <Text fx:id="userStatusText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                              <font>
+                                 <Font size="18.0" />
+                              </font>
+                           </Text>
+                           <rowConstraints>
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints percentHeight="0.0" />
+                           </rowConstraints>
+                            </GridPane>
+                        <VBox.margin>
+                           <Insets />
+                        </VBox.margin>
+                        </VBox>
+            
+                        <Separator style="-fx-padding: 5 0 5 0;" />
+            
+                        <!-- Seção de Saldo -->
+                        <VBox spacing="5" style="-fx-padding: 0 0 10 0;">
+                            <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="Fiat Balance" textFill="#ffa630" />
+                            <HBox alignment="CENTER_LEFT" spacing="20">
+                                <VBox spacing="2">
+                                    <Text fx:id="balanceText" style="-fx-font-size: 16px; -fx-fill: #27ae60;" />
+                                </VBox>
+                                <VBox spacing="2">
+                                    <Text fx:id="coinBalanceText" style="-fx-font-size: 16px; -fx-fill: #4fc3f7;" />
+                                </VBox>
+                            </HBox>
+                        </VBox>
+            
+                        <Separator style="-fx-padding: 5 0 5 0;" />
+            
+                        <!-- Seção de Transações -->
+                        <VBox spacing="5">
+                            <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="Order History" />
+                            <TableView fx:id="transactionsTable" maxWidth="1100.0" prefHeight="300" prefWidth="1148.0" style="-fx-padding: 5;">
+                                <columns>
+                                    <TableColumn fx:id="idColumn" editable="false" prefWidth="170.0" resizable="false" style="-fx-alignment: CENTER;" text="ID" />
+                                    <TableColumn fx:id="typeColumn" editable="false" prefWidth="170.0" text="Type" />
+                                    <TableColumn fx:id="coinColumn" editable="false" prefWidth="170.0" text="Coin" />
+                                    <TableColumn fx:id="valueColumn" editable="false" prefWidth="170.0" style="-fx-alignment: CENTER-RIGHT;" text="Value (€)" />
+                                    <TableColumn fx:id="amountColumn" editable="false" prefWidth="170.0" style="-fx-alignment: CENTER-RIGHT;" text="Amount" />
+                                    <TableColumn fx:id="dateColumn" prefWidth="240.0" text="Date" />
+                                </columns>
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                            </TableView>
+                        </VBox>
+                     <HBox alignment="BASELINE_LEFT" maxHeight="40.0" prefHeight="40.0" prefWidth="1692.0">
+                        <children>
+                           <Button alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" mnemonicParsing="false" onAction="#goBack" prefHeight="52.0" prefWidth="41.0" rotate="270.0" styleClass="return-button" text="⤴" />
+                        </children>
+                     </HBox>
+                     <padding>
+                        <Insets bottom="15.0" left="20.0" right="40.0" top="30.0" />
+                     </padding>
                      <VBox.margin>
                         <Insets />
-                     </VBox.margin></Label>
-                      <GridPane alignment="CENTER" hgap="10" prefHeight="123.0" prefWidth="692.0" scaleShape="false" vgap="5">
-                          <columnConstraints>
-                              <ColumnConstraints maxWidth="206.6666717529297" minWidth="56.00000762939453" percentWidth="0.0" prefWidth="66.66667175292969" />
-                              <ColumnConstraints fillWidth="false" halignment="LEFT" hgrow="NEVER" maxWidth="627.9999923706055" minWidth="477.3333282470703" prefWidth="617.3333282470703" />
-                          </columnConstraints>
-      
-                          <Label prefHeight="26.0" prefWidth="67.0" style="-fx-font-weight: bold;" text="Name:">
-                        <font>
-                           <Font size="18.0" />
-                        </font></Label>
-                          <Text fx:id="userNameText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1">
-                        <font>
-                           <Font size="18.0" />
-                        </font></Text>
-      
-                          <Label prefHeight="27.0" prefWidth="55.0" style="-fx-font-weight: bold;" text="Email:" GridPane.rowIndex="1">
-                        <font>
-                           <Font size="18.0" />
-                        </font></Label>
-                          <Text fx:id="userEmailText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                        <font>
-                           <Font size="18.0" />
-                        </font></Text>
-      
-                          <Label style="-fx-font-weight: bold;" text="Role:" GridPane.rowIndex="2">
-                        <font>
-                           <Font size="18.0" />
-                        </font></Label>
-                          <Text fx:id="userRoleText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                        <font>
-                           <Font size="18.0" />
-                        </font></Text>
-      
-                          <Label prefHeight="27.0" prefWidth="184.0" style="-fx-font-weight: bold;" text="Status:" GridPane.rowIndex="3">
-                        <font>
-                           <Font size="18.0" />
-                        </font></Label>
-                          <Text fx:id="userStatusText" fill="WHITE" styleClass="Text" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                        <font>
-                           <Font size="18.0" />
-                        </font></Text>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints percentHeight="0.0" />
-                     </rowConstraints>
-                      </GridPane>
-                  <VBox.margin>
-                     <Insets />
-                  </VBox.margin>
-                  </VBox>
-      
-                  <Separator style="-fx-padding: 5 0 5 0;" />
-      
-                  <!-- Seção de Saldo -->
-                  <VBox spacing="5" style="-fx-padding: 0 0 10 0;">
-                      <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="Fiat Balance" textFill="#ffa630" />
-                      <HBox alignment="CENTER_LEFT" spacing="20">
-                          <VBox spacing="2">
-                              <Text fx:id="balanceText" style="-fx-font-size: 16px; -fx-fill: #27ae60;" />
-                          </VBox>
-                          <VBox spacing="2">
-                              <Text fx:id="coinBalanceText" style="-fx-font-size: 16px; -fx-fill: #4fc3f7;" />
-                          </VBox>
-                      </HBox>
-                  </VBox>
-      
-                  <Separator style="-fx-padding: 5 0 5 0;" />
-      
-                  <!-- Seção de Transações -->
-                  <VBox spacing="5">
-                      <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffa630;" text="Order History" />
-                      <TableView fx:id="transactionsTable" maxWidth="1100.0" prefHeight="300" prefWidth="1148.0" style="-fx-padding: 5;">
-                          <columns>
-                              <TableColumn fx:id="idColumn" editable="false" prefWidth="170.0" resizable="false" style="-fx-alignment: CENTER;" text="ID" />
-                              <TableColumn fx:id="typeColumn" editable="false" prefWidth="170.0" text="Type" />
-                              <TableColumn fx:id="coinColumn" editable="false" prefWidth="170.0" text="Coin" />
-                              <TableColumn fx:id="valueColumn" editable="false" prefWidth="170.0" style="-fx-alignment: CENTER-RIGHT;" text="Value (€)" />
-                              <TableColumn fx:id="amountColumn" editable="false" prefWidth="170.0" style="-fx-alignment: CENTER-RIGHT;" text="Amount" />
-                              <TableColumn fx:id="dateColumn" prefWidth="240.0" text="Date" />
-                          </columns>
-                     <VBox.margin>
-                        <Insets left="5.0" />
                      </VBox.margin>
-                      </TableView>
-                  </VBox>
-               <HBox alignment="BASELINE_LEFT" maxHeight="40.0" prefHeight="40.0" prefWidth="1692.0">
-                  <children>
-                     <Button alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" mnemonicParsing="false" onAction="#goBack" prefHeight="52.0" prefWidth="41.0" rotate="270.0" styleClass="return-button" text="⤴" />
-                  </children>
-               </HBox>
-               <padding>
-                  <Insets bottom="15.0" left="20.0" right="40.0" top="30.0" />
-               </padding>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-              </VBox>
+                    </VBox>
+               </children>
+            </VBox>
          </children>
-      </VBox>
+      </StackPane>
     </center>
 </BorderPane>

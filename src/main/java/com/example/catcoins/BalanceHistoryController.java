@@ -1,14 +1,9 @@
 package com.example.catcoins;
 
-import com.example.catcoins.model.BalanceHistory;
-import com.example.catcoins.model.Client;
-import com.example.catcoins.model.Transaction;
-import com.example.catcoins.model.User;
+import com.example.catcoins.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -16,17 +11,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.NumberFormat;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -47,11 +38,11 @@ public class BalanceHistoryController extends MenuLoader {
     @FXML
     private TableView<BalanceHistory> BalanceHistoryTable;
     @FXML
-    private TableColumn<Transaction, Date> DateColumn;
+    private TableColumn<Order, Date> DateColumn;
     @FXML
-    private TableColumn<Transaction, Double> BalanceColumn;
+    private TableColumn<Order, Double> BalanceColumn;
     @FXML
-    private TableColumn<Transaction, Double> PendingBalanceColumn;
+    private TableColumn<Order, Double> PendingBalanceColumn;
     @FXML
     private VBox Stack;
     @FXML
@@ -59,12 +50,10 @@ public class BalanceHistoryController extends MenuLoader {
     @FXML
     private StackPane Background;
 
-    private final ObservableList<BalanceHistory> BalanceHistoryList = FXCollections.observableArrayList();
-
     @Override
     public void setLoggedUser(User user) {
         super.setLoggedUser(user);
-        super.LoadMenus(Stack, MainPanel);
+        super.LoadMenus(Stack, MainPanel, Background);
         loadHistory();
     }
 
@@ -73,41 +62,24 @@ public class BalanceHistoryController extends MenuLoader {
         BalanceColumn.setCellValueFactory(new PropertyValueFactory<>("Balance"));
         PendingBalanceColumn.setCellValueFactory(new PropertyValueFactory<>("PendingBalance"));
         DateColumn.setCellValueFactory(new PropertyValueFactory<>("Date"));
-        String sql = " SELECT * FROM BalanceHistory where Wallet = ? ORDER BY Date DESC";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            Client LoggedClient = (Client) super.getLoggedUser();
-            stmt.setInt(1,   LoggedClient.getWallet().getID());
-            ResultSet rs = stmt.executeQuery();
 
-            BalanceHistoryList.clear();
-            while (rs.next()) {
-                BalanceHistory b = new BalanceHistory(
-                        rs.getTimestamp("Date").toString(),
-                        rs.getDouble("PendingBalance"),
-                        rs.getDouble("Balance")
-                );
-                BalanceHistoryList.add(b);
-            }
+        Client LoggedClient = (Client) super.getLoggedUser();
+        BalanceHistoryDAO BlncHstrDao = new BalanceHistoryDAO();
 
+        try {
+            ArrayList<BalanceHistory> BalanceHistory =BlncHstrDao.GetWalletBalanceHistory(LoggedClient.getWallet());
+            ObservableList<BalanceHistory> BalanceHistoryList = FXCollections.observableArrayList(BalanceHistory);
             BalanceHistoryTable.setItems(BalanceHistoryList);
-            System.out.println("Loaded " + BalanceHistoryList.size() + " transactions for user ID: " + LoggedClient.getWallet().getID());
 
         } catch (SQLException e) {
-            System.err.println("Error loading transactions: " + e.getMessage());
-            handleDatabaseError(e);
+            DatabaseConnection.HandleConnectionError(Background, e);
             BalanceHistoryTable.setItems(FXCollections.emptyObservableList());
         }
     }
 
-    private void handleDatabaseError(SQLException e) {
-        e.printStackTrace();
-        System.err.println("Database error: " + e.getMessage());
-    }
-
     @FXML
     private void exportLineChartToCSV() throws IOException {
-        // Garante que o diretório existe
+        // Garante que a pasta existe
         java.nio.file.Path dirPath = Paths.get("src/main/resources/CSV");
         if (!Files.exists(dirPath)) {
             Files.createDirectories(dirPath);
@@ -140,7 +112,6 @@ public class BalanceHistoryController extends MenuLoader {
             System.out.println("Error removing file: " + e.getMessage());
         }
 
-    // Substituindo o Alert padrão pelo ShowAlert personalizado
-        AlertUtils.showAlert(Background, Alert.AlertType.ERROR, "Export completed", "The full history has been sent to your email!");
+        AlertUtils.showAlert(Background, "The full history has been sent to your email!");
     }
 }

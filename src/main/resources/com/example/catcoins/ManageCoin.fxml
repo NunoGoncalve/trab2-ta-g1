@@ -12,158 +12,163 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane fx:id="MainPanel" prefHeight="1080.0" prefWidth="1792.0" styleClass="root" stylesheets="@styles/ManageCoinStyle.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.catcoins.ManageCoinController">
     <center>
-        <VBox fx:id="Stack" alignment="CENTER_RIGHT" stylesheets="@styles/ManageCoinStyle.css" BorderPane.alignment="CENTER">
-
-            <!-- Lista de Moedas com Scroll -->
-            <ScrollPane fitToWidth="true" maxHeight="-Infinity" prefHeight="649.0" prefWidth="1732.0" styleClass="card">
-                <content>
-                    <VBox fx:id="coinListVBox" alignment="TOP_CENTER" prefHeight="647.0" prefWidth="1730.0" spacing="20" style="-fx-padding: 50px;">
-                        <!-- Título -->
-                        <Label styleClass="section-title" text="Coin Management" />
-
-                        <Separator />
-
-                        <!-- Cabeçalho -->
-                        <GridPane alignment="CENTER" hgap="20" styleClass="grid-header" vgap="10">
-                            <columnConstraints>
-                                <ColumnConstraints halignment="CENTER" percentWidth="15" />
-                                <ColumnConstraints halignment="CENTER" percentWidth="25" />
-                                <ColumnConstraints halignment="CENTER" percentWidth="25" />
-                                <ColumnConstraints halignment="CENTER" percentWidth="25" />
-                                <ColumnConstraints halignment="CENTER" percentWidth="10" />
-                            </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints valignment="CENTER" />
-                            </rowConstraints>
-
-                            <Label text="Logo" GridPane.columnIndex="0" />
-                            <Label text="Name" GridPane.columnIndex="1" />
-                            <Label text="Value" GridPane.columnIndex="2" />
-                            <Label prefHeight="15.0" prefWidth="90.0" text="Actions" GridPane.columnIndex="4" />
-                        </GridPane>
-
-                        <!-- Container único para as moedas -->
-                        <GridPane fx:id="coinGrid" alignment="CENTER_LEFT" hgap="20" prefHeight="101.0" prefWidth="1008.0" styleClass="coin-entry" vgap="15">
-                            <columnConstraints>
-                                <ColumnConstraints halignment="CENTER" percentWidth="15" />
-                                <ColumnConstraints halignment="CENTER" percentWidth="25" />
-                                <ColumnConstraints halignment="CENTER" percentWidth="25" />
-                                <ColumnConstraints halignment="CENTER" percentWidth="25" />
-                                <ColumnConstraints halignment="CENTER" percentWidth="10" />
-                            </columnConstraints>
-
-                            <!-- Exemplo de entrada 1 -->
-                            <Label styleClass="coin-logo" text="₿" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                            <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                            <Label styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-                            <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="4" GridPane.rowIndex="0">
-                                <Button prefHeight="30.0" prefWidth="40.0" styleClass="edit-btn" text="✏" />
-                                <Button prefHeight="30.0" prefWidth="41.0" styleClass="delete-btn" text="✖" />
-                            </HBox>
-
-                            <!-- Exemplo de entrada 2 -->
-                            <Label styleClass="coin-logo" text="🐾" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                            <Label styleClass="coin-label" text="DogCoin" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                            <Label styleClass="coin-price" text="125,00$" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                            <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="4" GridPane.rowIndex="1">
-                                <Button prefHeight="30.0" prefWidth="38.0" styleClass="edit-btn" text="✏" />
-                                <Button styleClass="delete-btn" text="✖" />
-                            </HBox>
-
-                            <rowConstraints>
-                                <RowConstraints />
-                                <RowConstraints />
-                            </rowConstraints>
-                        </GridPane>
-                    </VBox>
-                </content>
-            <VBox.margin>
-               <Insets bottom="30.0" />
-            </VBox.margin>
-            </ScrollPane>
-
-            <!-- Seção Adicionar Nova Moeda -->
-            <BorderPane styleClass="card">
-                <left>
-                    <Label styleClass="section-title" text="Add coin" BorderPane.alignment="CENTER_LEFT" />
-                </left>
-                <right>
-                    <Button onAction="#newCoinForm" styleClass="add-btn" text="➕" BorderPane.alignment="CENTER" />
-                </right>
-            <VBox.margin>
-               <Insets bottom="15.0" />
-            </VBox.margin>
-            </BorderPane>
-
-            <!-- Container único: Seção Editar Moeda -->
-            <VBox fx:id="editCoinForm" managed="false" spacing="20" styleClass="card" visible="false">
-
-                <!-- Cabeçalho com título e botão cancelar -->
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label styleClass="section-title" text="Edit coin" />
-                    <Label fx:id="editingCoinLabel" styleClass="editing-coin-name" text="" />
-                    <Region HBox.hgrow="ALWAYS" />
-                    <Button onAction="#cancelarEdicao" styleClass="cancel-btn" text="✖ Cancel" />
-                </HBox>
-
-                <Separator />
-
-                <!-- Campos de nome e preço -->
-                <HBox spacing="15">
-                    <!-- Campo Nome -->
-                    <VBox spacing="5" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: #8d99ad;" text="Coin Name" />
-                        <TextField fx:id="editCoinNameField" promptText="Ex: Ethereum" />
-                    </VBox>
-
-                    <!-- Campo Preço -->
-                    <VBox spacing="5" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: #8d99ad;" text="Value ($)" />
-                        <TextField fx:id="editCoinPriceField" promptText="Ex: 1500.00" />
-                    </VBox>
-                </HBox>
-
-                <!-- Botão de salvar -->
-                <HBox alignment="CENTER_RIGHT" spacing="10">
-                    <Button onAction="#confirmarEdicaoMoeda" styleClass="submit-btn" text="Salvar Alterações" />
-                </HBox>
-            <VBox.margin>
-               <Insets top="15.0" />
-            </VBox.margin>
-
-            </VBox>
-
-            <!-- Formulário Nova Moeda -->
-            <VBox fx:id="newCoinForm" alignment="CENTER_LEFT" managed="false" spacing="15" styleClass="card" visible="false">
-                <Label styleClass="section-title" text="Add new coin" />
-                <Separator />
-                <HBox spacing="15">
-                    <VBox spacing="5" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: #8d99ad;" text="Coin Name" />
-                        <TextField fx:id="coinNameField" promptText="Ex: Ethereum" />
-                    </VBox>
-                    <VBox spacing="5" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: #8d99ad;" text="Value ($)" />
-                        <TextField fx:id="coinPriceField" promptText="Ex: 1500.00" />
-                    </VBox>
-                </HBox>
-                <Label style="-fx-text-fill: #8d99ad;" text="Coin Image (PNG)" />
-                <Button fx:id="uploadImageButton" styleClass="upload-btn" text="Upload PNG" />
-                <Label fx:id="imageFileNameLabel" style="-fx-text-fill: #8d99ad;" text="" />
-                <HBox alignment="CENTER_RIGHT">
-                    <Button onAction="#CriarMoeda" styleClass="submit-btn" text="Submit" />
-                </HBox>
-            <VBox.margin>
-               <Insets top="15.0" />
-            </VBox.margin>
-            </VBox>
+      <StackPane fx:id="Background" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets bottom="40.0" left="20.0" right="40.0" top="40.0" />
          </BorderPane.margin>
-        </VBox>
+         <children>
+              <VBox fx:id="Stack" alignment="CENTER_RIGHT" stylesheets="@styles/ManageCoinStyle.css">
+      
+                  <!-- Lista de Moedas com Scroll -->
+                  <ScrollPane fitToWidth="true" maxHeight="-Infinity" prefHeight="649.0" prefWidth="1732.0" styleClass="card">
+                      <content>
+                          <VBox fx:id="coinListVBox" alignment="TOP_CENTER" prefHeight="647.0" prefWidth="1730.0" spacing="20" style="-fx-padding: 50px;">
+                              <!-- Título -->
+                              <Label styleClass="section-title" text="Coin Management" />
+      
+                              <Separator />
+      
+                              <!-- Cabeçalho -->
+                              <GridPane alignment="CENTER" hgap="20" styleClass="grid-header" vgap="10">
+                                  <columnConstraints>
+                                      <ColumnConstraints halignment="CENTER" percentWidth="15" />
+                                      <ColumnConstraints halignment="CENTER" percentWidth="25" />
+                                      <ColumnConstraints halignment="CENTER" percentWidth="25" />
+                                      <ColumnConstraints halignment="CENTER" percentWidth="25" />
+                                      <ColumnConstraints halignment="CENTER" percentWidth="10" />
+                                  </columnConstraints>
+                                  <rowConstraints>
+                                      <RowConstraints valignment="CENTER" />
+                                  </rowConstraints>
+      
+                                  <Label text="Logo" GridPane.columnIndex="0" />
+                                  <Label text="Name" GridPane.columnIndex="1" />
+                                  <Label text="Value" GridPane.columnIndex="2" />
+                                  <Label prefHeight="15.0" prefWidth="90.0" text="Actions" GridPane.columnIndex="4" />
+                              </GridPane>
+      
+                              <!-- Container único para as moedas -->
+                              <GridPane fx:id="coinGrid" alignment="CENTER_LEFT" hgap="20" prefHeight="101.0" prefWidth="1008.0" styleClass="coin-entry" vgap="15">
+                                  <columnConstraints>
+                                      <ColumnConstraints halignment="CENTER" percentWidth="15" />
+                                      <ColumnConstraints halignment="CENTER" percentWidth="25" />
+                                      <ColumnConstraints halignment="CENTER" percentWidth="25" />
+                                      <ColumnConstraints halignment="CENTER" percentWidth="25" />
+                                      <ColumnConstraints halignment="CENTER" percentWidth="10" />
+                                  </columnConstraints>
+      
+                                  <!-- Exemplo de entrada 1 -->
+                                  <Label styleClass="coin-logo" text="₿" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                  <Label styleClass="coin-label" text="BITCOIN" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                  <Label styleClass="coin-price" text="200,00$" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                                  <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="4" GridPane.rowIndex="0">
+                                      <Button prefHeight="30.0" prefWidth="40.0" styleClass="edit-btn" text="✏" />
+                                      <Button prefHeight="30.0" prefWidth="41.0" styleClass="delete-btn" text="✖" />
+                                  </HBox>
+      
+                                  <!-- Exemplo de entrada 2 -->
+                                  <Label styleClass="coin-logo" text="🐾" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                  <Label styleClass="coin-label" text="DogCoin" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                  <Label styleClass="coin-price" text="125,00$" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                  <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                                      <Button prefHeight="30.0" prefWidth="38.0" styleClass="edit-btn" text="✏" />
+                                      <Button styleClass="delete-btn" text="✖" />
+                                  </HBox>
+      
+                                  <rowConstraints>
+                                      <RowConstraints />
+                                      <RowConstraints />
+                                  </rowConstraints>
+                              </GridPane>
+                          </VBox>
+                      </content>
+                  <VBox.margin>
+                     <Insets bottom="30.0" />
+                  </VBox.margin>
+                  </ScrollPane>
+      
+                  <!-- Seção Adicionar Nova Moeda -->
+                  <BorderPane styleClass="card">
+                      <left>
+                          <Label styleClass="section-title" text="Add coin" BorderPane.alignment="CENTER_LEFT" />
+                      </left>
+                      <right>
+                          <Button onAction="#newCoinForm" styleClass="add-btn" text="➕" BorderPane.alignment="CENTER" />
+                      </right>
+                  <VBox.margin>
+                     <Insets bottom="15.0" />
+                  </VBox.margin>
+                  </BorderPane>
+      
+                  <!-- Container único: Seção Editar Moeda -->
+                  <VBox fx:id="editCoinForm" managed="false" spacing="20" styleClass="card" visible="false">
+      
+                      <!-- Cabeçalho com título e botão cancelar -->
+                      <HBox alignment="CENTER_LEFT" spacing="10">
+                          <Label styleClass="section-title" text="Edit coin" />
+                          <Label fx:id="editingCoinLabel" styleClass="editing-coin-name" text="" />
+                          <Region HBox.hgrow="ALWAYS" />
+                          <Button onAction="#CancelEdit" styleClass="cancel-btn" text="✖ Cancel" />
+                      </HBox>
+      
+                      <Separator />
+      
+                      <!-- Campos de nome e preço -->
+                      <HBox spacing="15">
+                          <!-- Campo Nome -->
+                          <VBox spacing="5" HBox.hgrow="ALWAYS">
+                              <Label style="-fx-text-fill: #8d99ad;" text="Coin Name" />
+                              <TextField fx:id="editCoinNameField" promptText="Ex: Ethereum" />
+                          </VBox>
+      
+                          <!-- Campo Preço -->
+                          <VBox spacing="5" HBox.hgrow="ALWAYS">
+                              <Label style="-fx-text-fill: #8d99ad;" text="Value ($)" />
+                              <TextField fx:id="editCoinPriceField" promptText="Ex: 1500.00" />
+                          </VBox>
+                      </HBox>
+      
+                      <!-- Botão de salvar -->
+                      <HBox alignment="CENTER_RIGHT" spacing="10">
+                          <Button onAction="#ConfirmEdit" styleClass="submit-btn" text="Salvar Alterações" />
+                      </HBox>
+                  <VBox.margin>
+                     <Insets top="15.0" />
+                  </VBox.margin>
+      
+                  </VBox>
+      
+                  <!-- Formulário Nova Moeda -->
+                  <VBox fx:id="newCoinForm" alignment="CENTER_LEFT" managed="false" spacing="15" styleClass="card" visible="false">
+                      <Label styleClass="section-title" text="Add new coin" />
+                      <Separator />
+                      <HBox spacing="15">
+                          <VBox spacing="5" HBox.hgrow="ALWAYS">
+                              <Label style="-fx-text-fill: #8d99ad;" text="Coin Name" />
+                              <TextField fx:id="coinNameField" promptText="Ex: Ethereum" />
+                          </VBox>
+                          <VBox spacing="5" HBox.hgrow="ALWAYS">
+                              <Label style="-fx-text-fill: #8d99ad;" text="Value ($)" />
+                              <TextField fx:id="coinPriceField" promptText="Ex: 1500.00" />
+                          </VBox>
+                      </HBox>
+                      <Label style="-fx-text-fill: #8d99ad;" text="Coin Image (PNG)" />
+                      <Button fx:id="uploadImageButton" styleClass="upload-btn" text="Upload PNG" />
+                      <Label fx:id="imageFileNameLabel" style="-fx-text-fill: #8d99ad;" text="" />
+                      <HBox alignment="CENTER_RIGHT">
+                          <Button onAction="#NewCoin" styleClass="submit-btn" text="Submit" />
+                      </HBox>
+                  <VBox.margin>
+                     <Insets top="15.0" />
+                  </VBox.margin>
+                  </VBox>
+              </VBox>
+         </children>
+      </StackPane>
     </center>
 </BorderPane>

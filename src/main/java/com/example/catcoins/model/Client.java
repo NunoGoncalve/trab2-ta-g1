@@ -4,9 +4,9 @@ public class Client extends User {
 
     Wallet wallet;
 
-    public Client(int id, String name, String email, Role role, Status status, Wallet wallet) {
+    public Client(int id, String name, String email, String password, Role role, Status status, Wallet wallet) {
 
-        super(id, name, email, role, status);
+        super(id, name, email,password, role, status);
         this.wallet = wallet;
     }
 

@@ -8,10 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Coin {
-    int ID;
-    String name;
-    double value;
-
+    private int ID;
+    private String name;
+    private double value;
+    private double variance;
 
     public int getID() {
         return ID;
@@ -25,10 +25,20 @@ public class Coin {
         return name;
     }
 
+    public double getVariance() {
+        return variance;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
+    public Coin(int ID, String name, double value, double variance) {
+        this.ID = ID;
+        this.name = name;
+        this.value = value;
+        this.variance = variance;
+    }
 
     public Coin(int ID, String name) {
         this.ID = ID;

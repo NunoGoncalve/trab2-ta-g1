@@ -1,5 +1,6 @@
 package com.example.catcoins;
 
+import com.example.catcoins.model.Coin;
 import com.example.catcoins.model.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -35,25 +36,29 @@ public class Main extends Application {
         super.stop();
     }
 
-    public static void setRoot(String fxml, User LoggedUser) throws IOException {
-        FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxml));
-        Parent root = loader.load();
-        Object controller = loader.getController();
-        if (controller instanceof MenuLoader) {
-            ((MenuLoader) controller).setLoggedUser(LoggedUser);
+    public static void setRoot(String fxml, User LoggedUser) throws Exception {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxml));
+            Parent root = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof MenuLoader) {
+                ((MenuLoader) controller).setLoggedUser(LoggedUser);
+            }
+            scene.setRoot(root);
+        }catch (Exception e){
+            throw e;
         }
-        scene.setRoot(root);
     }
 
-    public static void setRoot(String fxml, User LoggedUser, int ID) throws IOException {
+    public static void setRoot(String fxml, User LoggedUser, Object object) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxml));
         Parent root = loader.load();
         Object controller = loader.getController();
         if (controller instanceof MarketController) {
             ((MarketController) controller).setLoggedUser(LoggedUser);
-            ((MarketController) controller).setCoin(ID);
+            ((MarketController) controller).setCoin((Coin) object);
         }else if (controller instanceof UserDetailsController){
-            ((UserDetailsController) controller).setUserDetails(ID);
+            ((UserDetailsController) controller).setUserDetails((User) object);
             ((UserDetailsController) controller).setLoggedUser(LoggedUser);
 
         }

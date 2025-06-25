@@ -34,7 +34,6 @@ public class UserMenuController {
     private User LoggedUser;
 
     @FXML private Button BalanceButton;
-    @FXML private HBox UserMenu;
     @FXML private Button ManageCoinBttn;
     @FXML private Button ManageUserBttn;
     @FXML private Button ActiveOrdersBttn;
@@ -42,6 +41,8 @@ public class UserMenuController {
     @FXML private Button BalanceHistoryBttn;
     @FXML private StackPane UserMenuPane; // Usando o ID correto do StackPane no FXML
     @FXML private TextField amountField;
+
+    private StackPane Background;
 
     public void setUser(User user) {
         this.LoggedUser = user;
@@ -61,6 +62,9 @@ public class UserMenuController {
         }
     }
 
+    public void SetBackground(StackPane background) {
+        Background = background;
+    }
     @FXML
     void Close() {
         FadeTransition CloseTransition = new FadeTransition(Duration.millis(250), UserMenuPane);
@@ -108,26 +112,26 @@ public class UserMenuController {
                 try {
                     String amountText = amountField.getText();
                     if (amountText == null || amountText.trim().isEmpty()) {
-                        showAlert(Alert.AlertType.ERROR, "Error", "Please, add the desired value to add.", addBalanceBackground);
+                        AlertUtils.showAlert(addBalanceBackground, "Please, add the desired value to add." );
                         return;
                     }
 
                     double amount = Double.parseDouble(amountText);
                     if (amount <= 0) {
-                        showAlert(Alert.AlertType.ERROR, "Error", "Please, insert a valid value, bigger than 0 (zero).", addBalanceBackground);
+                        AlertUtils.showAlert(addBalanceBackground, "Please, insert a valid value, bigger than 0 (zero).");
                         return;
                     }
 
                     // Atualiza o saldo na tabela Wallet
                     if (updateWalletBalance(amount, event)) {
-                        showAlert(Alert.AlertType.INFORMATION, "Sucesso", String.format("%.2f was added to your wallet with success!", amount), addBalanceBackground);
+                        AlertUtils.showAlert(addBalanceBackground, String.format("%.2f was added to your wallet with success!", amount));
                         addBalanceStage.close(); // Fecha a janela após sucesso
                     } else {
-                        showAlert(Alert.AlertType.ERROR, "Error", "Balance update failed.", addBalanceBackground);
+                        AlertUtils.showAlert(addBalanceBackground, "Balance update failed.");
                     }
 
                 } catch (NumberFormatException ex) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "Please, insert a valid value (ex: 5000.00)", addBalanceBackground);
+                    AlertUtils.showAlert( addBalanceBackground,"Please, insert a valid value (ex: 5000.00)");
                 }
             });
 
@@ -139,104 +143,30 @@ public class UserMenuController {
 
         } catch (IOException e) {
             // Aqui usamos o UserMenuPane para mostrar o alerta no menu principal
-            showAlert(Alert.AlertType.ERROR, "Error", "It wasn't possible to load the deposit window.", UserMenuPane);
+            AlertUtils.showAlert(Background, "It wasn't possible to load the deposit window.");
             e.printStackTrace();
         }
     }
 
     // Método para atualizar o saldo na tabela Wallet
     private boolean updateWalletBalance(double amount, ActionEvent event) {
-        Client client = (Client) LoggedUser;
-        Boolean Success = client.getWallet().SetBalance(client.getWallet().getBalance() + amount, client.getWallet().getPendingBalance());
+        try {
+            Client client = (Client) LoggedUser;
+            Boolean Success = client.getWallet().SetBalance(client.getWallet().getBalance() + amount, client.getWallet().getPendingBalance());
+            scene = ((Node) event.getSource()).getScene();
+            root = scene.getRoot();
+            Node node = root.lookup("#balanceLabel");
 
-        scene = ((Node) event.getSource()).getScene();
-        root = scene.getRoot();
-        Node node = root.lookup("#balanceLabel");
-
-        if (node instanceof Label) {
-            Label label = (Label) node;
-            label.setText(String.format("%.2f", client.getWallet().getBalance()));
-        }
-        return Success; // Retorna verdadeiro se a atualização foi bem-sucedida
-
-    }
-
-    // Método para mostrar alerta personalizado (substituindo os alertas padrão do JavaFX)
-    private void showAlert(Alert.AlertType type, String title, String message, StackPane container) {
-        // Verifica se o container está disponível
-        if (container == null) {
-            // Se não estiver disponível, usa o método alternativo para obter o container
-            try {
-                Scene currentScene = BalanceButton.getScene();
-                if (currentScene != null) {
-                    Parent currentRoot = currentScene.getRoot();
-                    if (currentRoot instanceof StackPane) {
-                        container = (StackPane) currentRoot;
-                    } else {
-                        // Se não encontrar o container, cria um alerta padrão como fallback
-                        Alert alert = new Alert(type);
-                        alert.setTitle(title);
-                        alert.setHeaderText(null);
-                        alert.setContentText(message);
-                        alert.showAndWait();
-                        return;
-                    }
-                } else {
-                    // Se não houver cena, cria um alerta padrão como fallback
-                    Alert alert = new Alert(type);
-                    alert.setTitle(title);
-                    alert.setHeaderText(null);
-                    alert.setContentText(message);
-                    alert.showAndWait();
-                    return;
-                }
-            } catch (Exception e) {
-                // Em caso de erro, usa o alerta padrão como fallback
-                Alert alert = new Alert(type);
-                alert.setTitle(title);
-                alert.setHeaderText(null);
-                alert.setContentText(message);
-                alert.showAndWait();
-                return;
+            if (node instanceof Label) {
+                Label label = (Label) node;
+                label.setText(String.format("%.2f", client.getWallet().getBalance()));
             }
+            return Success; // Retorna verdadeiro se a atualização foi bem-sucedida
+        }catch (SQLException e) {
+            DatabaseConnection.HandleConnectionError(Background, e);
         }
+        return false;
 
-        // Cria o conteúdo do diálogo (não em tela cheia)
-        VBox dialog = new VBox(3);
-        dialog.setSpacing(25);
-        dialog.setAlignment(Pos.CENTER);
-        dialog.setStyle("-fx-background-color: #28323E; -fx-padding: 5; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: white;");
-        dialog.setMaxWidth(320);
-        dialog.setMaxHeight(170);
-
-        Label messageLabel = new Label(message);
-        messageLabel.setStyle("-fx-text-fill: white");
-
-        Button okButton = new Button("OK");
-        okButton.setStyle("-fx-background-color: #FFA630; -fx-max-width: 50; -fx-border-radius: 10;");
-
-        dialog.getChildren().addAll(messageLabel, okButton);
-
-        // Cria um overlay semi-transparente
-        StackPane overlay = new StackPane();
-        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);"); // 0.2 = 20% de opacidade
-
-        // Adiciona o diálogo ao overlay e centraliza
-        overlay.getChildren().add(dialog);
-        overlay.setAlignment(Pos.CENTER);
-
-        // Adiciona o overlay ao StackPane raiz
-        container.getChildren().add(overlay);
-
-        // Remove o overlay quando OK é clicado
-        StackPane finalContainer = container;
-        okButton.setOnAction(e -> finalContainer.getChildren().remove(overlay));
-    }
-
-
-    // Sobrecarga do método showAlert para usar o UserMenuPane como container padrão
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        showAlert(type, title, message, UserMenuPane);
     }
 
     @FXML
@@ -246,7 +176,7 @@ public class UserMenuController {
 
     @FXML
     void TransactionHistory() {
-        GoTo("TransactionHistory.fxml");
+        GoTo("OrderHistory.fxml");
     }
 
     @FXML
@@ -267,8 +197,8 @@ public class UserMenuController {
     private void GoTo(String View) {
         try {
             Main.setRoot(View, LoggedUser);
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "It wasn't possible to load the requested page.");
+        } catch (Exception e) {
+            AlertUtils.showAlert(Background, "It wasn't possible to load the requested page.");
             e.printStackTrace();
         }
     }
